@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "echo \"No build needed here — the news pages are prebuilt and committed, and GitHub Actions rebuilds them on every change.\"",
+  "outputDirectory": ".",
+  "trailingSlash": false
+}
