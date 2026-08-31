@@ -143,14 +143,22 @@ These are placeholders:
 
 ### Photography
 
-**The supplied headshot is 192 by 262 pixels**, which is small. The layout works
-around it by presenting the photo in a bordered frame at a modest size rather than
-as a full-width banner image.
+Photographs live in `assets/img/`. Every framed photo is cropped by CSS
+(`object-fit: cover`), so you can drop in a replacement of any shape and it will
+still sit correctly in its frame — no need to pre-crop the file.
 
-A higher-resolution portrait would allow a stronger hero. Replace
-`assets/img/leigh-hulsey.jpg` and it will be picked up automatically. Additional
-photographs from district events would also improve the news cards, which are
-currently text only.
+| File | Where it appears |
+| --- | --- |
+| `leigh-portrait.jpg` | Home hero and About sidebar (the main portrait) |
+| `leigh-house-floor.jpg` | Home "About Leigh" section |
+| `leigh-community.webp` | Home full-width photo band |
+| `leigh-press.jpg` | About page, in the biography |
+| `leigh-headshot.jpg` | Contact page sidebar |
+
+To swap any photo, replace the file at the same path (keep the name) and it is
+picked up automatically. Larger, higher-resolution images look best; the frames
+scale them down cleanly. Additional photographs from district events would also
+strengthen the news cards, which are currently text only.
 
 ---
 
