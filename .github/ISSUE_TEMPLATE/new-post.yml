@@ -1,0 +1,75 @@
+name: 📝 New blog post
+description: Write a post for the News page. No coding — just fill this in.
+title: "[Post] "
+labels: ["new-post"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill this in and press **Submit new issue**. If you're on the campaign
+        team, your post goes live on its own within a minute or two. Otherwise a
+        team member will give it a quick look and approve it.
+  - type: input
+    id: title
+    attributes:
+      label: Headline
+      description: The title, shown on the news card and in Google results.
+      placeholder: Hulsey to Host Town Hall in Helena
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Date (YYYY-MM-DD)
+      description: Leave blank to use today's date. Posts sort newest first.
+      placeholder: 2026-09-14
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: This becomes a filter button on the News page.
+      options:
+        - Campaign
+        - Legislation
+        - District
+        - Events
+        - Statement
+        - Press Release
+        - In the News
+        - Other
+      default: 0
+  - type: input
+    id: category_other
+    attributes:
+      label: Other category (only if you picked Other)
+      placeholder: Endorsements
+  - type: input
+    id: excerpt
+    attributes:
+      label: One-sentence summary
+      description: Shown on the news card and as the preview when the post is shared on Facebook.
+      placeholder: Rep. Hulsey will hold an open town hall at Helena City Hall on September 27.
+    validations:
+      required: true
+  - type: textarea
+    id: body
+    attributes:
+      label: Post text
+      description: |
+        Write normally. A blank line starts a new paragraph.
+        **two asterisks** makes bold, and [words in brackets](https://example.com) makes a link.
+      placeholder: |
+        Rep. Leigh Hulsey will host a town hall at Helena City Hall on September 27...
+
+        ## What to expect
+
+        - Time for questions
+        - A recap of the session
+    validations:
+      required: true
+  - type: checkboxes
+    id: draft
+    attributes:
+      label: Draft?
+      options:
+        - label: Keep this as a draft for now (do not publish yet)

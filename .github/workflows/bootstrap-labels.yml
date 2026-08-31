@@ -1,0 +1,28 @@
+name: Set up labels
+
+# Creates the labels the posting system relies on. Runs by itself the first
+# time this file lands on main, and you can re-run it any time from the Actions
+# tab. It's safe to run repeatedly — it just makes sure the labels exist.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bootstrap-labels.yml"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Create or update the labels
+        run: |
+          gh label create "new-post"     --repo "$GITHUB_REPOSITORY" --color "1f6feb" --description "A blog post submitted through the form" --force
+          gh label create "news-link"    --repo "$GITHUB_REPOSITORY" --color "0e8a16" --description "A news link to add to the News tab"       --force
+          gh label create "needs-review" --repo "$GITHUB_REPOSITORY" --color "d4c5f9" --description "Waiting for a team member to review"       --force
+          gh label create "approved"     --repo "$GITHUB_REPOSITORY" --color "0e8a16" --description "Approved — publish this to the News tab"   --force

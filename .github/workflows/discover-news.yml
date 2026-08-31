@@ -1,0 +1,48 @@
+name: Find fresh news (daily)
+
+# Once a day, search the news for stories about Rep. Hulsey, drop anything
+# negative or already-seen, and open a pre-filled "review" issue for each new
+# story. Nothing is published automatically — a team member approves each one.
+#
+# You can also run it any time from the Actions tab ("Run workflow").
+
+on:
+  schedule:
+    - cron: "0 13 * * *" # 13:00 UTC daily (~8am Central)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: discover-news
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the site
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Search and queue stories for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/discover-news.js
+
+      - name: Remember what was suggested
+        run: |
+          if [ -n "$(git status --porcelain data/seen-news.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/seen-news.json
+            git commit -m "Update discovered-news ledger [skip ci]"
+            git push
+          fi

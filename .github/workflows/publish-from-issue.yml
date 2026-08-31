@@ -1,0 +1,91 @@
+name: Publish from a submitted form
+
+# Turns a submitted "New blog post" or "Submit a news link" issue into a real
+# post on the News page, then closes the issue.
+#
+# It publishes when EITHER:
+#   * a team member (someone with write access) adds the "approved" label, OR
+#   * a team member opens a "New blog post" form themselves, OR
+#   * a team member comments "/approve" on the issue.
+# Links from outside always wait for that approval, so the News tab stays vetted.
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: news-build
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: >
+      (github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'approved'
+        && (contains(github.event.issue.labels.*.name, 'news-link') || contains(github.event.issue.labels.*.name, 'new-post')))
+      ||
+      (github.event_name == 'issues' && github.event.action == 'opened'
+        && contains(github.event.issue.labels.*.name, 'new-post')
+        && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
+      ||
+      (github.event_name == 'issue_comment' && github.event.issue.state == 'open'
+        && startsWith(github.event.comment.body, '/approve')
+        && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+        && (contains(github.event.issue.labels.*.name, 'news-link') || contains(github.event.issue.labels.*.name, 'new-post')))
+    steps:
+      - name: Get the site
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build the post from the form
+        id: make
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node scripts/issue-to-post.js
+
+      - name: Rebuild the news pages
+        if: steps.make.outputs.status == 'published'
+        run: node build-news.js
+
+      - name: Commit and publish
+        if: steps.make.outputs.status == 'published'
+        env:
+          NUM: ${{ github.event.issue.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish news post from issue #$NUM [skip ci]"
+          git push
+
+      - name: Say it's published, and close the issue
+        if: steps.make.outputs.status == 'published'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUM: ${{ github.event.issue.number }}
+          SLUG: ${{ steps.make.outputs.slug }}
+        run: |
+          gh issue comment "$NUM" --body "✅ Published! It will appear on the News page within a minute or two, at \`news/$SLUG.html\`. Thanks!"
+          gh issue close "$NUM" --reason completed
+
+      - name: Explain what needs fixing
+        if: steps.make.outputs.status == 'error'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUM: ${{ github.event.issue.number }}
+          MSG: ${{ steps.make.outputs.message }}
+        run: |
+          gh issue comment "$NUM" --body "⚠️ This couldn't be published yet: $MSG"

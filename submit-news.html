@@ -3,15 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>News | Hulsey for House</title>
-<meta name="description" content="Updates from Rep. Leigh Hulsey and the Hulsey for House campaign, including legislation, session news and events across Alabama House District 15.">
+<title>Submit a News Link | Hulsey for House</title>
+<meta name="description" content="Share a news story about Rep. Leigh Hulsey. The campaign reviews every link before it appears on the News page.">
 <meta name="theme-color" content="#262262">
+<meta name="robots" content="noindex">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/img/logo.png">
-<meta property="og:type" content="website">
-<meta property="og:title" content="News | Hulsey for House">
-<meta property="og:description" content="Updates from Rep. Leigh Hulsey and the Hulsey for House campaign.">
-<meta property="og:image" content="assets/img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -58,53 +55,52 @@
 <section class="page-banner">
   <img class="page-banner__mark" src="assets/img/mark.png" alt="" aria-hidden="true">
   <div class="wrap">
-    <p class="crumbs"><a href="index.html">Home</a> &rsaquo; News</p>
+    <p class="crumbs"><a href="index.html">Home</a> &rsaquo; <a href="news.html">News</a> &rsaquo; Submit a link</p>
     <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
-    <h1>News</h1>
-    <p>Legislation, session updates and news from across House District 15.</p>
+    <h1>Share a News Link</h1>
+    <p>Saw a story about Rep. Hulsey? Send it our way. The campaign reviews every link before it appears on the News page.</p>
   </div>
 </section>
 
 <section class="section">
-  <div class="wrap">
-    <div class="news-bar">
-      <div class="filters" id="news-filters" role="group" aria-label="Filter by category"></div>
-      <div class="searchbox">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 105 14.3l5.3 5.4 1.4-1.4-5.4-5.3A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
-        <label class="visually-hidden" for="news-search">Search news</label>
-        <input id="news-search" type="search" placeholder="Search news..." autocomplete="off">
+  <div class="wrap-narrow">
+    <form id="tip-form" novalidate>
+      <div class="form-grid">
+        <div class="field field--full">
+          <label for="tip-url">Link to the story</label>
+          <input id="tip-url" name="url" type="url" inputmode="url" placeholder="https://www.example.com/article" required>
+          <span class="field__error"></span>
+        </div>
+        <div class="field field--full">
+          <label for="tip-headline">Headline to show (optional)</label>
+          <input id="tip-headline" name="headline" type="text" placeholder="Leave blank to use the article's own headline">
+          <span class="field__error"></span>
+        </div>
+        <div class="field field--full">
+          <label for="tip-note">Why it matters (optional)</label>
+          <textarea id="tip-note" name="note" placeholder="One or two sentences of context (optional)."></textarea>
+          <span class="field__error"></span>
+        </div>
       </div>
+      <div style="margin-top:var(--s-3)">
+        <button class="btn btn--lg" type="submit">Submit for review</button>
+      </div>
+      <p class="form-hint" style="margin-top:1rem">
+        This opens GitHub, where the campaign team gives the story a quick look and approves it.
+        A free GitHub account is needed to submit there.
+        No account? <a data-email href="#">Email the link to us</a> and we will post it.
+      </p>
+    </form>
+
+    <div class="form-done" id="tip-done" style="margin-top:1.5rem">
+      <h3>Thank You</h3>
+      <p>Your link opened in a new tab on GitHub. Press <strong>Submit new issue</strong> there to send it. The team will review it and, once approved, it appears on the News page.</p>
+      <p style="margin-top:1rem"><a class="btn btn--navy" href="news.html">Back to News</a></p>
     </div>
 
-    <p class="visually-hidden" id="news-count" role="status" aria-live="polite"></p>
-
-    <div class="news-list" id="news-list"></div>
-
-    <div class="no-results" id="news-empty" style="display:none">
-      <p>No posts match that search. Try a different word or clear the filter.</p>
-    </div>
-
-    <p class="text-center form-hint" style="margin-top:var(--s-4)">
-      Have a news story about Rep. Hulsey? <a href="submit-news.html">Share a link &rsaquo;</a>
+    <p style="margin-top:var(--s-3)" class="form-hint">
+      Prefer to do it by hand? <a id="direct-link" href="#" target="_blank" rel="noopener">Open the blank submission form on GitHub</a>.
     </p>
-  </div>
-</section>
-
-<section class="section section--tight section--gray">
-  <div class="wrap">
-    <div class="signup" data-fade>
-      <h2>Stay Informed</h2>
-      <p>Sign up for updates from the campaign. We will not share your email address.</p>
-      <form class="signup-form" data-form data-done="signup-done" data-subject="Email list signup">
-        <label class="visually-hidden" for="signup-email">Email address</label>
-        <input id="signup-email" name="email" type="email" placeholder="Your email address" required>
-        <button class="btn" type="submit">Sign Up</button>
-      </form>
-      <div class="form-done" id="signup-done" style="margin-top:1rem">
-        <h3>Thank You</h3>
-        <p>You have been added to the campaign email list.</p>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -158,7 +154,62 @@
   </div>
 </footer>
 
-<script src="assets/js/posts.js"></script>
 <script src="assets/js/site.js"></script>
+<script>
+/* Turn a pasted link into a pre-filled GitHub submission form. The campaign
+   reviews and approves it there — nothing is published straight from here.
+   If you move the site to a different GitHub repository, update REPO below. */
+(function () {
+  "use strict";
+  var REPO = "williamhodgesiii-bit/RepLeighHulsey";
+  var NEW_ISSUE = "https://github.com/" + REPO + "/issues/new";
+
+  var direct = document.getElementById("direct-link");
+  if (direct) direct.href = NEW_ISSUE + "?template=news-link.yml";
+
+  var form = document.getElementById("tip-form");
+  var done = document.getElementById("tip-done");
+  if (!form) return;
+
+  function fieldError(input, message) {
+    var field = input.closest(".field");
+    if (!field) return;
+    field.classList.toggle("has-error", !!message);
+    var box = field.querySelector(".field__error");
+    if (box) box.textContent = message || "";
+    input.setAttribute("aria-invalid", message ? "true" : "false");
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var urlInput = document.getElementById("tip-url");
+    var url = (urlInput.value || "").trim();
+    if (!/^https?:\/\/.+/i.test(url)) {
+      fieldError(urlInput, "Please paste a full link that starts with https://");
+      urlInput.focus();
+      return;
+    }
+    fieldError(urlInput, "");
+
+    var headline = (document.getElementById("tip-headline").value || "").trim();
+    var note = (document.getElementById("tip-note").value || "").trim();
+
+    var params = new URLSearchParams();
+    params.set("template", "news-link.yml");
+    params.set("link", url);
+    if (headline) params.set("headline", headline);
+    if (note) params.set("note", note);
+
+    window.open(NEW_ISSUE + "?" + params.toString(), "_blank", "noopener");
+
+    form.hidden = true;
+    if (done) {
+      done.classList.add("is-visible");
+      done.setAttribute("tabindex", "-1");
+      done.focus();
+    }
+  });
+})();
+</script>
 </body>
 </html>

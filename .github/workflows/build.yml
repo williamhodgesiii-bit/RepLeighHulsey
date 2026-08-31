@@ -1,0 +1,47 @@
+name: Build the news section
+
+# Whenever a post is added or changed, rebuild the site's news pages, feed
+# and sitemap automatically and commit the result. This is what lets someone
+# add a post through GitHub with no build step and no developer.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "content/news/**"
+      - "build-news.js"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the site
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rebuild the news pages
+        run: node build-news.js
+
+      - name: Commit the regenerated pages
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Rebuild news section [skip ci]"
+            git push
+          else
+            echo "Already up to date — nothing to rebuild."
+          fi

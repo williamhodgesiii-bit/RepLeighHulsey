@@ -1146,3 +1146,7 @@ body.has-mobile-cta { padding-bottom: 5.25rem; }
   min-height: 44px;
   word-break: break-word;
 }
+
+/* Small muted helper text under forms and the news list */
+.form-hint { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.form-hint a { font-weight: 600; }

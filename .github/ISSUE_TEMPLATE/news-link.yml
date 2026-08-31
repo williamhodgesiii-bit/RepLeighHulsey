@@ -1,0 +1,40 @@
+name: 🔗 Submit a news link
+description: Paste a link to a news story. It gets formatted onto the News tab after a quick review.
+title: "[News link] "
+labels: ["news-link", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Paste a link to a news article about Rep. Hulsey. A campaign team member
+        reviews every link before it goes live, so nothing is posted automatically.
+  - type: input
+    id: link
+    attributes:
+      label: News link (URL)
+      description: The full web address of the article.
+      placeholder: https://www.example.com/story-about-rep-hulsey
+    validations:
+      required: true
+  - type: input
+    id: headline
+    attributes:
+      label: Headline to show (optional)
+      description: Leave blank to use the article's own headline.
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - In the News
+        - Legislation
+        - District
+        - Campaign
+        - Events
+        - Statement
+      default: 0
+  - type: textarea
+    id: note
+    attributes:
+      label: Why it matters (optional)
+      description: One or two sentences of context. Leave blank to use the article's own summary.

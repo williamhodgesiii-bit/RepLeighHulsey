@@ -1,107 +1,109 @@
-# How to post news
+# How to post news (for the campaign team)
 
-Everything on the News page comes from the files in **`content/news/`**. One file
-is one post. You do not need to touch any other part of the site.
+Everything on the **News** page can be added right here on GitHub, in your web
+browser. **No coding, no software, and nobody else has to do anything.** You just
+fill in a form.
 
----
+There are three ways to add something. Pick whichever fits:
 
-## Write a post
+1. [Write a blog post](#1-write-a-blog-post) — your own update or announcement.
+2. [Add a news link](#2-add-a-news-link) — a story from a newspaper or TV station.
+3. [Approve a suggested story](#3-approve-a-suggested-story) — from the daily robot.
 
-Create a new file in `content/news/`. Name it the way you want the web address to
-read, using lowercase letters and dashes, ending in `.md`.
-
-```
-content/news/town-hall-in-helena.md   ->   hulseyforhouse.com/news/town-hall-in-helena.html
-```
-
-Put this at the top of the file, between the two lines of dashes:
-
-```markdown
----
-title: Hulsey to Host Town Hall in Helena
-date: 2026-09-14
-category: Events
-excerpt: Rep. Hulsey will hold an open town hall at Helena City Hall on September 27.
----
-
-Write the post here.
-
-Leave a blank line between paragraphs. That is all the formatting most posts need.
-
-## A section heading
-
-Use two number signs for a heading.
-
-- A bulleted list
-- Another point
-
-Use **two asterisks** around words to bold them, and write a link like
-[this](https://example.com).
-```
-
-### The five fields
-
-| Field | What it does |
-|---|---|
-| `title` | The headline, shown on the card, the page and in Google results |
-| `date` | `YYYY-MM-DD`. Posts sort newest first automatically |
-| `category` | The filter button on the News page. Reuse one, or invent a new one and the button appears by itself |
-| `excerpt` | One or two sentences. Shown on the news card and as the preview when the post is shared on Facebook |
-| `draft` | Optional. Add `draft: true` to keep a post out of the site until it is ready |
-
-If the title or excerpt contains a colon, wrap it in quotes:
-`title: "Hulsey: Session Recap"`
+You'll need a free GitHub account (github.com → **Sign up**) and an invite to this
+project. If you can see the **Issues** tab, you're all set.
 
 ---
 
-## Publish it
+## 1. Write a blog post
 
-```
-npm run build
-```
+1. Go to the **Issues** tab at the top.
+2. Click the green **New issue** button.
+3. Next to **📝 New blog post**, click **Get started**.
+4. Fill in the boxes:
+   - **Headline** — the title of the post.
+   - **Date** — leave blank for today.
+   - **Category** — pick one (it becomes a filter button on the News page).
+   - **One-sentence summary** — shown on the news card and when it's shared on
+     Facebook.
+   - **Post text** — write it normally. A blank line starts a new paragraph.
+5. Click **Submit new issue**.
 
-That regenerates the news pages, the feed and the sitemap. Then commit and push,
-and the site updates.
+That's it. Within a minute or two the post appears on the News page automatically,
+and the form closes itself. You don't run anything.
 
-If the campaign is hosted on Vercel or Netlify, this command runs automatically on
-every push, so publishing is just: add the file, commit, done.
+> **Tip:** to make a word **bold**, put two stars around it: `**like this**`.
+> To add a link, write `[the words people click](https://the-web-address.com)`.
 
-### What the build creates for each post
-
-- Its own page at `news/<name>.html`
-- A card on the News page and, if it is one of the three newest, on the home page
-- A proper Facebook and X preview showing the post's own headline and excerpt
-- An entry in `feed.xml` and in `sitemap.xml` for search engines
-
----
-
-## Editing or removing a post
-
-- **Edit** — change the `.md` file and run `npm run build` again.
-- **Rename** — rename the `.md` file. The old page is deleted on the next build.
-  Anyone who saved the old link lands on the News page rather than an error.
-- **Delete** — delete the `.md` file and run `npm run build`.
+Want to hold a post back? Tick **"Keep this as a draft for now"** and it's saved
+but not shown. (Delete that draft later from the **content/news** folder, or ask
+whoever set this up.)
 
 ---
 
-## If the build stops
+## 2. Add a news link
 
-The build checks each post before writing anything and prints exactly what is
-wrong, for example:
+Great when a newspaper or TV station covers Rep. Hulsey and you want it on the site.
 
-```
-These posts need attention before the site can be built:
+1. Go to **Issues** → **New issue** → **🔗 Submit a news link** → **Get started**.
+2. Paste the **link** to the article. That's the only required box.
+   (Optionally add a headline or a sentence of context.)
+3. Click **Submit new issue**.
 
-  - town-hall.md: date must look like 2026-04-09
-```
+The system reads the article and formats a tidy news card that links out to the
+full story — you don't copy any text yourself.
 
-Fix the file and run it again. Nothing is published until every post is valid.
+**One quick approval keeps the News tab clean:** a team member opens the new issue
+and either
+
+- adds the **`approved`** label (right sidebar → **Labels** → click **approved**), or
+- types a comment that says **`/approve`**.
+
+The moment it's approved, it publishes and the issue closes. To pass on a story
+instead, just **Close** the issue.
+
+> There's also a **"Share a news link"** page on the website itself (linked at the
+> bottom of the News page) so supporters can send links in. Those arrive here the
+> same way, and still wait for a team member's approval.
 
 ---
 
-## A note on formatting
+## 3. Approve a suggested story
 
-Only the basics are supported, which is deliberate: headings (`##`), paragraphs,
-bulleted and numbered lists, bold, italics, links and block quotes. That covers a
-press release or an update, and it keeps every post looking consistent with the
-rest of the site.
+Every morning a helper searches the news for fresh, **positive** stories about Rep.
+Hulsey and drops each one into the **Issues** tab, already formatted and ready.
+Nothing it finds goes live on its own — you decide.
+
+1. Open the **Issues** tab. Suggested stories are labeled **`news-link`** and
+   **`needs-review`**.
+2. Open one and read it. If it looks good and puts the Rep in a good light:
+   - add the **`approved`** label (or comment **`/approve`**), and it publishes.
+3. If it's off-topic or you'd rather skip it, just **Close** the issue.
+
+The helper already skips anything that reads negative, and never suggests the same
+story twice — but **you always have the final say.**
+
+---
+
+## Editing or removing a post after it's up
+
+Posts live as simple text files in the **`content/news`** folder.
+
+- **Edit:** open the file there, click the pencil ✏️, make changes, and click
+  **Commit changes**. The site updates itself.
+- **Remove:** open the file, click the trash 🗑️ icon, and **Commit changes**.
+
+If you'd rather not touch the folder, just open a new issue describing the change
+and a teammate can handle it.
+
+---
+
+## If something doesn't show up
+
+- Give it two or three minutes — the site rebuilds itself after each change.
+- If you submitted a link or a suggested story, check that it was **approved**
+  (added the `approved` label or an `/approve` comment). Unapproved links wait.
+- If a form couldn't be published, the helper leaves a comment on that issue
+  explaining exactly what to fix. Edit the issue and approve it again.
+
+That's everything. Welcome aboard.
