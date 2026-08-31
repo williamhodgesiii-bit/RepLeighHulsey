@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Contact | Hulsey for House</title>
 <meta name="description" content="Volunteer, request a yard sign, or contact the Hulsey for House campaign in Alabama House District 15.">
 <meta name="theme-color" content="#262262">
@@ -42,13 +42,13 @@
   </div>
 </header>
 
-<div class="mobile-nav" id="mobile-nav">
-  <div class="wrap">
-    <a href="index.html">Home</a>
-    <a href="about.html">About Leigh</a>
-    <a href="issues.html">On the Issues</a>
-    <a href="news.html">News</a>
-    <a href="contact.html" aria-current="page">Contact</a>
+<div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+  <div class="wrap mobile-nav__inner">
+    <a class="mobile-nav__link" href="index.html">Home</a>
+    <a class="mobile-nav__link" href="about.html">About Leigh</a>
+    <a class="mobile-nav__link" href="issues.html">On the Issues</a>
+    <a class="mobile-nav__link" href="news.html">News</a>
+    <a class="mobile-nav__link" href="contact.html" aria-current="page">Contact</a>
     <a class="btn btn--block" href="donate.html">Donate</a>
   </div>
 </div>
@@ -56,18 +56,21 @@
 <main id="main">
 
 <section class="page-banner">
+  <img class="page-banner__mark" src="assets/img/mark.png" alt="" aria-hidden="true">
   <div class="wrap">
     <p class="crumbs"><a href="index.html">Home</a> &rsaquo; Contact</p>
+    <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
     <h1>Contact</h1>
     <p>Volunteer, request a yard sign, or send the campaign a message.</p>
   </div>
 </section>
 
 <section class="section">
-  <div class="wrap cols cols--sidebar" data-fade>
+  <div class="wrap cols cols--sidebar">
 
-    <div>
+    <div data-fade>
       <div class="section-title">
+        <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
         <h2>Get Involved</h2>
         <p>Tell us how you would like to help and someone from the campaign will follow up.</p>
       </div>
@@ -114,7 +117,7 @@
           </div>
         </div>
 
-        <div style="margin-top:1.5rem">
+        <div style="margin-top:var(--s-3)">
           <button class="btn btn--lg" type="submit">Submit</button>
         </div>
       </form>
@@ -125,8 +128,9 @@
       </div>
     </div>
 
-    <aside>
+    <aside data-fade>
       <div class="section-title">
+        <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
         <h2>Campaign Office</h2>
       </div>
       <dl class="bio-facts">
@@ -136,7 +140,7 @@
         <div><dt>District 15</dt><dd>Portions of Helena, McCalla, Bessemer and western Hoover, in Shelby and Jefferson counties</dd></div>
       </dl>
 
-      <p class="form-note" style="margin-top:1.5rem">
+      <p class="form-note" style="margin-top:var(--s-3)">
         <strong>Need help with a state agency?</strong> Constituent casework is handled
         through the legislative office rather than the campaign. Send a note here and we
         will point you to the right contact.
@@ -197,8 +201,8 @@
         <h4>Contact</h4>
         <ul>
           <li><a data-email href="#">info@hulseyforhouse.com</a></li>
-          <li>Helena, Alabama</li>
-          <li>House District 15</li>
+          <li><span>Helena, Alabama</span></li>
+          <li><span>House District 15</span></li>
         </ul>
       </div>
     </div>

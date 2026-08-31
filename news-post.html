@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>News | Hulsey for House</title>
 <meta name="description" content="An update from Rep. Leigh Hulsey and the Hulsey for House campaign.">
 <meta name="theme-color" content="#262262">
@@ -42,13 +42,13 @@
   </div>
 </header>
 
-<div class="mobile-nav" id="mobile-nav">
-  <div class="wrap">
-    <a href="index.html">Home</a>
-    <a href="about.html">About Leigh</a>
-    <a href="issues.html">On the Issues</a>
-    <a href="news.html" aria-current="page">News</a>
-    <a href="contact.html">Contact</a>
+<div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+  <div class="wrap mobile-nav__inner">
+    <a class="mobile-nav__link" href="index.html">Home</a>
+    <a class="mobile-nav__link" href="about.html">About Leigh</a>
+    <a class="mobile-nav__link" href="issues.html">On the Issues</a>
+    <a class="mobile-nav__link" href="news.html" aria-current="page">News</a>
+    <a class="mobile-nav__link" href="contact.html">Contact</a>
     <a class="btn btn--block" href="donate.html">Donate</a>
   </div>
 </div>
@@ -58,10 +58,12 @@
   <article id="article"></article>
 
 <section class="cta">
+  <img class="cta__mark" src="assets/img/mark.png" alt="" aria-hidden="true">
   <div class="wrap">
+    <p class="brandrule brandrule--center" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
     <h2>Support the Campaign</h2>
     <p>Campaigns in House District 15 are funded by neighbors. A contribution of any size helps us reach voters across the district.</p>
-    <div class="btn-row btn-row--center" style="margin-top:1.5rem">
+    <div class="btn-row btn-row--center" style="margin-top:1.75rem">
       <a class="btn btn--navy btn--lg" href="donate.html">Donate</a>
       <a class="btn btn--lg btn--outline-white" href="contact.html">Volunteer</a>
     </div>
@@ -69,6 +71,11 @@
 </section>
 
 </main>
+
+<div class="mobile-cta">
+  <a class="btn" href="donate.html">Donate</a>
+  <a class="btn btn--outline" href="contact.html">Volunteer</a>
+</div>
 
 <footer class="footer">
   <div class="wrap">
@@ -101,8 +108,8 @@
         <h4>Contact</h4>
         <ul>
           <li><a data-email href="#">info@hulseyforhouse.com</a></li>
-          <li>Helena, Alabama</li>
-          <li>House District 15</li>
+          <li><span>Helena, Alabama</span></li>
+          <li><span>House District 15</span></li>
         </ul>
       </div>
     </div>

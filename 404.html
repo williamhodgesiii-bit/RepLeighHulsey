@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Page Not Found | Hulsey for House</title>
 <meta name="description" content="The page you requested could not be found.">
 <meta name="theme-color" content="#262262">
@@ -43,13 +43,13 @@
   </div>
 </header>
 
-<div class="mobile-nav" id="mobile-nav">
-  <div class="wrap">
-    <a href="index.html">Home</a>
-    <a href="about.html">About Leigh</a>
-    <a href="issues.html">On the Issues</a>
-    <a href="news.html">News</a>
-    <a href="contact.html">Contact</a>
+<div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+  <div class="wrap mobile-nav__inner">
+    <a class="mobile-nav__link" href="index.html">Home</a>
+    <a class="mobile-nav__link" href="about.html">About Leigh</a>
+    <a class="mobile-nav__link" href="issues.html">On the Issues</a>
+    <a class="mobile-nav__link" href="news.html">News</a>
+    <a class="mobile-nav__link" href="contact.html">Contact</a>
     <a class="btn btn--block" href="donate.html">Donate</a>
   </div>
 </div>
@@ -57,7 +57,9 @@
 <main id="main">
 
 <section class="page-banner">
+  <img class="page-banner__mark" src="assets/img/mark.png" alt="" aria-hidden="true">
   <div class="wrap">
+    <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
     <h1>Page Not Found</h1>
     <p>The page you requested could not be found. It may have moved, or the address may contain a typo.</p>
   </div>
@@ -66,7 +68,7 @@
 <section class="section">
   <div class="wrap-narrow text-center">
     <p>You can return to the home page or browse the latest news from the campaign.</p>
-    <div class="btn-row btn-row--center" style="margin-top:1.5rem">
+    <div class="btn-row btn-row--center" style="margin-top:var(--s-3)">
       <a class="btn btn--navy" href="index.html">Home</a>
       <a class="btn btn--outline" href="news.html">News</a>
     </div>
@@ -106,8 +108,8 @@
         <h4>Contact</h4>
         <ul>
           <li><a data-email href="#">info@hulseyforhouse.com</a></li>
-          <li>Helena, Alabama</li>
-          <li>House District 15</li>
+          <li><span>Helena, Alabama</span></li>
+          <li><span>House District 15</span></li>
         </ul>
       </div>
     </div>

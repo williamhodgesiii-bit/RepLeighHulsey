@@ -36,6 +36,34 @@ window.SITE = {
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---------- Scroll position, shared by the header and the mobile bar ---------- */
+  function scrollWatchers() {
+    var header = $(".header");
+    var cta = $(".mobile-cta");
+    var footer = $(".footer");
+    if (!header && !cta) return;
+
+    var ticking = false;
+    function update() {
+      var y = window.scrollY || window.pageYOffset;
+      if (header) header.classList.toggle("is-stuck", y > 8);
+
+      if (cta) {
+        // Show once the visitor is past the opening screen, but get out of the
+        // way when the footer (which carries its own links) comes into view.
+        var footerTop = footer ? footer.getBoundingClientRect().top : Infinity;
+        var show = y > 420 && footerTop > window.innerHeight;
+        cta.classList.toggle("is-visible", show);
+      }
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
   /* ---------- Mobile menu ---------- */
   function menu() {
     var burger = $(".burger");
@@ -45,7 +73,10 @@ window.SITE = {
     function setOpen(open) {
       panel.classList.toggle("is-open", open);
       burger.setAttribute("aria-expanded", String(open));
+      panel.setAttribute("aria-hidden", String(!open));
     }
+    setOpen(false);
+
     burger.addEventListener("click", function () {
       setOpen(burger.getAttribute("aria-expanded") !== "true");
     });
@@ -59,11 +90,11 @@ window.SITE = {
       }
     });
     window.addEventListener("resize", function () {
-      if (window.innerWidth >= 992) setOpen(false);
+      if (window.innerWidth >= 1000) setOpen(false);
     });
   }
 
-  /* ---------- Gentle fade-in on scroll ---------- */
+  /* ---------- Fade sections in, with a small stagger inside grids ---------- */
   function fade() {
     var els = $$("[data-fade]");
     if (!els.length) return;
@@ -73,13 +104,28 @@ window.SITE = {
     }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-in");
-          io.unobserve(entry.target);
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var delay = parseInt(el.getAttribute("data-fade-delay") || "0", 10);
+        if (delay) {
+          window.setTimeout(function () { el.classList.add("is-in"); }, delay);
+        } else {
+          el.classList.add("is-in");
         }
+        io.unobserve(el);
       });
-    }, { threshold: 0.05, rootMargin: "0px 0px -5% 0px" });
+    }, { threshold: 0.05, rootMargin: "0px 0px -4% 0px" });
     els.forEach(function (el) { io.observe(el); });
+  }
+
+  /* Give cards inside a grid a staggered delay so they arrive in sequence. */
+  function stagger() {
+    if (reduceMotion) return;
+    $$(".issue-grid, .news-list").forEach(function (grid) {
+      $$("[data-fade]", grid).forEach(function (card, i) {
+        card.setAttribute("data-fade-delay", String(Math.min(i, 5) * 70));
+      });
+    });
   }
 
   /* ---------- News helpers ---------- */
@@ -103,17 +149,22 @@ window.SITE = {
   }
   function newsItemHTML(p) {
     return (
-      '<a class="news-item" href="news-post.html?p=' + encodeURIComponent(p.slug) + '">' +
-        '<p class="news-item__meta">' + escapeHTML(p.category) +
-          ' <span>&nbsp;|&nbsp; ' + formatDate(p.date) + "</span></p>" +
-        "<h3>" + escapeHTML(p.title) + "</h3>" +
-        "<p>" + escapeHTML(p.excerpt) + "</p>" +
-        '<span class="news-item__more">Read More</span>' +
+      '<a class="news-item" href="news-post.html?p=' + encodeURIComponent(p.slug) + '" data-fade>' +
+        '<div class="news-item__top">' +
+          '<img src="assets/img/mark.png" alt="" aria-hidden="true">' +
+          '<span class="news-item__cat">' + escapeHTML(p.category) + "</span>" +
+          '<span class="news-item__date">' + formatDate(p.date) + "</span>" +
+        "</div>" +
+        '<div class="news-item__body">' +
+          "<h3>" + escapeHTML(p.title) + "</h3>" +
+          "<p>" + escapeHTML(p.excerpt) + "</p>" +
+          '<span class="news-item__more">Read More</span>' +
+        "</div>" +
       "</a>"
     );
   }
 
-  /* ---------- News index: filters + search ---------- */
+  /* ---------- News index: filters and search ---------- */
   function newsIndex() {
     var list = $("#news-list");
     if (!list) return;
@@ -156,6 +207,8 @@ window.SITE = {
         return inCategory && (!state.query || haystack.indexOf(state.query) !== -1);
       });
       list.innerHTML = matches.map(newsItemHTML).join("");
+      // Results are injected after the observer ran, so reveal them directly.
+      $$("[data-fade]", list).forEach(function (el) { el.classList.add("is-in"); });
       var empty = $("#news-empty");
       if (empty) empty.style.display = matches.length ? "none" : "block";
       var count = $("#news-count");
@@ -186,7 +239,7 @@ window.SITE = {
         '<div class="section"><div class="wrap-narrow text-center">' +
         "<h1>Page Not Found</h1>" +
         "<p>That link may be out of date. You can find all updates on the news page.</p>" +
-        '<p><a class="btn btn--navy" href="news.html">View All News</a></p>' +
+        '<p style="margin-top:1.5rem"><a class="btn btn--navy" href="news.html">View All News</a></p>' +
         "</div></div>";
       return;
     }
@@ -218,7 +271,7 @@ window.SITE = {
       '<div class="section"><div class="wrap-narrow">' +
         '<div class="article-body">' + post.body + "</div>" +
         footer +
-        '<p style="margin-top:2rem"><a href="news.html">&laquo; Back to all news</a></p>' +
+        '<p style="margin-top:1.75rem"><a href="news.html">&laquo; Back to all news</a></p>' +
       "</div></div>";
   }
 
@@ -386,6 +439,8 @@ window.SITE = {
       var key = a.getAttribute("data-social");
       if (social[key]) { a.href = social[key]; } else { a.remove(); }
     });
+
+    if ($(".mobile-cta")) document.body.classList.add("has-mobile-cta");
   }
 
   function init() {
@@ -396,7 +451,9 @@ window.SITE = {
     articlePage();
     donate();
     forms();
+    stagger();
     fade();
+    scrollWatchers();
   }
 
   if (document.readyState === "loading") {

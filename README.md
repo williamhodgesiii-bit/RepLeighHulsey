@@ -121,18 +121,34 @@ Update `sitemap.xml` and `robots.txt` if the domain is not `hulseyforhouse.com`.
   Fonts with system fallbacks. Both are common on campaign sites. They can be
   self-hosted later for speed and privacy.
 - **Colors** are taken from the logo: red `#ED2424` and navy `#262262`.
+- **Brand elements.** Three motifs pulled from the logo run through the whole site:
+  the full lockup (header, footer), the Alabama-and-elephant mark
+  (`assets/img/mark.png`, cropped from the logo) used as a watermark, a portrait
+  badge, an issue-card icon and a news-card marker, and the star-and-bar rule that
+  sits above section headings. A faint star field textures the navy and gray panels.
+- **Mobile.** Tap targets are at least 44-48px throughout. Spacing uses a fluid
+  `clamp()` scale so padding tightens on small screens instead of jumping at
+  breakpoints. On the home page the hero reorders on mobile to name, photo, then
+  text. A sticky Donate/Volunteer bar appears once the visitor scrolls past the
+  opening screen and retracts when the footer arrives; it is hidden entirely on the
+  donate and contact pages, where those actions are already on the page.
 - **Accessibility** — skip link, semantic headings, keyboard-accessible menu,
   `aria-expanded` and `aria-current` state, visible focus outlines, and a live
   region announcing news filter results.
-- **Motion** is limited to a subtle fade as sections scroll into view, and it is
-  disabled entirely for visitors who set a reduced-motion preference.
+- **Motion** is limited to a short fade-and-rise as sections scroll into view
+  (cards in a grid stagger slightly), the mobile menu's height transition, and the
+  sticky bar sliding in. All of it is disabled for visitors who set a reduced-motion
+  preference.
 - The news index and article pages require JavaScript, since posts are loaded from
   `posts.js`. If pre-rendered article pages are wanted for search engines later, a
   short script can generate them from the same file.
 
 ### Testing
 
-Verified in headless Chromium at 390, 768 and 1440 pixels wide across all eight
-pages: no JavaScript errors, no horizontal overflow, and the mobile menu, news
-filters and search, article routing, donation amount picker and form validation
-all confirmed working.
+Verified in headless Chromium at 320, 390, 430, 768, 1280 and 1600 pixels wide
+across all eight pages: no JavaScript errors, no horizontal overflow, and no tap
+target under 40px. Interaction checks cover the mobile menu (including its open
+animation and Escape to close), the sticky mobile bar appearing and retracting at
+the footer, hero column order on mobile and desktop, staggered reveals, news
+filters and search, article routing, the donation amount picker and form
+validation, plus a reduced-motion pass.
