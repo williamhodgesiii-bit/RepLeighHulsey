@@ -1,188 +1,207 @@
 /* ==========================================================================
-   posts.js — the whole news section lives here.
+   posts.js — all news content lives in this file.
 
-   TO ADD A POST: copy a block, paste it at the TOP of the array, change the
-   fields. Save. That's it — it shows up on news.html and gets its own page.
+   TO ADD A POST: copy one block, paste it at the top of the list, and change
+   the fields. Save the file. The post will appear on the news page, in the
+   category filters, in the search, on the home page, and at its own address.
 
-   slug     -> the URL: news-post.html?p=your-slug   (letters, numbers, dashes)
-   date     -> YYYY-MM-DD
-   category -> groups it under a filter button. Reuse an existing one or invent one.
-   excerpt  -> 1-2 sentences shown on the card
-   body     -> the article. Plain HTML: <p>, <h2>, <ul><li>, <a href="">.
+   slug      the web address: news-post.html?p=your-slug  (letters, numbers, dashes)
+   date      YYYY-MM-DD
+   category  groups the post under a filter button; reuse one or add a new one
+   excerpt   one or two sentences shown on the news card
+   body      the article, written in simple HTML: <p>, <h2>, <ul><li>, <a href="">
    ========================================================================== */
 
 window.POSTS = [
   {
     slug: "reelection-announcement",
-    title: "Hulsey announces re-election campaign for House District 15",
+    title: "Hulsey Announces Re-Election Campaign for House District 15",
     date: "2026-01-08",
     category: "Campaign",
     excerpt:
-      "After three years in Montgomery, Leigh is asking District 15 for another term — with the same approach that got her here.",
+      "State Rep. Leigh Hulsey announced her campaign for re-election to the Alabama House of Representatives, District 15.",
     body: `
-      <p>State Representative Leigh Hulsey announced this week that she is running for
-      re-election in Alabama House District 15.</p>
+      <p>State Representative Leigh Hulsey, R&ndash;District 15, has announced her campaign
+      for re-election to the Alabama House of Representatives.</p>
 
-      <p>The announcement was short on fanfare and long on the thing she keeps coming back
-      to: showing up. Since taking office in November 2022, Leigh has represented Helena,
-      McCalla, Bessemer, western Hoover and the communities in between — and she has spent
-      most of that time in rooms that don't make the news. City council chambers. School
-      board meetings. Ballfields. The gym she owns in Alabaster.</p>
+      <p>Hulsey was elected to the House in November 2022 and represents portions of
+      Helena, McCalla, Bessemer and western Hoover across Shelby and Jefferson counties.
+      She previously served on the Helena City Council.</p>
 
-      <h2>The record so far</h2>
-      <p>Over her first term, Leigh has worked with local leaders to bring more than
-      <strong>$360,000 in grant funding</strong> back to House District 15 for community
-      needs and local projects. She sponsored the FOCUS Act, the bell-to-bell school cell
-      phone law that passed the House 79&ndash;15 and was signed by Governor Ivey in May 2025.
-      In 2026, she carried the bill reining in long-term tax breaks for data centers.</p>
+      <h2>Record of Service</h2>
 
-      <h2>Why she's running again</h2>
-      <p>The pitch is not complicated. District 15 is growing fast, and growth brings bills
-      that come due: roads, classrooms, first responders, water. Leigh's argument is that
-      the district is better off with someone in Montgomery who already knows which
-      phone calls to make.</p>
+      <p>During her first term, Hulsey has focused on public safety, responsible fiscal
+      stewardship, investment in education, and the values of Alabama families. Working
+      with local leaders, she has helped bring more than $360,000 in grant funding back
+      to House District 15 to support community needs and local projects.</p>
+
+      <p>Hulsey sponsored the FOCUS Act, which established a bell-to-bell prohibition on
+      student cell phone use in Alabama public schools. The bill passed the House by a
+      vote of 79 to 15 and was signed into law by Governor Kay Ivey in May 2025. In the
+      2026 session, she sponsored legislation limiting the length of tax abatements
+      available to large data centers.</p>
+
+      <h2>Looking Ahead</h2>
+
+      <p>House District 15 is among the fastest-growing areas of the state. Hulsey has
+      said her priorities for a second term include continued investment in roads and
+      infrastructure, support for local law enforcement and first responders, and
+      strengthening Alabama's public schools.</p>
 
       <p>"The citizens of District 15 deserve a God-fearing, qualified, conservative,
-      pro-jobs leader fighting for them."</p>
+      pro-jobs leader fighting for them," Hulsey said.</p>
 
-      <p>If you want to help, the fastest ways are a yard sign, an hour of door knocking,
-      or a contribution of any size. All three matter more than people think.</p>
+      <p>Residents interested in supporting the campaign may request a yard sign,
+      volunteer, or contribute through this website.</p>
     `,
   },
   {
-    slug: "data-center-tax-reform",
-    title: "Hulsey bill reining in data center tax breaks passes the Legislature",
+    slug: "data-center-tax-legislation",
+    title: "Hulsey Legislation Limiting Data Center Tax Abatements Passes Legislature",
     date: "2026-04-10",
-    category: "Economy",
+    category: "Legislation",
     excerpt:
-      "HB399 cuts the maximum tax abatement for large data centers from 30 years to 20 — and passed the Senate unanimously.",
+      "House Bill 399, sponsored by Rep. Hulsey, reduces the maximum abatement period for data processing centers from 30 years to 20.",
     body: `
-      <p>Alabama is in the middle of a data center boom. The buildings are enormous, they
-      draw an extraordinary amount of power, and the tax abatements used to land them can
-      run for decades.</p>
+      <p>Legislation sponsored by State Representative Leigh Hulsey, R&ndash;Helena, limiting
+      the tax abatements available to large data centers has passed the Alabama
+      Legislature. The Alabama Senate approved the measure unanimously.</p>
 
-      <p>House Bill 399, sponsored by Rep. Leigh Hulsey, R&ndash;Helena, puts a limit on that.
-      Beginning January 1, 2027, the maximum abatement period for data processing centers
-      drops from 30 years to 20 unless the project meets certain community investment
-      thresholds. It also restricts the sales tax abatement on the state's 4% sales and use
-      tax for facilities with a total peak demand of 100 megawatts or greater.</p>
+      <h2>What the Bill Does</h2>
 
-      <h2>What it does and doesn't do</h2>
-      <ul>
-        <li>It does not end incentives for data centers. Alabama still competes for them.</li>
-        <li>It does put a ceiling on how long a single project can sit off the tax rolls.</li>
-        <li>It ties the longest deals to real investment back into the community hosting them.</li>
-      </ul>
+      <p>House Bill 399 reduces the maximum abatement period available to data processing
+      centers from 30 years to 20 years, beginning January 1, 2027, unless a project
+      meets specified community investment thresholds. The bill also restricts the
+      abatement of the state's four percent sales and use tax beyond the date a project
+      is placed into service for facilities with a total peak demand of 100 megawatts
+      or greater.</p>
 
-      <p>The bill passed the Senate unanimously and was enacted in April 2026.</p>
+      <p>The legislation does not eliminate incentives for data center development.
+      Alabama continues to compete for these projects and the capital investment and
+      jobs associated with them.</p>
 
-      <h2>The thinking behind it</h2>
-      <p>Leigh has run a small business in Alabaster for years. Her view is that a tax
-      structure works when everybody can see the deal and the math holds up over time. A
-      thirty-year abatement outlasts the officials who approved it, the school system that
-      absorbs the growth, and often the technology itself. Twenty years, with strings, is
-      still a serious offer — it's just one the state can defend.</p>
+      <h2>Background</h2>
+
+      <p>Data center construction has expanded rapidly across the Southeast in recent
+      years. The facilities require substantial electrical capacity and are frequently
+      recruited with long-term tax incentives negotiated at the state and local level.</p>
+
+      <p>Hulsey, who owns a small business in Alabaster, has said that incentive
+      agreements should be structured so that their terms remain reviewable within a
+      reasonable period and so that the communities hosting these projects share in
+      the benefit.</p>
+
+      <p>The bill was enacted in April 2026.</p>
     `,
   },
   {
-    slug: "focus-act-signed",
-    title: "Governor Ivey signs the FOCUS Act, Hulsey's school cell phone bill",
+    slug: "focus-act-signed-into-law",
+    title: "Governor Ivey Signs the FOCUS Act Into Law",
     date: "2025-05-15",
-    category: "Education",
+    category: "Legislation",
     excerpt:
-      "Bell to bell, phones go away. Alabama's classrooms got quieter thanks to HB166 — and teachers noticed immediately.",
+      "House Bill 166, sponsored by Rep. Hulsey, prohibits student cell phone use in Alabama public schools during the school day.",
     body: `
-      <p>Governor Kay Ivey signed the FOCUS Act — Freeing Our Classrooms of Unnecessary
-      Screens for Safety — into law in May 2025. The bill, HB166, was sponsored by Rep.
-      Leigh Hulsey.</p>
+      <p>Governor Kay Ivey has signed the FOCUS Act into law. The legislation, House Bill
+      166, was sponsored by State Representative Leigh Hulsey and prohibits student cell
+      phone use in Alabama public schools during the school day.</p>
 
-      <p>Under the law, students in Alabama public elementary and secondary schools may not
-      possess or use a wireless communication device during the school day unless it is
-      powered off and stored away. Bell to bell.</p>
+      <p>FOCUS stands for Freeing Our Classrooms of Unnecessary Screens for Safety.</p>
 
-      <h2>How it passed</h2>
-      <p>The House passed it 79&ndash;15. The Senate passed it 30&ndash;2. In a building where almost
-      nothing is unanimous, those are remarkable numbers — and they came from teachers and
-      principals who had been asking for exactly this.</p>
+      <h2>Provisions of the Law</h2>
 
-      <h2>The exceptions matter</h2>
+      <p>Under the FOCUS Act, students in Alabama public elementary and secondary schools
+      may not possess or use a wireless communication device during the school day unless
+      the device is powered off and stored away from the student.</p>
+
+      <p>The law provides exceptions for:</p>
+
       <ul>
-        <li>Emergencies.</li>
-        <li>Students with an Individualized Education Plan or a Section 504 plan.</li>
-        <li>When a device is genuinely needed for instruction.</li>
+        <li>Emergency situations</li>
+        <li>Students with an Individualized Education Plan or a Section 504 plan</li>
+        <li>Instances in which a device is necessary for instructional purposes</li>
       </ul>
 
-      <p>The law also requires local boards of education to adopt an internet safety policy
-      for school devices, and requires students to complete a social media safety course
-      before they begin eighth grade.</p>
+      <p>The legislation additionally requires local boards of education to adopt an
+      internet safety policy governing school devices, and requires students to complete
+      a social media safety course before entering the eighth grade.</p>
 
-      <h2>In her words</h2>
+      <h2>Passage</h2>
+
+      <p>The bill passed the Alabama House of Representatives by a vote of 79 to 15 and
+      the Alabama Senate by a vote of 30 to 2 before being sent to the Governor.</p>
+
       <p>"As a parent, equipping my children to excel in all aspects of life is priority
-      number one, and what they learn in the classroom plays an immense role in that."</p>
-
-      <p>Leigh has three grown children and spent twelve years at home raising them before
-      going back to work. She has said more than once that this bill started as a parent
-      problem before it was ever a policy problem.</p>
+      number one, and what they learn in the classroom plays an immense role in that,"
+      Hulsey said. She has said the law will limit distractions and give every student a
+      better opportunity to get the most out of the school day.</p>
     `,
   },
   {
     slug: "grant-funding-district-15",
-    title: "More than $360,000 brought home to District 15",
+    title: "More Than $360,000 in Grant Funding Delivered to District 15",
     date: "2025-11-12",
     category: "District",
     excerpt:
-      "Grant money isn't glamorous. It's ballfields, equipment, paving and public safety — and it adds up.",
+      "Working with local officials, Rep. Hulsey has secured grant funding for community needs and local projects across House District 15.",
     body: `
-      <p>One of the least visible parts of a state representative's job is knowing which
-      pots of money exist and how to get a local project in front of them. It rarely makes
-      headlines. It shows up later as a resurfaced road or a piece of equipment a
-      department didn't have to fundraise for.</p>
+      <p>Working alongside local leaders, State Representative Leigh Hulsey has helped
+      bring more than $360,000 in grant funding back to House District 15 in support of
+      community needs and local projects.</p>
 
-      <p>Working with local leaders, Leigh has brought more than <strong>$360,000 in grant
-      funding</strong> back to House District 15 to support community needs and local
-      projects.</p>
+      <h2>How the Process Works</h2>
 
-      <h2>How this actually works</h2>
-      <p>A mayor, a chief, a school, or a civic group identifies a need. The office helps
-      match it to a funding source, gets the paperwork right, and then follows the request
-      through the process in Montgomery until there's a check or a clear no.</p>
+      <p>Grant requests typically begin at the local level. A city, school, public safety
+      department or civic organization identifies a need. The legislative office then
+      helps identify an appropriate funding source, assists with the application, and
+      follows the request through the process in Montgomery.</p>
 
-      <p>If your city, school, department or nonprofit in District 15 has a project that
-      might qualify, get in touch. The worst answer is no, and it costs you an email.</p>
+      <p>Awards of this kind are rarely announced with much attention. They appear later
+      as resurfaced roads, park improvements, and equipment that a local department did
+      not have to raise money for on its own.</p>
+
+      <h2>Submitting a Request</h2>
+
+      <p>Municipalities, schools, departments and nonprofit organizations located in
+      House District 15 that have a project which may qualify for grant funding are
+      encouraged to contact the office.</p>
     `,
   },
   {
-    slug: "helena-council-to-montgomery",
-    title: "From the Helena council table to the Alabama House",
+    slug: "from-helena-council-to-the-alabama-house",
+    title: "From the Helena City Council to the Alabama House",
     date: "2025-08-04",
     category: "District",
     excerpt:
-      "Municipal budgets, road projects and planning meetings turned out to be good training for the State House.",
+      "Rep. Hulsey's service on the Helena City Council shaped the approach she has taken in Montgomery.",
     body: `
-      <p>Before Montgomery, Leigh served on the Helena City Council. The work there was
-      unglamorous in the best way: municipal budgets, economic development, and planning
-      and funding road projects.</p>
+      <p>Before her election to the Alabama House of Representatives, Leigh Hulsey served
+      on the Helena City Council. Her work there centered on municipal budgets, economic
+      development, and the planning and funding of road projects.</p>
 
-      <p>That experience shaped how she legislates. City government is where an abstract
-      policy becomes a line item, a contractor, and a completed project — or doesn't. It's
-      also where you learn that the person complaining at the podium usually has a point.</p>
+      <p>Local government is where policy becomes a line item, a contract and a completed
+      project. Hulsey has said that experience shaped how she evaluates legislation in
+      Montgomery, particularly bills that affect city and county budgets.</p>
 
-      <h2>Carried into the House</h2>
-      <p>In January 2023, at the start of her first term, House Republicans elected Leigh
-      as the caucus's freshman representative — the voice for first-term members in
-      leadership discussions.</p>
+      <h2>Legislative Service</h2>
 
-      <h2>What she's focused on</h2>
+      <p>Hulsey was elected to represent House District 15 in November 2022 and was sworn
+      in on November 9, 2022. In January 2023, House Republicans elected her to serve as
+      the caucus freshman representative, a position that gave first-term members a voice
+      in leadership discussions.</p>
+
+      <h2>Areas of Focus</h2>
+
       <ul>
-        <li>Economic development and jobs in a fast-growing district</li>
-        <li>Public education and what happens inside the classroom</li>
-        <li>Transportation and the roads growth is putting pressure on</li>
+        <li>Economic development and job growth</li>
+        <li>Public education</li>
+        <li>Transportation and infrastructure</li>
         <li>Protecting unborn life</li>
-        <li>Supporting active-duty service members, military families and veterans</li>
+        <li>Support for active-duty service members, military families and veterans</li>
       </ul>
 
-      <p>The through line is local. District 15 covers parts of Helena, McCalla, Bessemer
-      and western Hoover, and every one of them is changing quickly.</p>
+      <p>House District 15 includes portions of Helena, McCalla, Bessemer and western
+      Hoover, and is among the fastest-growing areas of Alabama.</p>
     `,
   },
 ];

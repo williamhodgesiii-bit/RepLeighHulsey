@@ -3,49 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Page not found · Hulsey for House</title>
-<meta name="description" content="That page doesn't exist. Head back to hulseyforhouse.com.">
-<meta name="robots" content="noindex">
+<title>Page Not Found | Hulsey for House</title>
+<meta name="description" content="The page you requested could not be found.">
 <meta name="theme-color" content="#262262">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Page Not Found | Hulsey for House">
+<meta property="og:description" content="The page you requested could not be found.">
+<meta property="og:image" content="assets/img/logo.png">
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <header class="header">
   <div class="wrap header__inner">
-    <a class="brand" href="index.html" aria-label="Hulsey for House — home">
+    <a class="brand" href="index.html">
       <img src="assets/img/logo.png" alt="Hulsey for House" width="1112" height="440">
     </a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="index.html">Home</a>
+      <a class="nav__link" href="about.html">About Leigh</a>
+      <a class="nav__link" href="issues.html">On the Issues</a>
+      <a class="nav__link" href="news.html">News</a>
+      <a class="nav__link" href="contact.html">Contact</a>
+    </nav>
     <div class="header__actions">
       <a class="btn btn--sm" href="donate.html">Donate</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </header>
 
+<div class="mobile-nav" id="mobile-nav">
+  <div class="wrap">
+    <a href="index.html">Home</a>
+    <a href="about.html">About Leigh</a>
+    <a href="issues.html">On the Issues</a>
+    <a href="news.html">News</a>
+    <a href="contact.html">Contact</a>
+    <a class="btn btn--block" href="donate.html">Donate</a>
+  </div>
+</div>
+
 <main id="main">
-  <section class="page-head on-navy" style="padding-block:clamp(4rem,12vw,7rem)">
-    <div class="wrap-narrow text-center">
-      <p class="eyebrow eyebrow--center">Error 404</p>
-      <h1 class="display">Well, that link's a dead end.</h1>
-      <p class="lede" style="margin-inline:auto">
-        The page you were after isn't here. It may have moved, or the link may have
-        a typo in it.
-      </p>
-      <div class="hero__cta" style="justify-content:center;margin-top:2rem">
-        <a class="btn btn--lg" href="index.html">Back to the home page</a>
-        <a class="btn btn--lg btn--ghost-light" href="news.html">See the news</a>
-      </div>
+
+<section class="page-banner">
+  <div class="wrap">
+    <h1>Page Not Found</h1>
+    <p>The page you requested could not be found. It may have moved, or the address may contain a typo.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap-narrow text-center">
+    <p>You can return to the home page or browse the latest news from the campaign.</p>
+    <div class="btn-row btn-row--center" style="margin-top:1.5rem">
+      <a class="btn btn--navy" href="index.html">Home</a>
+      <a class="btn btn--outline" href="news.html">News</a>
     </div>
-  </section>
+  </div>
+</section>
+
 </main>
 
 <footer class="footer">
   <div class="wrap">
-    <div class="footer__bottom" style="margin-top:0;border-top:0;padding-top:0">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__logo">
+          <img src="assets/img/logo.png" alt="Hulsey for House" width="1112" height="440">
+        </div>
+        <p>
+          Leigh Hulsey is a Republican serving House District 15 in the Alabama House of
+          Representatives.
+        </p>
+        <div class="socials">
+          <a data-social="facebook" href="#" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a data-social="instagram" href="#" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.9c-.1 3.2-1.6 4.8-4.9 4.9-1.3.1-1.6.1-4.9.1s-3.6 0-4.9-.1c-3.3-.2-4.8-1.7-4.9-4.9-.1-1.3-.1-1.6-.1-4.9s0-3.6.1-4.9C2.3 4 3.8 2.4 7.1 2.3 8.4 2.2 8.8 2.2 12 2.2zm0 5a4.8 4.8 0 100 9.6 4.8 4.8 0 000-9.6zm0 7.9a3.1 3.1 0 110-6.2 3.1 3.1 0 010 6.2zm5-8.1a1.1 1.1 0 11-2.3 0 1.1 1.1 0 012.3 0z"/></svg></a>
+          <a data-social="x" href="#" aria-label="X" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M17.5 3h3l-6.5 7.4L21.7 21h-5.9l-4.6-6-5.3 6H3l7-7.9L2.6 3h6l4.2 5.5L17.5 3z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Campaign</h4>
+        <ul>
+          <li><a href="about.html">About Leigh</a></li>
+          <li><a href="issues.html">On the Issues</a></li>
+          <li><a href="news.html">News</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a data-email href="#">info@hulseyforhouse.com</a></li>
+          <li>Helena, Alabama</li>
+          <li>House District 15</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__legal">
       <span data-disclaimer>Paid for by Hulsey for House.</span>
       <span>&copy; <span data-year>2026</span> Hulsey for House</span>
     </div>
