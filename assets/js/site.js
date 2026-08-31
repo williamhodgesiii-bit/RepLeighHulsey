@@ -55,6 +55,7 @@ window.SITE = {
         var show = y > 420 && footerTop > window.innerHeight;
         cta.classList.toggle("is-visible", show);
       }
+      revealScrolledPast();
       ticking = false;
     }
     window.addEventListener("scroll", function () {
@@ -118,6 +119,18 @@ window.SITE = {
     els.forEach(function (el) { io.observe(el); });
   }
 
+  /* Safety net. A fast scroll can carry an element past the viewport between
+     observer callbacks, which would leave it stuck invisible. Anything whose top
+     has already passed the top of the screen is revealed outright. Elements
+     arriving normally are still handled by the observer, so the stagger is kept. */
+  function revealScrolledPast() {
+    if (reduceMotion) return;
+    var pending = document.querySelectorAll("[data-fade]:not(.is-in)");
+    for (var i = 0; i < pending.length; i++) {
+      if (pending[i].getBoundingClientRect().top < 0) pending[i].classList.add("is-in");
+    }
+  }
+
   /* Give cards inside a grid a staggered delay so they arrive in sequence. */
   function stagger() {
     if (reduceMotion) return;
@@ -149,7 +162,7 @@ window.SITE = {
   }
   function newsItemHTML(p) {
     return (
-      '<a class="news-item" href="news-post.html?p=' + encodeURIComponent(p.slug) + '" data-fade>' +
+      '<a class="news-item" href="' + (p.url || ("news/" + p.slug + ".html")) + '" data-fade>' +
         '<div class="news-item__top">' +
           '<img src="assets/img/mark.png" alt="" aria-hidden="true">' +
           '<span class="news-item__cat">' + escapeHTML(p.category) + "</span>" +
@@ -203,7 +216,7 @@ window.SITE = {
     function render() {
       var matches = posts.filter(function (p) {
         var inCategory = state.category === "All" || p.category === state.category;
-        var haystack = (p.title + " " + p.excerpt + " " + p.category + " " + p.body).toLowerCase();
+        var haystack = (p.title + " " + p.excerpt + " " + p.category + " " + (p.text || "")).toLowerCase();
         return inCategory && (!state.query || haystack.indexOf(state.query) !== -1);
       });
       list.innerHTML = matches.map(newsItemHTML).join("");
@@ -225,53 +238,25 @@ window.SITE = {
     el.innerHTML = allPosts().slice(0, 3).map(newsItemHTML).join("");
   }
 
-  /* ---------- Single article ---------- */
-  function articlePage() {
-    var root = $("#article");
+  /* ---------- Old-style links (news-post.html?p=slug) ----------
+     Posts now live at news/<slug>.html as real pages. Anything still
+     pointing at the old address is forwarded so shared links keep working. */
+  function legacyPostRedirect() {
+    var root = document.getElementById("legacy-post");
     if (!root) return;
 
     var slug = new URLSearchParams(window.location.search).get("p");
-    var posts = allPosts();
-    var i = posts.findIndex(function (p) { return p.slug === slug; });
+    var match = (window.POSTS || []).filter(function (p) { return p.slug === slug; })[0];
 
-    if (i === -1) {
-      root.innerHTML =
-        '<div class="section"><div class="wrap-narrow text-center">' +
-        "<h1>Page Not Found</h1>" +
-        "<p>That link may be out of date. You can find all updates on the news page.</p>" +
-        '<p style="margin-top:1.5rem"><a class="btn btn--navy" href="news.html">View All News</a></p>' +
-        "</div></div>";
+    if (match) {
+      window.location.replace(match.url || "news/" + match.slug + ".html");
       return;
     }
-
-    var post = posts[i];
-    var older = posts[i + 1];
-    var newer = posts[i - 1];
-
-    document.title = post.title + " | Hulsey for House";
-    var meta = $('meta[name="description"]');
-    if (meta) meta.setAttribute("content", post.excerpt);
-
-    var footer = "";
-    if (older || newer) {
-      footer = '<div class="article-foot">' +
-        (older ? '<a href="news-post.html?p=' + encodeURIComponent(older.slug) +
-                 '"><small>Previous</small>' + escapeHTML(older.title) + "</a>" : "<span></span>") +
-        (newer ? '<a class="next" href="news-post.html?p=' + encodeURIComponent(newer.slug) +
-                 '"><small>Next</small>' + escapeHTML(newer.title) + "</a>" : "") +
-        "</div>";
-    }
-
     root.innerHTML =
-      '<div class="article-head"><div class="wrap-narrow">' +
-        '<p class="article-head__meta">' + escapeHTML(post.category) +
-          " <span>&nbsp;|&nbsp; " + formatDate(post.date) + "</span></p>" +
-        "<h1>" + escapeHTML(post.title) + "</h1>" +
-      "</div></div>" +
-      '<div class="section"><div class="wrap-narrow">' +
-        '<div class="article-body">' + post.body + "</div>" +
-        footer +
-        '<p style="margin-top:1.75rem"><a href="news.html">&laquo; Back to all news</a></p>' +
+      '<div class="section"><div class="wrap-narrow text-center">' +
+      "<h1>Page Not Found</h1>" +
+      "<p>That link may be out of date. You can find all updates on the news page.</p>" +
+      '<p style="margin-top:1.5rem"><a class="btn btn--navy" href="news.html">View All News</a></p>' +
       "</div></div>";
   }
 
@@ -448,7 +433,7 @@ window.SITE = {
     chrome();
     newsPreview();
     newsIndex();
-    articlePage();
+    legacyPostRedirect();
     donate();
     forms();
     stagger();

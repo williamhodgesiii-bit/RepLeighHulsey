@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hulsey for House — News</title>
+    <link>https://hulseyforhouse.com/news.html</link>
+    <description>Updates from Rep. Leigh Hulsey and the Hulsey for House campaign.</description>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 10 Apr 2026 12:00:00 GMT</lastBuildDate>
+    <atom:link href="https://hulseyforhouse.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Hulsey Legislation Limiting Data Center Tax Abatements Passes Legislature</title>
+      <link>https://hulseyforhouse.com/news/data-center-tax-legislation.html</link>
+      <guid isPermaLink="true">https://hulseyforhouse.com/news/data-center-tax-legislation.html</guid>
+      <pubDate>Fri, 10 Apr 2026 12:00:00 GMT</pubDate>
+      <category>Legislation</category>
+      <description>House Bill 399, sponsored by Rep. Hulsey, reduces the maximum abatement period for data processing centers from 30 years to 20.</description>
+    </item>
+    <item>
+      <title>Hulsey Announces Re-Election Campaign for House District 15</title>
+      <link>https://hulseyforhouse.com/news/reelection-announcement.html</link>
+      <guid isPermaLink="true">https://hulseyforhouse.com/news/reelection-announcement.html</guid>
+      <pubDate>Thu, 08 Jan 2026 12:00:00 GMT</pubDate>
+      <category>Campaign</category>
+      <description>State Rep. Leigh Hulsey announced her campaign for re-election to the Alabama House of Representatives, District 15.</description>
+    </item>
+    <item>
+      <title>More Than $360,000 in Grant Funding Delivered to District 15</title>
+      <link>https://hulseyforhouse.com/news/grant-funding-district-15.html</link>
+      <guid isPermaLink="true">https://hulseyforhouse.com/news/grant-funding-district-15.html</guid>
+      <pubDate>Wed, 12 Nov 2025 12:00:00 GMT</pubDate>
+      <category>District</category>
+      <description>Working with local officials, Rep. Hulsey has secured grant funding for community needs and local projects across House District 15.</description>
+    </item>
+    <item>
+      <title>From the Helena City Council to the Alabama House</title>
+      <link>https://hulseyforhouse.com/news/from-helena-council-to-the-alabama-house.html</link>
+      <guid isPermaLink="true">https://hulseyforhouse.com/news/from-helena-council-to-the-alabama-house.html</guid>
+      <pubDate>Mon, 04 Aug 2025 12:00:00 GMT</pubDate>
+      <category>District</category>
+      <description>Rep. Hulsey's service on the Helena City Council shaped the approach she has taken in Montgomery.</description>
+    </item>
+    <item>
+      <title>Governor Ivey Signs the FOCUS Act Into Law</title>
+      <link>https://hulseyforhouse.com/news/focus-act-signed-into-law.html</link>
+      <guid isPermaLink="true">https://hulseyforhouse.com/news/focus-act-signed-into-law.html</guid>
+      <pubDate>Thu, 15 May 2025 12:00:00 GMT</pubDate>
+      <category>Legislation</category>
+      <description>House Bill 166, sponsored by Rep. Hulsey, prohibits student cell phone use in Alabama public schools during the school day.</description>
+    </item>
+  </channel>
+</rss>

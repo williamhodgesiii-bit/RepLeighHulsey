@@ -15,37 +15,81 @@ build step. Open `index.html` in a browser and it works.
 | `about.html` | Full biography |
 | `issues.html` | On the Issues |
 | `news.html` | News index with category filters and search |
-| `news-post.html` | Individual article, loaded from `posts.js` via `?p=slug` |
+| `news/<slug>.html` | One page per post, generated from `content/news/` |
+| `news-post.html` | Forwards old `?p=slug` links to the new post pages |
 | `donate.html` | Contribution page |
 | `contact.html` | Volunteer and contact form |
 | `404.html` | Page not found |
 
 ---
 
-## Adding a news post
+## The news section
 
-All news content is in **`assets/js/posts.js`**. Copy one block, paste it at the
-top of the list, change the fields, and save. The post appears on the news page,
-in the category filters, in the search, on the home page, and at its own address.
+Posts are written as Markdown files in **`content/news/`**. One file is one post.
+`build-news.js` turns them into the news section.
 
-```js
-{
-  slug: "my-new-post",        // address becomes news-post.html?p=my-new-post
-  title: "Headline",
-  date: "2026-09-14",         // YYYY-MM-DD; sorting is automatic
-  category: "District",       // reuse a category or add a new one
-  excerpt: "One or two sentences for the news card.",
-  body: `
-    <p>Paragraphs in plain HTML.</p>
-    <h2>A subheading</h2>
-    <ul><li>A list item</li></ul>
-  `,
-},
+```
+content/news/town-hall-in-helena.md   ->   /news/town-hall-in-helena.html
 ```
 
-Dates, filter buttons and previous/next links are generated automatically.
+Each file starts with five fields, then the text of the post:
 
+```markdown
 ---
+title: Hulsey to Host Town Hall in Helena
+date: 2026-09-14
+category: Events
+excerpt: Rep. Hulsey will hold an open town hall at Helena City Hall on September 27.
+---
+
+Write the post here. Blank lines separate paragraphs.
+
+## A heading
+
+- A list
+- Another point
+
+**Bold**, *italics* and [links](https://example.com) all work.
+```
+
+Then run:
+
+```
+npm run build
+```
+
+That regenerates the post pages, `assets/js/posts.js`, `feed.xml` and
+`sitemap.xml`. On Vercel or Netlify this runs automatically on every push, so
+publishing is: add the file, commit, done.
+
+**`POSTING.md` is the guide to hand the campaign.** It covers the same ground in
+plain language, with no assumed technical background.
+
+### What the build gives each post
+
+- Its own address, e.g. `/news/focus-act-signed-into-law.html`
+- A `<title>`, description, canonical link and `NewsArticle` structured data
+- Facebook and X preview tags carrying that post's own headline and excerpt,
+  so a shared link shows the story rather than a generic site card
+- The full text in the HTML, so search engines can read it without running
+  JavaScript
+- A card on the news page and, if it is one of the three newest, on the home page
+- An entry in `feed.xml` and `sitemap.xml`
+
+### Safeguards
+
+- The build validates every post first and refuses to publish if a title, date or
+  excerpt is missing or malformed, naming the file and the problem.
+- `draft: true` in the front matter keeps a post out of the site.
+- Renaming or deleting a Markdown file removes its old page on the next build.
+- Old `news-post.html?p=slug` links still resolve, so anything already shared
+  keeps working.
+
+### Categories
+
+The filter buttons on the news page are built from whatever categories exist in
+the files. Adding `category: Events` to a post is all it takes for an Events
+button to appear.
 
 ## Settings
 
@@ -107,11 +151,14 @@ drafts, not approved language.
 
 These are static files and will work on any host.
 
-- **Vercel or Netlify** — connect the repository, framework preset "Other", no
-  build command, output directory `.`. Or drag the folder onto Netlify Drop.
-- **Traditional hosting** — upload the folder.
+- **Vercel or Netlify** — connect the repository, framework preset "Other", build
+  command `npm run build`, output directory `.`. With the build command set, a
+  staffer can add a post through GitHub in the browser and the site updates itself.
+- **Traditional hosting** — run `npm run build` locally, then upload the folder.
+  The generated pages are committed, so the site also works if uploaded as-is.
 
-Update `sitemap.xml` and `robots.txt` if the domain is not `hulseyforhouse.com`.
+Update `robots.txt`, and `SITE_URL` in `build-news.js`, if the domain is not
+`hulseyforhouse.com`.
 
 ---
 
@@ -139,9 +186,13 @@ Update `sitemap.xml` and `robots.txt` if the domain is not `hulseyforhouse.com`.
   (cards in a grid stagger slightly), the mobile menu's height transition, and the
   sticky bar sliding in. All of it is disabled for visitors who set a reduced-motion
   preference.
-- The news index and article pages require JavaScript, since posts are loaded from
-  `posts.js`. If pre-rendered article pages are wanted for search engines later, a
-  short script can generate them from the same file.
+- Post pages are plain HTML and need no JavaScript. The news index uses JavaScript
+  for its filter and search, and falls back to nothing if scripts are blocked, so
+  the posts themselves remain reachable through their own links, the feed and the
+  sitemap.
+- `SITE_URL` at the top of `build-news.js` sets the domain used in social preview
+  tags, the feed and the sitemap. Change it there if the site launches elsewhere,
+  then run `npm run build`.
 
 ### Testing
 

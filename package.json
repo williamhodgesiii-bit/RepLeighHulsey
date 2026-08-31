@@ -1,0 +1,9 @@
+{
+  "name": "hulsey-for-house",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Campaign website for Rep. Leigh Hulsey, Alabama House District 15.",
+  "scripts": {
+    "build": "node build-news.js"
+  }
+}
