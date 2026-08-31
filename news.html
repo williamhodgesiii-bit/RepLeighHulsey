@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>News · Hulsey for House</title>
+<meta name="description" content="Updates from Rep. Leigh Hulsey and the Hulsey for House campaign — legislation, session recaps, and what's happening across Alabama House District 15.">
+<meta name="theme-color" content="#262262">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="News · Hulsey for House">
+<meta property="og:description" content="Updates from Rep. Leigh Hulsey and the Hulsey for House campaign.">
+<meta property="og:image" content="assets/img/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"><div class="progress__bar"></div></div>
+
+<header class="header">
+  <div class="wrap header__inner">
+    <a class="brand" href="index.html" aria-label="Hulsey for House — home">
+      <img src="assets/img/logo.png" alt="Hulsey for House" width="1112" height="440">
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="nav__link" href="index.html">Home</a>
+      <a class="nav__link" href="about.html">Meet Leigh</a>
+      <a class="nav__link" href="issues.html">Priorities</a>
+      <a class="nav__link" href="news.html" aria-current="page">News</a>
+      <a class="nav__link" href="contact.html">Get Involved</a>
+    </nav>
+    <div class="header__actions">
+      <a class="btn btn--sm" href="donate.html">Donate</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <nav class="drawer__nav" aria-label="Mobile">
+    <a class="drawer__link" href="index.html">Home</a>
+    <a class="drawer__link" href="about.html">Meet Leigh</a>
+    <a class="drawer__link" href="issues.html">Priorities</a>
+    <a class="drawer__link" href="news.html" aria-current="page">News</a>
+    <a class="drawer__link" href="contact.html">Get Involved</a>
+  </nav>
+  <div class="drawer__footer">
+    <a class="btn btn--block" href="donate.html">Donate</a>
+    <a class="btn btn--ghost-light btn--block" href="contact.html">Volunteer</a>
+    <p class="drawer__meta"><span data-disclaimer></span></p>
+  </div>
+</div>
+
+<main id="main">
+
+<section class="page-head on-navy">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="index.html">Home</a> / News</p>
+    <h1 class="display">News &amp; Updates</h1>
+    <p class="lede">What passed, what didn't, and what it means for District 15.</p>
+  </div>
+</section>
+
+<section class="section section--cream">
+  <div class="wrap">
+
+    <div class="news-tools">
+      <div class="chips" id="post-filters" role="group" aria-label="Filter by category"></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 105 14.3l5.3 5.4 1.4-1.4-5.4-5.3A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>
+        <label class="visually-hidden" for="post-search">Search news</label>
+        <input id="post-search" type="search" placeholder="Search updates…" autocomplete="off">
+      </div>
+    </div>
+
+    <p class="visually-hidden" id="posts-count" role="status" aria-live="polite"></p>
+
+    <div class="posts" id="posts-grid"></div>
+
+    <div class="empty-state" id="posts-empty" style="display:none">
+      <p style="margin:0"><strong>Nothing matches that.</strong><br>Try a different word, or clear the filters.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section section--white">
+  <div class="wrap">
+    <div class="signup-strip" data-reveal>
+      <div style="max-width:620px">
+        <p class="eyebrow">Get it first</p>
+        <h2 class="display" style="font-size:clamp(1.8rem,4vw,2.6rem)">Updates straight to your inbox.</h2>
+        <p class="lede" style="margin-bottom:0">Session news and District 15 events. Nothing else.</p>
+        <form class="signup-form" data-form data-success="signup-done" data-subject="Email list signup">
+          <label class="visually-hidden" for="signup-email">Email address</label>
+          <input id="signup-email" name="email" type="email" placeholder="you@example.com" required>
+          <button class="btn" type="submit">Sign me up</button>
+        </form>
+        <div class="form-success" id="signup-done" style="margin-top:1rem">
+          <h3>You're on the list.</h3>
+          <p>Thanks — we'll be in touch.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__logo"><img src="assets/img/logo.png" alt="Hulsey for House" width="1112" height="440"></div>
+        <p style="max-width:38ch;font-size:.96rem">
+          Re-elect Leigh Hulsey to the Alabama House of Representatives, District 15.
+        </p>
+        <div class="socials">
+          <a data-social="facebook" href="#" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a data-social="instagram" href="#" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.9c-.1 3.2-1.6 4.8-4.9 4.9-1.3.1-1.6.1-4.9.1s-3.6 0-4.9-.1c-3.3-.2-4.8-1.7-4.9-4.9-.1-1.3-.1-1.6-.1-4.9s0-3.6.1-4.9C2.3 4 3.8 2.4 7.1 2.3 8.4 2.2 8.8 2.2 12 2.2zm0 5a4.8 4.8 0 100 9.6 4.8 4.8 0 000-9.6zm0 7.9a3.1 3.1 0 110-6.2 3.1 3.1 0 010 6.2zm5-8.1a1.1 1.1 0 11-2.3 0 1.1 1.1 0 012.3 0z"/></svg></a>
+          <a data-social="x" href="#" aria-label="X" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M17.5 3h3l-6.5 7.4L21.7 21h-5.9l-4.6-6-5.3 6H3l7-7.9L2.6 3h6l4.2 5.5L17.5 3z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>The Campaign</h4>
+        <ul>
+          <li><a href="about.html">Meet Leigh</a></li>
+          <li><a href="issues.html">Priorities</a></li>
+          <li><a href="news.html">News</a></li>
+          <li><a href="contact.html">Get Involved</a></li>
+          <li><a href="donate.html">Donate</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a data-site-email href="#">info@hulseyforhouse.com</a></li>
+          <li>Helena, Alabama</li>
+          <li>House District 15</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span data-disclaimer>Paid for by Hulsey for House.</span>
+      <span>&copy; <span data-year>2026</span> Hulsey for House</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><path d="M12 5l7 7h-4v7h-6v-7H5l7-7z"/></svg>
+</button>
+
+<script src="assets/js/posts.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
