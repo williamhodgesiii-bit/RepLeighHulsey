@@ -6,9 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Fill this in and press **Submit new issue**. If you're on the campaign
-        team, your post goes live on its own within a minute or two. Otherwise a
-        team member will give it a quick look and approve it.
+        Fill this in and press **Submit new issue**. If you're on the campaign team, your post goes live on its own in a minute or two. Otherwise a team member gives it a quick look and approves it.
   - type: input
     id: title
     attributes:
@@ -21,7 +19,7 @@ body:
     id: date
     attributes:
       label: Date (YYYY-MM-DD)
-      description: Leave blank to use today's date. Posts sort newest first.
+      description: Leave blank to use today's date.
       placeholder: 2026-09-14
   - type: dropdown
     id: category
@@ -47,7 +45,7 @@ body:
     id: excerpt
     attributes:
       label: One-sentence summary
-      description: Shown on the news card and as the preview when the post is shared on Facebook.
+      description: Shown on the news card and when the post is shared on Facebook.
       placeholder: Rep. Hulsey will hold an open town hall at Helena City Hall on September 27.
     validations:
       required: true
@@ -55,21 +53,7 @@ body:
     id: body
     attributes:
       label: Post text
-      description: |
-        Write normally. A blank line starts a new paragraph.
-        **two asterisks** makes bold, and [words in brackets](https://example.com) makes a link.
-      placeholder: |
-        Rep. Leigh Hulsey will host a town hall at Helena City Hall on September 27...
-
-        ## What to expect
-
-        - Time for questions
-        - A recap of the session
+      description: "Write normally. A blank line starts a new paragraph. Put **two stars** around a word to bold it."
+      placeholder: Write the post here.
     validations:
       required: true
-  - type: checkboxes
-    id: draft
-    attributes:
-      label: Draft?
-      options:
-        - label: Keep this as a draft for now (do not publish yet)

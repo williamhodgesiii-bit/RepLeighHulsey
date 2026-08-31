@@ -19,8 +19,8 @@ window.SITE = {
   email: "info@hulseyforhouse.com",
 
   social: {
-    facebook: "https://www.facebook.com/",
-    instagram: "https://www.instagram.com/",
+    facebook: "https://www.facebook.com/HulseyForHouse/",
+    instagram: "https://www.instagram.com/hulseyforhouse/",
     x: "",
   },
 
