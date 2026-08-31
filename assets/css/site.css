@@ -419,48 +419,6 @@ h4 { font-size: 1.05rem; }
 }
 
 /* ==========================================================================
-   Fact bar
-   ========================================================================== */
-.factbar {
-  background: var(--gray);
-  background-image: var(--stars-dark);
-  border-bottom: 1px solid var(--line);
-}
-.factbar__grid { display: grid; }
-@media (min-width: 700px) { .factbar__grid { grid-template-columns: repeat(3, 1fr); } }
-
-.factbar__item {
-  display: flex; align-items: center; gap: 1rem;
-  padding: 1.1rem .25rem;
-  border-bottom: 1px solid var(--line);
-}
-.factbar__item:last-child { border-bottom: 0; }
-@media (min-width: 700px) {
-  .factbar__item {
-    flex-direction: column; text-align: center; gap: .3rem;
-    padding: 1.85rem 1.25rem;
-    border-bottom: 0;
-    border-left: 1px solid var(--line);
-  }
-  .factbar__item:first-child { border-left: 0; }
-}
-.factbar__num {
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: clamp(1.5rem, 5vw, 2.05rem);
-  color: var(--red);
-  line-height: 1;
-  flex: none;
-  min-width: 5.5rem;
-}
-@media (min-width: 700px) { .factbar__num { min-width: 0; } }
-.factbar__label {
-  font-size: .92rem;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-/* ==========================================================================
    Column layouts
    ========================================================================== */
 .cols { display: grid; gap: var(--s-4); align-items: start; }
@@ -494,6 +452,7 @@ h4 { font-size: 1.05rem; }
 }
 .photo-frame img { width: 100%; height: auto; }
 .photo-frame figcaption {
+  margin-top: 12px;
   padding: .85rem .25rem .15rem;
   font-size: .88rem;
   color: var(--muted);
@@ -1150,45 +1109,76 @@ body.has-mobile-cta { padding-bottom: 5.25rem; }
 /* Small muted helper text under forms and the news list */
 .form-hint { color: var(--muted); font-size: .95rem; line-height: 1.6; }
 .form-hint a { font-weight: 600; }
-
 /* ==========================================================================
    Photography
-   Every framed photo is cropped by CSS (object-fit) rather than by the file,
-   so a replacement image of any shape still sits correctly in its frame.
-   object-position keeps the subject's face in view when a crop is applied.
+
+   The five campaign photographs are modest-resolution files, so the rule
+   throughout is: show every one at its own native shape and never blow it up
+   past the pixels it actually has. Frames are sized to match, which is what
+   keeps them looking sharp instead of soft.
+
+     leigh-portrait.jpg      447 x 447   square    hero, about sidebar
+     leigh-press.jpg         554 x 554   square    home about, donate
+     leigh-house-floor.jpg   738 x 414   16:9      record band, about page
+     leigh-headshot.jpg      640 x 320   2:1       contact sidebar
+     leigh-community.webp   1439 x 809   16:9      full-bleed photo bands
    ========================================================================== */
 
-/* Hero portrait — square headshot, framed */
-.portrait__img img {
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: center 18%;
+/* The media box reserves its space from the aspect ratio before the file
+   arrives, so nothing on the page jumps while photographs load. */
+.media {
+  position: relative;
+  overflow: hidden;
+  line-height: 0;
+  background: var(--navy-deeper) var(--stars-light);
 }
+.media > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.media--square { aspect-ratio: 1 / 1; }
+.media--wide   { aspect-ratio: 16 / 9; }
+.media--pano   { aspect-ratio: 2 / 1; }
 
-/* Framed photos (about blurbs, feature columns).
-   Default is a 4:5 upright crop that flatters a standing/podium shot. */
-.photo-frame img {
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: center 22%;
+/* With JavaScript on, a photograph settles in rather than snapping in over
+   the placeholder. Without it the image is simply visible from the start. */
+html.js .media > img {
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity .5s var(--ease), transform .8s var(--ease);
 }
-.photo-frame--square img { aspect-ratio: 1 / 1; object-position: center 25%; }
-.photo-frame--wide img   { aspect-ratio: 16 / 9; object-position: center 28%; }
-/* Show a photo at its own proportions, uncropped. */
-.photo-frame--natural img { aspect-ratio: auto; height: auto; object-fit: contain; }
-/* A centered, width-capped figure for the flow of a body column. */
+html.js .media > img.is-loaded { opacity: 1; transform: none; }
+
+/* Hero portrait — square file, square frame, no crop. */
+.portrait__img img { aspect-ratio: 1 / 1; object-fit: cover; object-position: center 14%; }
+
+/* Framed photos default to the square shape, because the two portrait-style
+   files are square. Landscape files use the modifiers below. */
+.photo-frame .media { aspect-ratio: 1 / 1; }
+.photo-frame--wide .media { aspect-ratio: 16 / 9; }
+.photo-frame--pano .media { aspect-ratio: 2 / 1; }
+.photo-frame img { width: 100%; height: 100%; }
+
+/* Wider frames need more room than the 320px column a square photo sits in. */
+.photo-frame--wide, .photo-frame--pano { width: min(420px, 88vw); }
+@media (min-width: 900px) { .photo-frame--wide, .photo-frame--pano { width: 100%; } }
+
+/* A centred, width-capped figure for the flow of a body column. */
 .photo-frame--inset { width: min(100%, 470px); margin-inline: auto; }
+.photo-frame--inset.photo-frame--wide { width: min(100%, 620px); }
 
 /* ==========================================================================
-   Cinematic photo band — a full-bleed photograph with a navy scrim and a
-   short message laid over it. Breaks up the run of text sections with a real,
-   human image while staying inside the brand palette.
+   Photo band — a full-bleed photograph with a navy scrim and a short message
+   laid over it. Breaks up the run of text sections with a real, human image
+   while staying inside the brand palette.
    ========================================================================== */
 .photo-band {
   position: relative;
   display: flex;
   align-items: flex-end;
-  min-height: clamp(360px, 78vw, 460px);
+  min-height: clamp(330px, 72vw, 460px);
   background: var(--navy-deeper);
   overflow: hidden;
   border-top: 4px solid var(--red);
@@ -1200,32 +1190,274 @@ body.has-mobile-cta { padding-bottom: 5.25rem; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 62% 28%;   /* keep Leigh and the handshake in frame */
+  /* Portrait-shaped frame on a phone: hold Leigh and the handshake centre. */
+  object-position: 48% 26%;
 }
-/* Mobile: darken the lower third so the message reads over the photo. */
+/* Darken the lower half so the message reads over the police cruiser. */
 .photo-band__scrim {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(0deg, rgba(20,17,52,.92) 4%, rgba(20,17,52,.55) 34%, rgba(20,17,52,.05) 62%);
+    linear-gradient(0deg,
+      rgba(20, 17, 52, .95) 2%,
+      rgba(20, 17, 52, .82) 26%,
+      rgba(20, 17, 52, .38) 52%,
+      rgba(20, 17, 52, .06) 78%);
 }
-.photo-band__inner { position: relative; z-index: 2; width: 100%; }
-.photo-band__content { max-width: 34rem; padding: var(--s-4) 0; }
+.photo-band__inner { position: relative; z-index: 2; }
+.photo-band__content { max-width: 34rem; padding: var(--s-4) 0 2.4rem; }
 .photo-band__content .eyebrow { color: #ff9a9a; }
 .photo-band__content h2 { color: #fff; margin-bottom: .5rem; }
 .photo-band__content p {
-  color: rgba(255,255,255,.92);
+  color: rgba(255, 255, 255, .93);
   margin: 0;
   font-size: clamp(1rem, 2.6vw, 1.1rem);
   max-width: 46ch;
 }
 @media (min-width: 760px) {
-  .photo-band { align-items: center; min-height: clamp(440px, 52vw, 600px); }
-  /* Desktop: pull the dark side to the left so text sits on the officer/vehicle
-     while Leigh stays clear on the right. */
+  .photo-band { align-items: center; min-height: clamp(420px, 48vw, 580px); }
+  .photo-band__img { object-position: 60% 30%; }
+  /* Pull the dark side to the left so the text sits over the officer and the
+     vehicle while Leigh stays clear on the right. */
   .photo-band__scrim {
     background:
-      linear-gradient(90deg, rgba(20,17,52,.9) 0%, rgba(20,17,52,.66) 40%, rgba(20,17,52,.12) 72%, rgba(20,17,52,0) 100%);
+      linear-gradient(90deg,
+        rgba(20, 17, 52, .92) 0%,
+        rgba(20, 17, 52, .70) 38%,
+        rgba(20, 17, 52, .16) 70%,
+        rgba(20, 17, 52, 0) 100%);
   }
   .photo-band__content { padding: 0; }
 }
+
+/* Shorter variant used to break up a long interior page. */
+.photo-band--slim { min-height: clamp(300px, 64vw, 360px); }
+.photo-band--slim .photo-band__scrim {
+  background:
+    linear-gradient(0deg,
+      rgba(20, 17, 52, .95) 4%,
+      rgba(20, 17, 52, .86) 40%,
+      rgba(20, 17, 52, .48) 66%,
+      rgba(20, 17, 52, .10) 88%);
+}
+@media (min-width: 760px) { .photo-band--slim { min-height: clamp(300px, 30vw, 380px); } }
+.photo-band--slim .photo-band__content h2 { font-size: clamp(1.45rem, 3.2vw, 1.9rem); }
+
+/* ==========================================================================
+   Statistics strip — sits inside the navy hero rather than as its own band,
+   so the opening screen reads as one block instead of two.
+   ========================================================================== */
+.hero__stats {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .5rem 1rem;
+}
+.hero__stat { text-align: center; }
+@media (min-width: 560px) {
+  .hero__stat { position: relative; }
+  .hero__stat + .hero__stat::before {
+    content: "";
+    position: absolute;
+    left: calc(-.5rem - 1px); top: 12%; bottom: 12%;
+    border-left: 1px solid rgba(255, 255, 255, .16);
+  }
+}
+.hero__stat b {
+  display: block;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: clamp(1.2rem, 4.8vw, 1.95rem);
+  line-height: 1.05;
+  color: #fff;
+  letter-spacing: .01em;
+}
+.hero__stat span {
+  display: block;
+  margin-top: .3rem;
+  font-size: clamp(.72rem, 2.2vw, .86rem);
+  line-height: 1.35;
+  color: rgba(255, 255, 255, .66);
+}
+
+/* ==========================================================================
+   Photo lockup — a wide photograph paired with a block of text on the navy
+   record panel. The 16:9 House floor picture is shown at its own proportions.
+   ========================================================================== */
+.lockup { display: grid; gap: var(--s-3); align-items: center; }
+@media (min-width: 900px) {
+  .lockup { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-5); }
+  .lockup--reverse > :first-child { order: 2; }
+}
+.lockup__media {
+  position: relative;
+  border: 5px solid #fff;
+  border-bottom: 5px solid var(--red);
+  background: #fff;
+}
+.lockup__caption {
+  margin: .8rem 0 0;
+  font-size: .86rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, .6);
+}
+.section--navy .lockup__caption strong {
+  display: block;
+  font-family: var(--font-head);
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-size: .78rem;
+  color: #ff9a9a;
+  margin-bottom: .15rem;
+}
+
+/* ==========================================================================
+   Rails — on a phone, a run of six issue cards or three news cards turns into
+   a very long scroll. Below the two-column breakpoint those grids become
+   horizontal, snapping rails that bleed to the edge of the screen, with a
+   progress indicator underneath. Nothing is hidden: the same cards are there,
+   they are read across instead of down.
+   ========================================================================== */
+.rail-dots { display: none; }
+
+@media (max-width: 659px) {
+  [data-rail] {
+    --rail-pad: 1.125rem;
+    grid-auto-flow: column;
+    grid-auto-columns: min(80%, 310px);
+    grid-template-columns: none;
+    gap: .85rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--rail-pad);
+    padding: 3px var(--rail-pad) .5rem;
+    margin-inline: calc(var(--rail-pad) * -1);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  [data-rail]::-webkit-scrollbar { display: none; }
+  [data-rail] > * { scroll-snap-align: start; }
+
+  /* The last card gets a trailing gutter so it can snap clear of the edge. */
+  [data-rail]::after { content: ""; width: .25rem; }
+
+  .rail-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .9rem;
+  }
+  .rail-dots b {
+    display: block;
+    width: 7px; height: 7px;
+    border-radius: 99px;
+    background: var(--line);
+    transition: width .25s var(--ease), background .25s var(--ease);
+  }
+  .rail-dots b.is-on { width: 22px; background: var(--red); }
+  .section--gray .rail-dots b { background: var(--gray-2); }
+  .section--gray .rail-dots b.is-on { background: var(--red); }
+}
+
+/* ==========================================================================
+   Mobile
+   The whole page is re-tuned below 720px: a shorter vertical rhythm, a
+   compact header, a hero that fits the opening screen, and consistent red
+   seams where a dark panel meets a light one so the sections read as one
+   banded page rather than a stack of unrelated slabs.
+   ========================================================================== */
+@media (max-width: 720px) {
+  :root {
+    --header-h: 64px;
+    --s-3: 1.05rem;
+    --s-4: 1.5rem;
+    --s-5: 2.1rem;
+    --s-6: 2.7rem;
+  }
+
+  body { font-size: 16.5px; line-height: 1.62; }
+  p { margin-bottom: 1.05em; }
+
+  .brand img { height: 40px; }
+  .header::after { height: 3px; }
+
+  /* Headings sit closer to the text they introduce. */
+  .section-title { margin-bottom: var(--s-3); }
+  h1, h2, h3 { line-height: 1.12; }
+  h2 { margin-bottom: .4em; }
+
+  /* Hero: less air around a smaller portrait, and the two calls to action
+     side by side instead of two full-width stacked bars. */
+  .hero { padding: var(--s-4) 0 var(--s-5); }
+  .hero__inner { gap: var(--s-3); }
+  .hero h1 { margin-bottom: .3rem; }
+  .hero__body p { font-size: 1rem; }
+  .hero .btn-row { margin-top: var(--s-3); }
+  .hero .btn-row .btn { flex: 1 1 0; width: auto; min-width: 0; padding: .8rem .5rem; font-size: .95rem; }
+  .portrait { width: min(232px, 58vw); }
+  .portrait__img { border-width: 5px; }
+
+  /* Dark panels are edged in red on both sides, matching the hero and the
+     photo band, so every change of background reads as a deliberate seam. */
+  .section--navy { border-top: 4px solid var(--red); border-bottom: 4px solid var(--red); }
+
+  /* Framed photographs run a little wider on a narrow screen. */
+  .photo-frame { width: min(340px, 82vw); }
+  .photo-frame--wide, .photo-frame--pano { width: 100%; }
+  .photo-frame figcaption { font-size: .85rem; }
+
+  .lockup { gap: var(--s-3); }
+
+  /* Cards carry less padding so more of each one is content. */
+  .issue-card { padding: 1.3rem 1.2rem 1.25rem; }
+  .issue-card p { font-size: .95rem; }
+  .news-item__body { padding: 1.1rem 1.15rem 1.25rem; }
+  .news-item p { font-size: .93rem; margin-bottom: .9rem; }
+
+  .quote { padding: 1.2rem 1.2rem 1.2rem 1.3rem; margin: var(--s-3) 0; }
+  .checklist li { margin-bottom: .85rem; padding-left: 1.9rem; }
+  .signup { padding: var(--s-3); }
+  .bio-facts > div { padding: .75rem 1rem; }
+
+  /* The sticky bar is on screen the whole way down; give it back some height. */
+  .mobile-cta { padding: .5rem .8rem calc(.5rem + env(safe-area-inset-bottom)); gap: .5rem; }
+  .mobile-cta .btn { min-height: 44px; font-size: .88rem; }
+  body.has-mobile-cta { padding-bottom: 4.5rem; }
+
+  /* The star texture is proportionally much louder on a small screen. */
+  .section--gray { background-size: 108px 108px; }
+}
+
+@media (max-width: 400px) {
+  .hero .btn-row .btn { font-size: .88rem; letter-spacing: .04em; }
+}
+
+/* ==========================================================================
+   Mobile menu — an overlay panel rather than a block that pushes the page
+   down and springs it back when the menu closes.
+   ========================================================================== */
+@media (max-width: 999px) {
+  .mobile-nav {
+    position: fixed;
+    top: var(--header-h);
+    left: 0; right: 0;
+    max-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 18px 40px rgba(20, 17, 52, .3);
+    border-bottom: 3px solid var(--red);
+  }
+  .mobile-nav.is-open { max-height: calc(100dvh - var(--header-h)); }
+}
+/* The menu overlays the page, so the page behind it holds still. This has to
+   sit on the scrolling element itself: html carries overflow-x, which stops an
+   overflow rule on body from propagating to the viewport, and turning body
+   into its own scroll container would drop the scroll position on close. */
+html.nav-open { overflow: hidden; }

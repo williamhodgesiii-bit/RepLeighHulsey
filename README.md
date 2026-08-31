@@ -143,22 +143,32 @@ These are placeholders:
 
 ### Photography
 
-Photographs live in `assets/img/`. Every framed photo is cropped by CSS
-(`object-fit: cover`), so you can drop in a replacement of any shape and it will
-still sit correctly in its frame — no need to pre-crop the file.
+Photographs live in `assets/img/`. Each one is shown at its own native shape and
+never scaled up past the pixels it actually has, which is what keeps them sharp.
+Every picture sits in a `.media` box that reserves its space from the aspect
+ratio before the file arrives, so the page does not jump while photos load.
 
-| File | Where it appears |
-| --- | --- |
-| `leigh-portrait.jpg` | Home hero and About sidebar (the main portrait) |
-| `leigh-house-floor.jpg` | Home "About Leigh" section |
-| `leigh-community.webp` | Home full-width photo band |
-| `leigh-press.jpg` | About page, in the biography |
-| `leigh-headshot.jpg` | Contact page sidebar |
+| File | Size | Shape | Where it appears |
+| --- | --- | --- | --- |
+| `leigh-portrait.jpg` | 447 x 447 | square | Home hero, About sidebar |
+| `leigh-press.jpg` | 554 x 554 | square | Home "About Leigh", Donate sidebar |
+| `leigh-house-floor.jpg` | 738 x 414 | 16:9 | Home record panel, About page |
+| `leigh-headshot.jpg` | 640 x 320 | 2:1 | Contact sidebar |
+| `leigh-community.webp` | 1439 x 809 | 16:9 | Home and Issues photo bands, About page |
 
-To swap any photo, replace the file at the same path (keep the name) and it is
-picked up automatically. Larger, higher-resolution images look best; the frames
-scale them down cleanly. Additional photographs from district events would also
-strengthen the news cards, which are currently text only.
+The two full-bleed photo bands use `leigh-community.webp` because it is the only
+file with enough pixels to cover the width of a screen. The others are shown in
+frames sized to suit them.
+
+To swap a photo, replace the file at the same path, keep the name, and update the
+`width` and `height` attributes on the `<img>` tags that use it (search the HTML
+for the filename). If the replacement has a different shape, change the frame's
+modifier class to match — `.media--square`, `.media--wide` (16:9) or
+`.media--pano` (2:1) — rather than letting the frame crop it.
+
+Higher-resolution originals of these same photographs would sharpen the hero
+portrait in particular: at 447px it is the tightest of the five against the size
+it is displayed at.
 
 ---
 
@@ -248,11 +258,15 @@ Update `robots.txt`, and `SITE_URL` in `build-news.js`, if the domain is not
   badge, an issue-card icon and a news-card marker, and the star-and-bar rule that
   sits above section headings. A faint star field textures the navy and gray panels.
 - **Mobile.** Tap targets are at least 44-48px throughout. Spacing uses a fluid
-  `clamp()` scale so padding tightens on small screens instead of jumping at
-  breakpoints. On the home page the hero reorders on mobile to name, photo, then
-  text. A sticky Donate/Volunteer bar appears once the visitor scrolls past the
-  opening screen and retracts when the footer arrives; it is hidden entirely on the
-  donate and contact pages, where those actions are already on the page.
+  `clamp()` scale, tightened again below 720px so the page does not run on. On the
+  home page the hero reorders to name, photo, then text, and carries the three
+  headline numbers inside the navy panel rather than in a separate strip below it.
+  Below 660px the issue and news grids become horizontal snapping rails with a
+  progress indicator, which keeps six cards to one screen instead of six. The menu
+  opens as an overlay and locks the page behind it. A sticky Donate/Volunteer bar
+  appears once the visitor scrolls past the opening screen and retracts when the
+  footer arrives; it is hidden entirely on the donate and contact pages, where
+  those actions are already on the page.
 - **Accessibility** — skip link, semantic headings, keyboard-accessible menu,
   `aria-expanded` and `aria-current` state, visible focus outlines, and a live
   region announcing news filter results.

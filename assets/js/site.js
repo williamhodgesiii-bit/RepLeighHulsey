@@ -56,6 +56,7 @@ window.SITE = {
         cta.classList.toggle("is-visible", show);
       }
       revealScrolledPast();
+      settlePhotos();
       ticking = false;
     }
     window.addEventListener("scroll", function () {
@@ -75,6 +76,10 @@ window.SITE = {
       panel.classList.toggle("is-open", open);
       burger.setAttribute("aria-expanded", String(open));
       panel.setAttribute("aria-hidden", String(!open));
+      // The panel overlays the page on a phone, so the page behind it should
+      // not scroll away underneath the menu. The class goes on the scrolling
+      // element, which is <html>, not <body>.
+      document.documentElement.classList.toggle("nav-open", open && window.innerWidth < 1000);
     }
     setOpen(false);
 
@@ -428,11 +433,108 @@ window.SITE = {
     if ($(".mobile-cta")) document.body.classList.add("has-mobile-cta");
   }
 
+
+  /* ---------- Photographs ----------
+     Each picture sits in a .media box that already knows its aspect ratio, so
+     the layout never shifts. Marking the image loaded fades it up over the
+     placeholder; anything already in the cache is marked straight away. */
+  function settlePhotos() {
+    var pending = document.querySelectorAll(".media > img:not(.is-loaded)");
+    for (var i = 0; i < pending.length; i++) {
+      if (pending[i].complete) pending[i].classList.add("is-loaded");
+    }
+    return pending.length;
+  }
+
+  function photos() {
+    $$(".media > img").forEach(function (img) {
+      img.addEventListener("load", function () { img.classList.add("is-loaded"); });
+      img.addEventListener("error", function () { img.classList.add("is-loaded"); });
+    });
+    settlePhotos();
+    // A lazily loaded picture can finish between the listener being attached
+    // and the event being dispatched, and a picture must never be left sitting
+    // at zero opacity, so sweep again as the page settles and as it scrolls.
+    window.addEventListener("load", settlePhotos);
+    window.setTimeout(settlePhotos, 1200);
+    window.setTimeout(settlePhotos, 4000);
+  }
+
+  /* ---------- Rails ----------
+     Below the two-column breakpoint the issue and news grids scroll sideways
+     instead of running down the page. Where that is actually happening, add a
+     progress indicator and make the rail reachable from the keyboard. */
+  function rails() {
+    $$("[data-rail]").forEach(function (rail) {
+      var dots = document.createElement("div");
+      dots.className = "rail-dots";
+      dots.setAttribute("aria-hidden", "true");
+      rail.insertAdjacentElement("afterend", dots);
+
+      var count = 0;
+
+      function isRail() { return rail.scrollWidth - rail.clientWidth > 8; }
+
+      function build() {
+        var items = rail.children.length;
+        if (!isRail() || items < 2) {
+          dots.innerHTML = "";
+          count = 0;
+          rail.removeAttribute("tabindex");
+          rail.removeAttribute("role");
+          return;
+        }
+        if (count !== items) {
+          count = items;
+          dots.innerHTML = new Array(items + 1).join("<b></b>");
+        }
+        rail.setAttribute("tabindex", "0");
+        rail.setAttribute("role", "group");
+        mark();
+      }
+
+      /* Which card is parked at the start of the rail. Measuring the cards
+         beats dividing scrollLeft by the scrollable width, because the
+         trailing gutter means the last card snaps well short of the end. */
+      function mark() {
+        if (!count) return;
+        var pad = parseFloat(getComputedStyle(rail).paddingLeft) || 0;
+        var origin = rail.getBoundingClientRect().left + pad;
+        var active = 0;
+        var nearest = Infinity;
+        Array.prototype.forEach.call(rail.children, function (card, i) {
+          var distance = Math.abs(card.getBoundingClientRect().left - origin);
+          if (distance < nearest) { nearest = distance; active = i; }
+        });
+        Array.prototype.forEach.call(dots.children, function (dot, i) {
+          dot.classList.toggle("is-on", i === active);
+        });
+      }
+
+      var ticking = false;
+      rail.addEventListener("scroll", function () {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () { mark(); ticking = false; });
+      }, { passive: true });
+
+      window.addEventListener("resize", build, { passive: true });
+      build();
+
+      // The news rail is filled in by script, so rebuild once it has content.
+      if (!rail.children.length) {
+        new MutationObserver(build).observe(rail, { childList: true });
+      }
+    });
+  }
+
   function init() {
     menu();
     chrome();
     newsPreview();
     newsIndex();
+    photos();
+    rails();
     legacyPostRedirect();
     donate();
     forms();

@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.className += " js";</script>
 </head>
 <body>
 
@@ -68,8 +69,9 @@
 
     <div class="hero__photo">
       <div class="portrait">
-        <div class="portrait__img">
-          <img src="assets/img/leigh-portrait.jpg" alt="State Representative Leigh Hulsey" width="447" height="447" fetchpriority="high">
+        <div class="portrait__img media media--square">
+          <img src="assets/img/leigh-portrait.jpg" alt="State Representative Leigh Hulsey"
+               width="447" height="447" fetchpriority="high" decoding="async">
         </div>
         <div class="portrait__badge">
           <img src="assets/img/mark.png" alt="" aria-hidden="true">
@@ -92,27 +94,22 @@
     </div>
 
   </div>
-</section>
 
-<!-- ===================== FACT BAR ===================== -->
-<div class="factbar">
-  <div class="wrap">
-    <div class="factbar__grid">
-      <div class="factbar__item">
-        <span class="factbar__num">2022</span>
-        <span class="factbar__label">Serving House District 15 since</span>
-      </div>
-      <div class="factbar__item">
-        <span class="factbar__num">$360,000+</span>
-        <span class="factbar__label">In grant funding brought back to the district</span>
-      </div>
-      <div class="factbar__item">
-        <span class="factbar__num">2</span>
-        <span class="factbar__label">Hulsey bills signed into law</span>
-      </div>
+  <div class="wrap hero__stats" data-fade>
+    <div class="hero__stat">
+      <b>2022</b>
+      <span>Serving District 15 since</span>
+    </div>
+    <div class="hero__stat">
+      <b>$360,000+</b>
+      <span>In grant funding secured</span>
+    </div>
+    <div class="hero__stat">
+      <b>2</b>
+      <span>Hulsey bills signed into law</span>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ===================== ABOUT ===================== -->
 <section class="section">
@@ -120,12 +117,16 @@
     <figure class="photo-frame" data-fade>
       <div class="photo-frame__shot">
         <div class="photo-frame__inner">
-          <img src="assets/img/leigh-house-floor.jpg" alt="Leigh Hulsey speaking on the floor of the Alabama House of Representatives" width="738" height="414" loading="lazy">
+          <div class="media media--square">
+            <img src="assets/img/leigh-press.jpg"
+                 alt="Leigh Hulsey speaking at a community event in House District 15"
+                 width="554" height="554" loading="lazy" decoding="async">
+          </div>
         </div>
       </div>
       <figcaption>
         <strong>Leigh Hulsey</strong>
-        On the floor of the Alabama House<br>of Representatives
+        Speaking with neighbors across<br>House District 15
       </figcaption>
     </figure>
 
@@ -167,7 +168,8 @@
 <!-- ===================== PHOTO BAND ===================== -->
 <section class="photo-band" aria-label="Leigh Hulsey in the community">
   <img class="photo-band__img" src="assets/img/leigh-community.webp"
-       alt="Leigh Hulsey shaking hands with a Pelham police officer" width="1439" height="809" loading="lazy">
+       alt="Leigh Hulsey shaking hands with a Pelham police officer"
+       width="1439" height="809" loading="lazy" decoding="async">
   <span class="photo-band__scrim" aria-hidden="true"></span>
   <div class="wrap photo-band__inner">
     <div class="photo-band__content" data-fade>
@@ -190,7 +192,7 @@
       <p>The priorities Leigh is working on for House District 15.</p>
     </div>
 
-    <div class="issue-grid">
+    <div class="issue-grid" data-rail aria-label="Priorities for House District 15">
       <div class="issue-card" data-fade>
         <img class="issue-card__mark" src="assets/img/mark.png" alt="" aria-hidden="true">
         <h3>Education</h3>
@@ -275,7 +277,20 @@
     </div>
 
     <div data-fade>
-      <div class="section-title">
+      <figure style="margin:0">
+        <div class="lockup__media media media--wide">
+          <img src="assets/img/leigh-house-floor.jpg"
+               alt="Leigh Hulsey speaking at the lectern on the floor of the Alabama House of Representatives"
+               width="738" height="414" loading="lazy" decoding="async">
+        </div>
+        <figcaption class="lockup__caption">
+          <strong>On the House floor</strong>
+          Rep. Hulsey speaks during a session of the Alabama House of Representatives
+          in Montgomery.
+        </figcaption>
+      </figure>
+
+      <div class="section-title" style="margin-top:var(--s-4)">
         <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
         <h2>District 15</h2>
       </div>
@@ -296,23 +311,19 @@
   </div>
 </section>
 
-<!-- ===================== NEWS ===================== -->
+<!-- ===================== NEWS + SIGNUP ===================== -->
 <section class="section">
   <div class="wrap">
     <div class="section-title" data-fade>
       <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
       <h2>Latest News</h2>
     </div>
-    <div class="news-list" id="news-preview"></div>
+    <div class="news-list" id="news-preview" data-rail aria-label="Latest news"></div>
     <p class="text-center" style="margin:var(--s-4) 0 0">
       <a class="btn btn--outline" href="news.html">View All News</a>
     </p>
-  </div>
-</section>
 
-<section class="section section--tight section--gray">
-  <div class="wrap">
-    <div class="signup" data-fade>
+    <div class="signup" data-fade style="margin-top:var(--s-6)">
       <h2>Stay Informed</h2>
       <p>Sign up for updates from the campaign. We will not share your email address.</p>
       <form class="signup-form" data-form data-done="signup-done" data-subject="Email list signup">

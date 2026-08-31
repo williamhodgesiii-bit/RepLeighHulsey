@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.className += " js";</script>
 </head>
 <body>
 
@@ -129,10 +130,13 @@
     </div>
 
     <aside data-fade>
-      <figure class="photo-frame photo-frame--square" style="margin-bottom:var(--s-3)">
+      <figure class="photo-frame photo-frame--pano" style="margin-bottom:var(--s-3)">
         <div class="photo-frame__shot">
           <div class="photo-frame__inner">
-            <img src="assets/img/leigh-headshot.jpg" alt="State Representative Leigh Hulsey" width="640" height="320" loading="lazy">
+            <div class="media media--pano">
+              <img src="assets/img/leigh-headshot.jpg" alt="State Representative Leigh Hulsey"
+                   width="640" height="320" loading="lazy" decoding="async">
+            </div>
           </div>
         </div>
         <figcaption>
