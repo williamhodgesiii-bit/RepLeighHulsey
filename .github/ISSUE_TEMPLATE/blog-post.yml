@@ -1,5 +1,5 @@
 name: 📝 New blog post
-description: Write a post for the News page. No coding — just fill this in.
+description: Write a post for the News page. No coding needed. Just fill this in.
 title: "[Post] "
 labels: ["new-post"]
 body:
@@ -53,7 +53,7 @@ body:
     id: body
     attributes:
       label: Post text
-      description: "Write normally. A blank line starts a new paragraph. Put **two stars** around a word to bold it."
+      description: Write normally. A blank line starts a new paragraph.
       placeholder: Write the post here.
     validations:
       required: true
