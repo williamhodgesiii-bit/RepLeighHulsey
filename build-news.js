@@ -432,7 +432,7 @@ ${post.bodyHTML}
 </div>
 
 <section class="cta">
-  <img class="cta__mark" src="${B}assets/img/mark.png" alt="" aria-hidden="true">
+  <img class="cta__mark" src="${B}assets/img/mark-outline.svg" alt="" aria-hidden="true">
   <div class="wrap">
     ${rule("brandrule--center")}
     <h2>Support the Campaign</h2>

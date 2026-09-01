@@ -318,15 +318,27 @@ h4 { font-size: 1.05rem; }
   overflow: hidden;
   border-bottom: 4px solid var(--red);
 }
-.hero__mark {
-  position: absolute;
-  right: -3.5rem; bottom: -5rem;
-  width: 26rem; max-width: 60%;
-  opacity: .05;
-  pointer-events: none;
-  filter: grayscale(1) brightness(3);
+/* The Alabama mark. It used to bleed off the right and bottom edges, so the
+   clipped shape read as a pale rectangle rather than a state. It now sits
+   wholly inside the panel, in the open navy between the text and the
+   portrait — and only at widths where that gap actually exists. Below 1100px
+   the two columns meet, and a mark half-hidden behind the portrait looks like
+   the same mistake, so it steps aside and the star field carries the brand. */
+.hero__mark { display: none; }
+@media (min-width: 1100px) {
+  .hero__mark {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateX(3.5rem);
+    width: clamp(8.5rem, 17vw, 15rem);
+    height: auto;
+    opacity: .08;
+    pointer-events: none;
+  }
 }
-@media (max-width: 860px) { .hero__mark { right: -4rem; bottom: -3rem; width: 20rem; opacity: .06; } }
+
 
 .hero__inner {
   position: relative; z-index: 2;
@@ -336,7 +348,7 @@ h4 { font-size: 1.05rem; }
 }
 @media (min-width: 860px) {
   .hero__inner {
-    grid-template-columns: minmax(0, 1fr) 330px;
+    grid-template-columns: minmax(0, 1fr) 372px;
     grid-template-areas: "intro photo" "body photo";
     gap: var(--s-3) var(--s-5);
     align-items: center;
@@ -385,10 +397,10 @@ h4 { font-size: 1.05rem; }
 /* Portrait with offset red block */
 .portrait {
   position: relative;
-  width: min(280px, 74vw);
+  width: min(310px, 78vw);
   margin-inline: auto;
 }
-@media (min-width: 860px) { .portrait { width: 100%; max-width: 330px; } }
+@media (min-width: 860px) { .portrait { width: 100%; max-width: 372px; } }
 .portrait::before {
   content: "";
   position: absolute;
@@ -975,7 +987,6 @@ h4 { font-size: 1.05rem; }
   left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: 20rem; opacity: .07;
-  filter: grayscale(1) brightness(4);
   pointer-events: none;
 }
 .cta > .wrap { position: relative; z-index: 2; }
@@ -998,7 +1009,6 @@ h4 { font-size: 1.05rem; }
   right: -2rem; top: 50%;
   transform: translateY(-50%);
   width: 15rem; opacity: .06;
-  filter: grayscale(1) brightness(3);
   pointer-events: none;
 }
 .page-banner > .wrap { position: relative; z-index: 2; }
@@ -1407,7 +1417,7 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
   .hero__body p { font-size: 1rem; }
   .hero .btn-row { margin-top: var(--s-3); }
   .hero .btn-row .btn { flex: 1 1 0; width: auto; min-width: 0; padding: .8rem .5rem; font-size: .95rem; }
-  .portrait { width: min(232px, 58vw); }
+  .portrait { width: min(258px, 64vw); }
   .portrait__img { border-width: 5px; }
 
   /* Dark panels are edged in red on both sides, matching the hero and the
