@@ -1,13 +1,19 @@
 name: Publish from a submitted form
 
-# Turns a submitted "New blog post" or "Submit a news link" issue into a real
-# post on the News page, then closes the issue.
+# Turns a submitted form into a change on the News page, then closes the issue.
 #
-# It publishes when EITHER:
-#   * a team member (someone with write access) adds the "approved" label, OR
-#   * a team member opens a "New blog post" form themselves, OR
-#   * a team member comments "/approve" on the issue.
-# Links from outside always wait for that approval, so the News tab stays vetted.
+# Handles four kinds of submission, told apart by the issue's label:
+#   new-post     a blog post someone wrote        -> publishes it
+#   edit-post    a correction to a post that is up -> rewrites it, same address
+#   delete-post  a post to take down               -> removes it
+#   news-link    a link to an outside story        -> formats and publishes it
+#
+# It acts when EITHER:
+#   * a team member (write access) opens the form themselves, OR
+#   * a team member adds the "approved" label, OR
+#   * a team member comments "/approve".
+# Anything from outside always waits for that approval, so the News tab and the
+# delete button stay in the campaign's hands.
 
 on:
   issues:
@@ -23,21 +29,32 @@ concurrency:
   group: news-build
   cancel-in-progress: false
 
+env:
+  SITE_URL: https://hulseyforhouse.com
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     if: >
       (github.event_name == 'issues' && github.event.action == 'labeled' && github.event.label.name == 'approved'
-        && (contains(github.event.issue.labels.*.name, 'news-link') || contains(github.event.issue.labels.*.name, 'new-post')))
+        && (contains(github.event.issue.labels.*.name, 'news-link')
+          || contains(github.event.issue.labels.*.name, 'new-post')
+          || contains(github.event.issue.labels.*.name, 'edit-post')
+          || contains(github.event.issue.labels.*.name, 'delete-post')))
       ||
       (github.event_name == 'issues' && github.event.action == 'opened'
-        && contains(github.event.issue.labels.*.name, 'new-post')
+        && (contains(github.event.issue.labels.*.name, 'new-post')
+          || contains(github.event.issue.labels.*.name, 'edit-post')
+          || contains(github.event.issue.labels.*.name, 'delete-post'))
         && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
       ||
       (github.event_name == 'issue_comment' && github.event.issue.state == 'open'
         && startsWith(github.event.comment.body, '/approve')
         && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
-        && (contains(github.event.issue.labels.*.name, 'news-link') || contains(github.event.issue.labels.*.name, 'new-post')))
+        && (contains(github.event.issue.labels.*.name, 'news-link')
+          || contains(github.event.issue.labels.*.name, 'new-post')
+          || contains(github.event.issue.labels.*.name, 'edit-post')
+          || contains(github.event.issue.labels.*.name, 'delete-post')))
     steps:
       - name: Get the site
         uses: actions/checkout@v4
@@ -47,7 +64,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Build the post from the form
+      - name: Apply the form
         id: make
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -64,21 +81,75 @@ jobs:
         if: steps.make.outputs.status == 'published'
         env:
           NUM: ${{ github.event.issue.number }}
+          ACTION: ${{ steps.make.outputs.action }}
+          SLUG: ${{ steps.make.outputs.slug }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Publish news post from issue #$NUM [skip ci]"
-          git push
+          if git diff --cached --quiet; then
+            echo "Nothing changed on disk — skipping the commit."
+            exit 0
+          fi
+          git commit -m "$ACTION: $SLUG (from issue #$NUM) [skip ci]"
+          # Another post may have landed while this one was building.
+          for i in 1 2 3 4 5; do
+            git push && exit 0
+            echo "Push rejected, rebasing on the latest main and retrying ($i/5)…"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || exit 1
+            sleep $((i * 3))
+          done
+          echo "Could not push after 5 attempts."; exit 1
 
-      - name: Say it's published, and close the issue
+      - name: Say what happened, and close the issue
         if: steps.make.outputs.status == 'published'
         env:
           GH_TOKEN: ${{ github.token }}
           NUM: ${{ github.event.issue.number }}
-          SLUG: ${{ steps.make.outputs.slug }}
+          ACTION: ${{ steps.make.outputs.action }}
+          TITLE: ${{ steps.make.outputs.title }}
+          URL: ${{ steps.make.outputs.url }}
         run: |
-          gh issue comment "$NUM" --body "✅ Published! It will appear on the News page within a minute or two, at \`news/$SLUG.html\`. Thanks!"
+          LIVE="$SITE_URL/$URL"
+          case "$ACTION" in
+            deleted)
+              cat > /tmp/comment.md <<MD
+          ## 🗑️ Taken down
+
+          **$TITLE** has been removed from the website.
+
+          It is gone from the News page, the RSS feed and the sitemap. Google will drop it from search results over the next few days on its own.
+
+          Changed your mind? A developer can restore it from the site's history — open an issue and say which post.
+          MD
+              ;;
+            updated)
+              cat > /tmp/comment.md <<MD
+          ## ✏️ Updated
+
+          **$TITLE** has been changed.
+
+          **[View the post]($LIVE)** — give it a minute or two, and refresh once if you still see the old version.
+
+          The web address has not changed, so any link already shared still works.
+          MD
+              ;;
+            *)
+              cat > /tmp/comment.md <<MD
+          ## ✅ Published
+
+          **$TITLE** is now on the News page.
+
+          **[View the post]($LIVE)** — give it a minute or two to appear.
+
+          It is also on the [News page]($SITE_URL/news.html), in the RSS feed and in the sitemap, so search engines pick it up on their own.
+
+          - **Need to change it?** Open a *✏️ Edit a post that is already up* form. That keeps this same web address.
+          - **Need it gone?** Open a *🗑️ Delete a post* form.
+          MD
+              ;;
+          esac
+          gh issue comment "$NUM" --body-file /tmp/comment.md
           gh issue close "$NUM" --reason completed
 
       - name: Explain what needs fixing
@@ -88,4 +159,11 @@ jobs:
           NUM: ${{ github.event.issue.number }}
           MSG: ${{ steps.make.outputs.message }}
         run: |
-          gh issue comment "$NUM" --body "⚠️ This couldn't be published yet: $MSG"
+          cat > /tmp/comment.md <<MD
+          ## ⚠️ Not done yet
+
+          $MSG
+
+          **Nothing on the website has changed.** Edit this issue to fix the problem, then add the **approved** label (or comment \`/approve\`) to try again.
+          MD
+          gh issue comment "$NUM" --body-file /tmp/comment.md

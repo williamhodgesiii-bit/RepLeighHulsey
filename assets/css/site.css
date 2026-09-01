@@ -1467,3 +1467,48 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
    overflow rule on body from propagating to the viewport, and turning body
    into its own scroll container would drop the scroll position on close. */
 html.nav-open { overflow: hidden; }
+
+/* ==========================================================================
+   News cards and articles carrying a photograph. A post published with a
+   picture leads with it on the card and at the top of the article; a post
+   without one keeps the plain card, so the two sit together in the grid.
+   ========================================================================== */
+.news-item__media { background: var(--gray-2); }
+.news-item__media img { width: 100%; height: 100%; object-fit: cover; }
+.news-item--photo .news-item__top { border-top: 3px solid var(--red); }
+
+.article-hero { margin: 0 0 var(--s-3); }
+.article-hero .media {
+  border: 5px solid #fff;
+  border-bottom: 5px solid var(--red);
+  box-shadow: var(--shadow-1);
+  background: var(--gray-2);
+}
+.article-hero img { width: 100%; height: 100%; object-fit: cover; }
+.article-hero figcaption {
+  margin-top: .75rem;
+  font-size: .87rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+@media (max-width: 720px) {
+  .article-hero { margin-bottom: var(--s-2); }
+  .article-hero .media { border-width: 4px; }
+}
+
+/* A quote inside a post body, styled like the pull quotes elsewhere on the
+   site. Posts are written in Markdown, which produces a plain <blockquote>. */
+.article-body blockquote {
+  margin: var(--s-3) 0;
+  padding: 1.35rem 1.5rem;
+  border-left: 4px solid var(--red);
+  background: var(--gray);
+  font-style: italic;
+  font-size: 1.04rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.article-body blockquote p:last-child { margin-bottom: 0; }
+@media (max-width: 720px) {
+  .article-body blockquote { padding: 1.1rem 1.15rem; font-size: 1rem; }
+}

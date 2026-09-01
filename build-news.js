@@ -69,13 +69,22 @@ function escapeHTML(s) {
     .replace(/"/g, "&quot;");
 }
 
-function inlineMarkdown(text) {
+// Post pages live in news/, one folder down from the rest of the site, so a
+// link someone writes as (contact.html) has to become ../contact.html or it
+// resolves to news/contact.html and 404s. Anything absolute is left alone.
+function resolveHref(href, base) {
+  if (/^(https?:|mailto:|tel:|#|\/)/i.test(href)) return href;
+  if (href.startsWith("../") || href.startsWith("./")) return href;
+  return (base || "") + href;
+}
+
+function inlineMarkdown(text, base) {
   let out = escapeHTML(text);
   // links: [label](https://example.com)
   out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_, label, href) {
     const external = /^https?:\/\//i.test(href);
     return (
-      '<a href="' + href + '"' +
+      '<a href="' + resolveHref(href, base) + '"' +
       (external ? ' target="_blank" rel="noopener"' : "") +
       ">" + label + "</a>"
     );
@@ -86,7 +95,7 @@ function inlineMarkdown(text) {
   return out;
 }
 
-function markdownToHTML(md) {
+function markdownToHTML(md, base) {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
   const html = [];
   let i = 0;
@@ -112,25 +121,25 @@ function markdownToHTML(md) {
 
     if (!line.trim()) { i++; continue; }
 
-    if (/^###\s+/.test(line)) { html.push("<h3>" + inlineMarkdown(line.replace(/^###\s+/, "")) + "</h3>"); i++; continue; }
-    if (/^##\s+/.test(line))  { html.push("<h2>" + inlineMarkdown(line.replace(/^##\s+/, "")) + "</h2>"); i++; continue; }
+    if (/^###\s+/.test(line)) { html.push("<h3>" + inlineMarkdown(line.replace(/^###\s+/, ""), base) + "</h3>"); i++; continue; }
+    if (/^##\s+/.test(line))  { html.push("<h2>" + inlineMarkdown(line.replace(/^##\s+/, ""), base) + "</h2>"); i++; continue; }
 
     if (/^>\s?/.test(line)) {
       const quote = [];
       while (i < lines.length && /^>\s?/.test(lines[i])) { quote.push(lines[i].replace(/^>\s?/, "")); i++; }
-      html.push("<blockquote><p>" + inlineMarkdown(quote.join(" ").trim()) + "</p></blockquote>");
+      html.push("<blockquote><p>" + inlineMarkdown(quote.join(" ").trim(), base) + "</p></blockquote>");
       continue;
     }
 
     if (isBullet(line)) {
       const items = collectList(isBullet, /^\s*[-*]\s+/);
-      html.push("<ul>\n" + items.map((t) => "  <li>" + inlineMarkdown(t) + "</li>").join("\n") + "\n</ul>");
+      html.push("<ul>\n" + items.map((t) => "  <li>" + inlineMarkdown(t, base) + "</li>").join("\n") + "\n</ul>");
       continue;
     }
 
     if (isNumber(line)) {
       const items = collectList(isNumber, /^\s*\d+\.\s+/);
-      html.push("<ol>\n" + items.map((t) => "  <li>" + inlineMarkdown(t) + "</li>").join("\n") + "\n</ol>");
+      html.push("<ol>\n" + items.map((t) => "  <li>" + inlineMarkdown(t, base) + "</li>").join("\n") + "\n</ol>");
       continue;
     }
 
@@ -139,7 +148,7 @@ function markdownToHTML(md) {
            !isBullet(lines[i]) && !isNumber(lines[i])) {
       para.push(lines[i].trim()); i++;
     }
-    html.push("<p>" + inlineMarkdown(para.join(" ")) + "</p>");
+    html.push("<p>" + inlineMarkdown(para.join("\n"), base).replace(/\n/g, "<br>\n") + "</p>");
   }
 
   return html.join("\n");
@@ -164,6 +173,23 @@ function stripTags(html) {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 function attr(s) { return escapeHTML(s).replace(/'/g, "&#39;"); }
+
+// Last-modified date of a file in the repository, for the sitemap.
+function fileDate(relPath) {
+  try { return isoDateOf(fs.statSync(path.join(ROOT, relPath)).mtime); }
+  catch (e) { return today(); }
+}
+function isoDateOf(d) { return new Date(d).toISOString().slice(0, 10); }
+function today() { return new Date().toISOString().slice(0, 10); }
+
+const IMAGE_MIME = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                     ".webp": "image/webp", ".gif": "image/gif" };
+function mimeForImage(rel) {
+  return IMAGE_MIME[path.extname(String(rel || "")).toLowerCase()] || "image/jpeg";
+}
+function imageBytes(rel) {
+  try { return fs.statSync(path.join(ROOT, rel)).size; } catch (e) { return 0; }
+}
 function jsString(s) { return JSON.stringify(String(s)); }
 
 /* ==========================================================================
@@ -187,7 +213,7 @@ const posts = fs.readdirSync(SRC)
     if (!meta.excerpt) problems.push(file + ": missing an excerpt");
     if (!parsed.body) problems.push(file + ": the post has no text under the --- block");
 
-    const bodyHTML = markdownToHTML(parsed.body);
+    const bodyHTML = markdownToHTML(parsed.body, "../");
     return {
       slug: slug,
       title: meta.title || slug,
@@ -195,6 +221,9 @@ const posts = fs.readdirSync(SRC)
       category: meta.category || "News",
       excerpt: meta.excerpt || "",
       draft: String(meta.draft || "").toLowerCase() === "true",
+      image: (meta.image || "").trim(),
+      imageAlt: (meta.imageAlt || meta.imagealt || "").trim(),
+      updated: /^\d{4}-\d{2}-\d{2}$/.test(meta.updated || "") ? meta.updated : "",
       bodyHTML: bodyHTML,
       plain: stripTags(bodyHTML),
       url: "news/" + slug + ".html",
@@ -232,25 +261,56 @@ const rule = (mod) =>
 function postPage(post, older, newer) {
   const B = "../";
   const canonical = SITE_URL + "/news/" + post.slug + ".html";
-  const image = SITE_URL + "/assets/img/logo.png";
+  const logo = SITE_URL + "/assets/img/logo.png";
+  // A post with its own photograph shares that photograph; everything else
+  // falls back to the campaign logo.
+  const image = post.image ? SITE_URL + "/" + post.image.replace(/^\/+/, "") : logo;
+  const modified = post.updated || post.date;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: post.title,
-    datePublished: post.date,
-    dateModified: post.date,
-    description: post.excerpt,
-    articleSection: post.category,
-    image: [image],
-    mainEntityOfPage: canonical,
-    author: { "@type": "Organization", name: AUTHOR },
-    publisher: {
-      "@type": "Organization",
-      name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: image },
-    },
+    "@graph": [
+      {
+        "@type": "NewsArticle",
+        headline: post.title,
+        datePublished: post.date,
+        dateModified: modified,
+        description: post.excerpt,
+        articleSection: post.category,
+        image: [image],
+        mainEntityOfPage: canonical,
+        url: canonical,
+        inLanguage: "en-US",
+        isAccessibleForFree: true,
+        author: { "@type": "Person", name: "Leigh Hulsey" },
+        publisher: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: SITE_URL,
+          logo: { "@type": "ImageObject", url: logo },
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL + "/" },
+          { "@type": "ListItem", position: 2, name: "News", item: SITE_URL + "/news.html" },
+          { "@type": "ListItem", position: 3, name: post.title, item: canonical },
+        ],
+      },
+    ],
   };
+
+  // The photograph leads the article, framed the same way as elsewhere.
+  const hero = post.image
+    ? '<figure class="article-hero">' +
+        '<div class="media media--wide">' +
+          '<img src="' + B + escapeHTML(post.image) + '" alt="' + attr(post.imageAlt || post.title) + '" ' +
+          'width="1600" height="900" fetchpriority="high" decoding="async">' +
+        "</div>" +
+        (post.imageAlt ? "<figcaption>" + escapeHTML(post.imageAlt) + "</figcaption>" : "") +
+      "</figure>"
+    : "";
 
   const nav = (older || newer)
     ? '<div class="article-foot">' +
@@ -293,7 +353,9 @@ function postPage(post, older, newer) {
 <meta property="og:image" content="${image}">
 <meta property="og:site_name" content="${SITE_NAME}">
 <meta property="article:published_time" content="${post.date}">
+<meta property="article:modified_time" content="${modified}">
 <meta property="article:section" content="${attr(post.category)}">
+<meta name="author" content="Leigh Hulsey">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${attr(post.title)}">
 <meta name="twitter:description" content="${attr(post.excerpt)}">
@@ -352,6 +414,7 @@ ${NAV.map(([href, label]) =>
 
     <div class="section">
       <div class="wrap-narrow">
+        ${hero}
         <div class="article-body">
 ${post.bodyHTML}
         </div>
@@ -468,6 +531,8 @@ ${posts.map((p) => `  {
     date: ${jsString(p.date)},
     category: ${jsString(p.category)},
     excerpt: ${jsString(p.excerpt)},
+    image: ${jsString(p.image)},
+    imageAlt: ${jsString(p.imageAlt || p.title)},
     text: ${jsString(p.plain)},
   },`).join("\n")}
 ];
@@ -477,7 +542,7 @@ fs.writeFileSync(path.join(ROOT, "assets", "js", "posts.js"), postsJs);
 // RSS feed
 const feed =
 `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>${escapeHTML(SITE_NAME)} — News</title>
     <link>${SITE_URL}/news.html</link>
@@ -491,7 +556,9 @@ ${posts.map((p) => `    <item>
       <guid isPermaLink="true">${SITE_URL}/${p.url}</guid>
       <pubDate>${rfc822(p.date)}</pubDate>
       <category>${escapeHTML(p.category)}</category>
-      <description>${escapeHTML(p.excerpt)}</description>
+      <description>${escapeHTML(p.excerpt)}</description>${p.image ? `
+      <enclosure url="${SITE_URL}/${p.image}" type="${mimeForImage(p.image)}" length="${imageBytes(p.image)}"/>` : ""}
+      <content:encoded><![CDATA[${p.image ? `<p><img src="${SITE_URL}/${p.image}" alt="${escapeHTML(p.imageAlt || p.title)}"></p>` : ""}${p.bodyHTML}]]></content:encoded>
     </item>`).join("\n")}
   </channel>
 </rss>
@@ -499,13 +566,23 @@ ${posts.map((p) => `    <item>
 fs.writeFileSync(path.join(ROOT, "feed.xml"), feed);
 
 // Sitemap covering the fixed pages plus every post.
-const fixed = ["", "about.html", "issues.html", "news.html", "donate.html", "contact.html"];
+// The news index changes whenever a post does; the rest change when edited,
+// so they are dated from the file on disk.
+const newest = posts.length ? posts[0].date : today();
+const fixed = [
+  ["", "index.html", "1.0", "weekly"],
+  ["about.html", "about.html", "0.8", "monthly"],
+  ["issues.html", "issues.html", "0.8", "monthly"],
+  ["news.html", "news.html", "0.9", "weekly"],
+  ["donate.html", "donate.html", "0.7", "monthly"],
+  ["contact.html", "contact.html", "0.7", "monthly"],
+];
 const sitemap =
 `<?xml version="1.0" encoding="UTF-8"?>
 <!-- GENERATED by build-news.js. Change SITE_URL in that file if the domain changes. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${fixed.map((f) => `  <url><loc>${SITE_URL}/${f}</loc></url>`).join("\n")}
-${posts.map((p) => `  <url><loc>${SITE_URL}/${p.url}</loc><lastmod>${p.date}</lastmod></url>`).join("\n")}
+${fixed.map(([loc, file, priority, freq]) => `  <url><loc>${SITE_URL}/${loc}</loc><lastmod>${loc === "news.html" || loc === "" ? newest : fileDate(file)}</lastmod><changefreq>${freq}</changefreq><priority>${priority}</priority></url>`).join("\n")}
+${posts.map((p) => `  <url><loc>${SITE_URL}/${p.url}</loc><lastmod>${p.updated || p.date}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`).join("\n")}
 </urlset>
 `;
 fs.writeFileSync(path.join(ROOT, "sitemap.xml"), sitemap);

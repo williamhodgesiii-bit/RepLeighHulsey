@@ -1,109 +1,150 @@
-# How to post news (for the campaign team)
+# Posting to the News page
 
-Everything on the **News** page can be added right here on GitHub, in your web
-browser. **No coding, no software, and nobody else has to do anything.** You just
-fill in a form.
+Everything on the News page is managed from the **Issues** tab of this
+repository. There is no separate login, no password to remember, and nothing
+you can break — every change is recorded and can be undone.
 
-There are three ways to add something. Pick whichever fits:
+Four things you can do:
 
-1. [Write a blog post](#1-write-a-blog-post) — your own update or announcement.
-2. [Add a news link](#2-add-a-news-link) — a story from a newspaper or TV station.
-3. [Approve a suggested story](#3-approve-a-suggested-story) — from the daily robot.
-
-You'll need a free GitHub account (github.com → **Sign up**) and an invite to this
-project. If you can see the **Issues** tab, you're all set.
-
----
-
-## 1. Write a blog post
-
-1. Go to the **Issues** tab at the top.
-2. Click the green **New issue** button.
-3. Next to **📝 New blog post**, click **Get started**.
-4. Fill in the boxes:
-   - **Headline** — the title of the post.
-   - **Date** — leave blank for today.
-   - **Category** — pick one (it becomes a filter button on the News page).
-   - **One-sentence summary** — shown on the news card and when it's shared on
-     Facebook.
-   - **Post text** — write it normally. A blank line starts a new paragraph.
-5. Click **Submit new issue**.
-
-That's it. Within a minute or two the post appears on the News page automatically,
-and the form closes itself. You don't run anything.
-
-> **Tip:** to make a word **bold**, put two stars around it: `**like this**`.
-> To add a link, write `[the words people click](https://the-web-address.com)`.
-
-Want to hold a post back? Tick **"Keep this as a draft for now"** and it's saved
-but not shown. (Delete that draft later from the **content/news** folder, or ask
-whoever set this up.)
+| I want to… | Use the form called |
+| --- | --- |
+| Write a post | 📝 **New blog post** |
+| Fix a typo or change a post already up | ✏️ **Edit a post that is already up** |
+| Take a post down | 🗑️ **Delete a post** |
+| Share a news story someone else wrote | 🔗 **Submit a news link** |
 
 ---
 
-## 2. Add a news link
+## Writing a post
 
-Great when a newspaper or TV station covers Rep. Hulsey and you want it on the site.
+1. Go to the **Issues** tab and press **New issue**.
+2. Choose **📝 New blog post**.
+3. Fill in the headline, the one-sentence summary, and the post text.
+4. Press **Submit new issue**.
 
-1. Go to **Issues** → **New issue** → **🔗 Submit a news link** → **Get started**.
-2. Paste the **link** to the article. That's the only required box.
-   (Optionally add a headline or a sentence of context.)
-3. Click **Submit new issue**.
+That's it. In a minute or two you'll get a reply on the issue with a link to
+the live post, and the issue closes itself.
 
-The system reads the article and formats a tidy news card that links out to the
-full story — you don't copy any text yourself.
+### The three fields that matter
 
-**One quick approval keeps the News tab clean:** a team member opens the new issue
-and either
+**Headline** — what people see on the news card, at the top of the post, and in
+Google results. Eight to twelve words is the sweet spot.
 
-- adds the **`approved`** label (right sidebar → **Labels** → click **approved**), or
-- types a comment that says **`/approve`**.
+**One-sentence summary** — this is doing more work than it looks. It appears on
+the news card, it is what Facebook and iMessage show when someone shares the
+post, and it is the description Google puts under your link. Write it as a
+complete sentence, not a fragment.
 
-The moment it's approved, it publishes and the issue closes. To pass on a story
-instead, just **Close** the issue.
+**Post text** — write normally. A blank line starts a new paragraph, and a
+single new line stays a new line, so an address block like this comes out the
+way you typed it:
 
-> There's also a **"Share a news link"** page on the website itself (linked at the
-> bottom of the News page) so supporters can send links in. Those arrive here the
-> same way, and still wait for a team member's approval.
+```
+When: Saturday, September 27, 10:00 a.m. to noon
+Where: Helena City Hall, 816 Highway 52 East
+```
+
+### Adding a photo
+
+Drag a photo into the **Photo** box, or click it and pick a file. The photo
+becomes the picture on the news card, the picture at the top of the post, and
+the picture people see when they share it — which is the single biggest thing
+you can do to make a post get read.
+
+Landscape photos work best. Big files are fine; they get handled for you.
+
+Fill in the **What is happening in the photo?** box too. It shows as the caption
+under the photo, and it is what a screen reader and Google read.
+
+### A bit of formatting, if you want it
+
+You do not need any of this — plain text is fine. But these work:
+
+| Type this | To get |
+| --- | --- |
+| `## A heading` on its own line | A section heading |
+| `- ` at the start of a line | A bullet point |
+| `**important**` | **important** |
+| `> ` at the start of a line | An indented quote |
+| `[click here](https://example.com)` | A link |
+| `[our issues page](issues.html)` | A link to another page on this site |
 
 ---
 
-## 3. Approve a suggested story
+## Fixing a post that is already up
 
-Every morning a helper searches the news for fresh, **positive** stories about Rep.
-Hulsey and drops each one into the **Issues** tab, already formatted and ready.
-Nothing it finds goes live on its own — you decide.
+Use **✏️ Edit a post that is already up**. Paste the post's web address, then
+fill in only the parts you want to change — anything you leave blank stays as
+it is.
 
-1. Open the **Issues** tab. Suggested stories are labeled **`news-link`** and
-   **`needs-review`**.
-2. Open one and read it. If it looks good and puts the Rep in a good light:
-   - add the **`approved`** label (or comment **`/approve`**), and it publishes.
-3. If it's off-topic or you'd rather skip it, just **Close** the issue.
+The post keeps the same web address, so any link already shared, posted or
+emailed keeps working. This is the reason to edit rather than delete and repost.
 
-The helper already skips anything that reads negative, and never suggests the same
-story twice — but **you always have the final say.**
+To hide a post temporarily without losing it, tick the **hide this post** box on
+the edit form. Untick it later to bring it back.
 
 ---
 
-## Editing or removing a post after it's up
+## Taking a post down
 
-Posts live as simple text files in the **`content/news`** folder.
+Use **🗑️ Delete a post**. Paste the post's web address and tick the confirm box.
 
-- **Edit:** open the file there, click the pencil ✏️, make changes, and click
-  **Commit changes**. The site updates itself.
-- **Remove:** open the file, click the trash 🗑️ icon, and **Commit changes**.
+The post disappears from the News page, the RSS feed and the sitemap within a
+minute or two. Google drops it from search results over the following few days
+on its own.
 
-If you'd rather not touch the folder, just open a new issue describing the change
-and a teammate can handle it.
+If you only want it gone for a while, hide it with the edit form instead.
 
 ---
 
-## If something doesn't show up
+## Search engines
 
-- Give it two or three minutes — the site rebuilds itself after each change.
-- If you submitted a link or a suggested story, check that it was **approved**
-  (added the `approved` label or an `/approve` comment). Unapproved links wait.
-- If a form couldn't be published, the helper leaves a comment on that issue
-  explaining exactly what to fix. Edit the issue and approve it again.
+You do not have to do anything for SEO. Every time you publish, edit or delete a
+post, the site automatically updates:
 
-That's everything. Welcome aboard.
+- the post's own title, description and social sharing image
+- the sharing preview for Facebook, X, LinkedIn and text messages
+- structured data telling Google this is a news article, who wrote it, when it
+  was published and when it was last changed
+- `sitemap.xml`, which is what search engines read to find new pages
+- `feed.xml`, the RSS feed
+
+The one thing that actually moves the needle is the part only you can do: a
+clear headline, a real sentence in the summary box, and a photo.
+
+---
+
+## Questions people ask
+
+**Does anything go live before I'm ready?** No. Nothing is published until you
+press Submit, and drafts stay off the site entirely.
+
+**Can I write a post now and publish it later?** Yes — tick **Save as a draft**.
+It is saved but stays off the website. Use the edit form and untick the hide box
+when you want it live.
+
+**I made a mistake and already submitted.** Use the edit form. If the post
+shouldn't exist at all, use the delete form.
+
+**Someone outside the campaign submitted something.** It waits. Posts from
+outside the campaign team are never published until someone with access adds the
+**approved** label or comments `/approve`.
+
+**Something went wrong.** The reply on your issue says what needs fixing, and
+nothing on the website changed. Correct the issue, then add the **approved**
+label to try again.
+
+---
+
+## For a developer
+
+Posts are Markdown files in `content/news/`. `build-news.js` turns them into
+`news/*.html`, `assets/js/posts.js`, `feed.xml` and `sitemap.xml`. Run
+`npm run build` after editing by hand.
+
+The automation lives in `scripts/issue-to-post.js` and
+`.github/workflows/publish-from-issue.yml`. Photos attached to a form are copied
+into `assets/img/news/` so the site never depends on a link that might expire.
+
+Front matter fields: `title`, `date`, `category`, `excerpt`, and optionally
+`image`, `imageAlt`, `updated`, `source`, `draft`.

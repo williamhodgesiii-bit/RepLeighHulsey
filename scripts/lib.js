@@ -106,13 +106,31 @@ function today() { return new Date().toISOString().slice(0, 10); }
    value instead of being mistaken for a new field.
    -------------------------------------------------------------------------- */
 const FORM_LABELS = [
+  // New post
   "Headline",
   "Date (YYYY-MM-DD)",
   "Category",
   "Other category (only if you picked Other)",
   "One-sentence summary",
   "Post text",
+  "Photo (optional)",
+  "What is happening in the photo? (optional)",
+  "Save as a draft",
   "Draft?",
+  // Edit
+  "Which post?",
+  "New headline (leave blank to keep)",
+  "New one-sentence summary (leave blank to keep)",
+  "New post text (leave blank to keep)",
+  "New photo (leave blank to keep)",
+  "New photo caption (leave blank to keep)",
+  "New category",
+  "New date (YYYY-MM-DD, leave blank to keep)",
+  "Visibility",
+  // Delete
+  "Why is it coming down? (optional)",
+  "Confirm",
+  // News link
   "News link (URL)",
   "Headline to show (optional)",
   "Why it matters (optional)",
@@ -320,20 +338,153 @@ function writePost(frontMatter, body) {
   }
   const finalSlug = file.replace(/\.md$/, "");
 
+  fs.writeFileSync(path.join(NEWS_SRC, file), renderPostFile(frontMatter, body));
+  return { slug: finalSlug, file: "content/news/" + file };
+}
+
+// The Markdown file's text: a front-matter block, then the body.
+function renderPostFile(frontMatter, body) {
   const lines = ["---"];
   lines.push("title: " + fmValue(frontMatter.title));
   lines.push("date: " + fmValue(frontMatter.date || today()));
   lines.push("category: " + fmValue(frontMatter.category || "News"));
   lines.push("excerpt: " + fmValue(frontMatter.excerpt));
+  if (frontMatter.image) lines.push("image: " + fmValue(frontMatter.image));
+  if (frontMatter.imageAlt) lines.push("imageAlt: " + fmValue(frontMatter.imageAlt));
   if (frontMatter.source) lines.push("source: " + fmValue(frontMatter.source));
+  if (frontMatter.updated) lines.push("updated: " + fmValue(frontMatter.updated));
   if (frontMatter.draft) lines.push("draft: true");
   lines.push("---");
   lines.push("");
   lines.push(String(body || "").trim());
   lines.push("");
+  return lines.join("\n");
+}
 
-  fs.writeFileSync(path.join(NEWS_SRC, file), lines.join("\n"));
-  return { slug: finalSlug, file: "content/news/" + file };
+/* --------------------------------------------------------------------------
+   Finding, editing and removing an existing post.
+
+   A post is identified by its slug. Because people paste whatever they have to
+   hand, resolveSlug accepts a slug, a filename, a path or a full URL, and only
+   ever returns a name that exists inside content/news/ — so nothing typed into
+   a form can reach a file elsewhere on disk.
+   -------------------------------------------------------------------------- */
+function listPosts() {
+  let files = [];
+  try { files = fs.readdirSync(NEWS_SRC); } catch (e) { return []; }
+  return files
+    .filter(function (f) { return f.toLowerCase().endsWith(".md") && !f.startsWith("_"); })
+    .map(function (f) {
+      const slug = f.replace(/\.md$/i, "");
+      const raw = fs.readFileSync(path.join(NEWS_SRC, f), "utf8");
+      const title = (/^title:\s*(.+)$/im.exec(raw) || [, ""])[1].trim().replace(/^["']|["']$/g, "");
+      const date = (/^date:\s*(.+)$/im.exec(raw) || [, ""])[1].trim().replace(/^["']|["']$/g, "");
+      return { slug: slug, file: f, title: title, date: date };
+    })
+    .sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+}
+
+function resolveSlug(input) {
+  let raw = String(input || "").trim();
+  if (!raw) return "";
+  // Accept a pasted URL or path: keep only the last segment.
+  raw = raw.split(/[?#]/)[0];
+  raw = raw.split("/").filter(Boolean).pop() || "";
+  raw = raw.replace(/\.(html?|md)$/i, "");
+  // Only ever a bare name — no traversal, no separators.
+  if (!/^[A-Za-z0-9._-]+$/.test(raw) || raw.indexOf("..") !== -1) return "";
+  const wanted = raw.toLowerCase();
+  const match = listPosts().filter(function (p) { return p.slug.toLowerCase() === wanted; })[0];
+  return match ? match.slug : "";
+}
+
+function readPost(slug) {
+  const safe = resolveSlug(slug);
+  if (!safe) return null;
+  const file = path.join(NEWS_SRC, safe + ".md");
+  const raw = fs.readFileSync(file, "utf8");
+  const m = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(raw.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n"));
+  const meta = {};
+  if (m) {
+    m[1].split("\n").forEach(function (line) {
+      const at = line.indexOf(":");
+      if (at === -1) return;
+      let v = line.slice(at + 1).trim();
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+        try { v = JSON.parse(v.replace(/^'|'$/g, '"')); } catch (e) { v = v.slice(1, -1); }
+      }
+      meta[line.slice(0, at).trim()] = v;
+    });
+  }
+  return { slug: safe, file: "content/news/" + safe + ".md", meta: meta, body: m ? m[2].trim() : raw.trim() };
+}
+
+// Rewrite a post in place, keeping its slug and therefore its web address.
+function updatePost(slug, changes, newBody) {
+  const post = readPost(slug);
+  if (!post) return null;
+  const meta = Object.assign({}, post.meta, changes);
+  const body = newBody != null && String(newBody).trim() ? String(newBody).trim() : post.body;
+  fs.writeFileSync(path.join(NEWS_SRC, post.slug + ".md"), renderPostFile(meta, body));
+  return { slug: post.slug, file: post.file, title: meta.title };
+}
+
+// Remove a post. build-news.js sweeps the orphaned page out of news/ on the
+// next build, so this one delete is enough to take it off the site.
+function deletePost(slug) {
+  const post = readPost(slug);
+  if (!post) return null;
+  fs.unlinkSync(path.join(NEWS_SRC, post.slug + ".md"));
+  return { slug: post.slug, title: post.meta.title || post.slug, file: post.file };
+}
+
+/* --------------------------------------------------------------------------
+   Photographs attached to a submitted form.
+
+   GitHub uploads a dragged-in image to its own CDN and drops a Markdown image
+   tag into the issue body. We copy that file into the repository so the site
+   does not depend on a link that may expire, and so it can be resized and
+   referenced like any other asset.
+   -------------------------------------------------------------------------- */
+const IMG_DIR = path.join(ROOT, "assets", "img", "news");
+const IMG_TYPES = { "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif" };
+const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
+
+// Pull the first image URL out of a form field, whether it arrived as
+// ![alt](url), <img src="url">, or a bare link.
+function firstImageUrl(value) {
+  const text = String(value || "");
+  let m = /!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/.exec(text);
+  if (m) return m[1];
+  m = /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i.exec(text);
+  if (m) return m[1];
+  m = /(https?:\/\/[^\s<>"')]+)/.exec(text);
+  if (m) return m[1];
+  return "";
+}
+
+async function saveImage(url, baseName) {
+  if (!/^https:\/\//i.test(url)) throw new Error("the photo link must start with https://");
+  const res = await fetch(url, { redirect: "follow", headers: { "user-agent": USER_AGENT } });
+  if (!res.ok) throw new Error("the photo could not be downloaded (HTTP " + res.status + ")");
+
+  const type = String(res.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  const ext = IMG_TYPES[type];
+  if (!ext) throw new Error("that file is a " + (type || "unknown type") + "; please attach a JPG, PNG, WebP or GIF");
+
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (!buf.length) throw new Error("the photo came back empty");
+  if (buf.length > MAX_IMAGE_BYTES) throw new Error("the photo is larger than 12 MB");
+
+  fs.mkdirSync(IMG_DIR, { recursive: true });
+  let name = slugify(baseName) + ext;
+  let n = 2;
+  while (fs.existsSync(path.join(IMG_DIR, name))) {
+    name = slugify(baseName) + "-" + n + ext;
+    n++;
+  }
+  fs.writeFileSync(path.join(IMG_DIR, name), buf);
+  return "assets/img/news/" + name;
 }
 
 /* --------------------------------------------------------------------------
@@ -341,9 +492,18 @@ function writePost(frontMatter, body) {
    -------------------------------------------------------------------------- */
 function setOutput(name, value) {
   const out = process.env.GITHUB_OUTPUT;
-  const oneLine = String(value == null ? "" : value).replace(/\r?\n/g, " ");
-  if (out) fs.appendFileSync(out, name + "=" + oneLine + "\n");
-  else console.log(name + "=" + oneLine);
+  const text = String(value == null ? "" : value).replace(/\r\n/g, "\n");
+  if (!out) { console.log(name + "=" + text.replace(/\n/g, " ")); return; }
+
+  if (text.indexOf("\n") === -1) {
+    fs.appendFileSync(out, name + "=" + text + "\n");
+    return;
+  }
+  // A value spanning lines needs the delimiter form, or the runner reads only
+  // the first line. The delimiter must not appear in the value itself.
+  let delim = "ghadelim_" + Math.random().toString(36).slice(2, 12);
+  while (text.indexOf(delim) !== -1) delim += "x";
+  fs.appendFileSync(out, name + "<<" + delim + "\n" + text + "\n" + delim + "\n");
 }
 
 module.exports = {
@@ -353,5 +513,7 @@ module.exports = {
   fetchPage, findMeta, extractMeta,
   vetHeadline,
   normalizeUrl, readLedger, writeLedger, publishedSourceUrls,
-  writePost, setOutput,
+  writePost, renderPostFile, setOutput,
+  listPosts, resolveSlug, readPost, updatePost, deletePost,
+  firstImageUrl, saveImage,
 };

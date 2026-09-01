@@ -166,8 +166,17 @@ window.SITE = {
     });
   }
   function newsItemHTML(p) {
+    // A post with a photograph leads with it; the rest keep the plain card.
+    var media = p.image
+      ? '<div class="news-item__media media media--wide">' +
+          '<img src="' + escapeHTML(p.image) + '" alt="' + escapeHTML(p.imageAlt || p.title) +
+          '" loading="lazy" decoding="async">' +
+        "</div>"
+      : "";
     return (
-      '<a class="news-item" href="' + (p.url || ("news/" + p.slug + ".html")) + '" data-fade>' +
+      '<a class="news-item' + (p.image ? " news-item--photo" : "") + '" href="' +
+        (p.url || ("news/" + p.slug + ".html")) + '" data-fade>' +
+        media +
         '<div class="news-item__top">' +
           '<img src="assets/img/mark.png" alt="" aria-hidden="true">' +
           '<span class="news-item__cat">' + escapeHTML(p.category) + "</span>" +

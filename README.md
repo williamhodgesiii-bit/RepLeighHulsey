@@ -170,6 +170,11 @@ Higher-resolution originals of these same photographs would sharpen the hero
 portrait in particular: at 447px it is the tightest of the five against the size
 it is displayed at.
 
+Photographs attached to a blog post land in `assets/img/news/` automatically,
+named after the post. They are referenced from the post's `image:` front-matter
+field and are used for the news card, the top of the article, and the social
+sharing preview. Nothing needs to be resized first.
+
 ---
 
 ## Content

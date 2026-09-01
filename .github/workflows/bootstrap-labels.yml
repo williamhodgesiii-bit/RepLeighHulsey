@@ -26,3 +26,5 @@ jobs:
           gh label create "news-link"    --repo "$GITHUB_REPOSITORY" --color "0e8a16" --description "A news link to add to the News tab"       --force
           gh label create "needs-review" --repo "$GITHUB_REPOSITORY" --color "d4c5f9" --description "Waiting for a team member to review"       --force
           gh label create "approved"     --repo "$GITHUB_REPOSITORY" --color "0e8a16" --description "Approved — publish this to the News tab"   --force
+          gh label create "edit-post"    --repo "$GITHUB_REPOSITORY" --color "fbca04" --description "A correction to a post already on the site"   --force
+          gh label create "delete-post"  --repo "$GITHUB_REPOSITORY" --color "b60205" --description "A post to take down from the News tab"       --force

@@ -1,0 +1,34 @@
+name: 🗑️ Delete a post
+description: Take a post off the News page for good.
+title: "[Delete] "
+labels: ["delete-post"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This removes the post from the website, the news list, the RSS feed and the sitemap.
+
+        **Only want to hide it for a while?** Use *Edit a post that is already up* instead and tick "hide this post" — that keeps the post so you can bring it back later.
+
+        A deleted post can still be recovered by a developer from the site's history, but it will be gone from the website within a minute or two.
+  - type: input
+    id: slug
+    attributes:
+      label: Which post?
+      description: Paste the post's web address, or just the last part of it.
+      placeholder: https://hulseyforhouse.com/news/hulsey-to-host-town-hall-in-helena.html
+    validations:
+      required: true
+  - type: input
+    id: reason
+    attributes:
+      label: Why is it coming down? (optional)
+      description: Only recorded here on this issue, for your own notes.
+      placeholder: Event was cancelled
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      options:
+        - label: Yes, take this post off the website.
+          required: true

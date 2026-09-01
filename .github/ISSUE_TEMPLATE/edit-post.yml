@@ -1,0 +1,67 @@
+name: ✏️ Edit a post that is already up
+description: Fix a typo or change something on a post that is already on the News page.
+title: "[Edit] "
+labels: ["edit-post"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this to change a post **without changing its web address**, so any link already shared keeps working.
+
+        Fill in only the parts you want to change. Anything you leave blank stays exactly as it is.
+  - type: input
+    id: slug
+    attributes:
+      label: Which post?
+      description: |
+        Paste the post's web address, or just the last part of it. Open the post on the site and copy the address bar.
+      placeholder: https://hulseyforhouse.com/news/focus-act-signed-into-law.html
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: New headline (leave blank to keep)
+  - type: input
+    id: excerpt
+    attributes:
+      label: New one-sentence summary (leave blank to keep)
+  - type: textarea
+    id: body
+    attributes:
+      label: New post text (leave blank to keep)
+      description: If you fill this in it replaces the whole post text, so paste the full corrected version, not just the changed line.
+  - type: textarea
+    id: photo
+    attributes:
+      label: New photo (leave blank to keep)
+      description: Drag a photo in to replace the current one.
+  - type: input
+    id: photo_alt
+    attributes:
+      label: New photo caption (leave blank to keep)
+  - type: dropdown
+    id: category
+    attributes:
+      label: New category
+      options:
+        - "Keep the current category"
+        - Campaign
+        - Legislation
+        - District
+        - Events
+        - Statement
+        - Press Release
+        - In the News
+      default: 0
+  - type: input
+    id: date
+    attributes:
+      label: New date (YYYY-MM-DD, leave blank to keep)
+      description: Changing this changes where the post sits in the list.
+  - type: checkboxes
+    id: draft
+    attributes:
+      label: Visibility
+      options:
+        - label: Hide this post from the website for now (it is kept, not deleted)
