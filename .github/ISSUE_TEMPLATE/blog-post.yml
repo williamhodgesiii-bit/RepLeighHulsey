@@ -79,7 +79,7 @@ body:
     attributes:
       label: Date (YYYY-MM-DD)
       description: Leave blank to use today's date. Posts show newest first.
-      placeholder: 2026-09-14
+      placeholder: "2026-09-14"
   - type: checkboxes
     id: draft
     attributes:
