@@ -1,0 +1,4 @@
+# Vercel serves this repository from its root (see outputDirectory in
+# vercel.json), so anything committed here would otherwise be downloadable
+# from the live site. Business paperwork is kept out of the deployment.
+docs/

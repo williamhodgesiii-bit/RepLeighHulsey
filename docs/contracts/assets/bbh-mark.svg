@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Built By Hodges">
+  <title>Built By Hodges</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Brackets -->
+    <g stroke="#2A7CC0" stroke-width="42">
+      <path d="M150 128 H74 V384 H150"/>
+      <path d="M362 128 H438 V384 H362"/>
+    </g>
+    <!-- Code glyph -->
+    <g stroke="#3E4A57">
+      <path d="M210 200 L148 256 L210 312" stroke-width="34"/>
+      <path d="M306 150 L240 362" stroke-width="30"/>
+      <path d="M328 200 L390 256 L328 312" stroke-width="34"/>
+    </g>
+  </g>
+</svg>

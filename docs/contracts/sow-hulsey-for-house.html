@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Statement of Work — Built By Hodges</title>
+<style>
+  :root{
+    --blue:#2A7CC0; --ink:#22303C; --slate:#3E4A57;
+    --muted:#5C6874; --line:#C9D2DA; --soft:#F1F5F8;
+  }
+  @page { size: Letter; margin: 0.85in 0.8in 0.95in 0.8in; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; font-family:"Liberation Serif","Times New Roman",serif;
+    font-size:10.4pt; line-height:1.5; color:var(--ink);
+  }
+  h1,h2,h3,h4,.sans{ font-family:"Liberation Sans",Arial,Helvetica,sans-serif; }
+
+  /* ---------- Cover ---------- */
+  .cover{ height:8.95in; display:flex; flex-direction:column; page-break-after:always; }
+  .cover__mark{ display:flex; align-items:center; gap:16px; }
+  .cover__mark svg{ width:54px; height:54px; }
+  .wordmark{
+    font-family:"Liberation Sans",Arial,sans-serif; font-weight:bold;
+    font-size:17pt; letter-spacing:.06em; color:var(--slate);
+  }
+  .rule{ height:3px; background:var(--blue); margin:22px 0 0; }
+  .rule--thin{ height:1px; background:var(--line); margin:0; }
+
+  .cover__title{ margin-top:1.35in; }
+  .cover__title .kicker{
+    font-family:"Liberation Sans",Arial,sans-serif; font-size:9pt;
+    letter-spacing:.24em; text-transform:uppercase; color:var(--blue);
+    margin:0 0 10px;
+  }
+  .cover__title h1{
+    margin:0; font-size:30pt; line-height:1.1; letter-spacing:-.01em; color:var(--ink);
+  }
+  .cover__title .sub{
+    margin:14px 0 0; font-size:13pt; color:var(--muted); line-height:1.4;
+  }
+  .cover__meta{ margin-top:auto; }
+  .cover__meta table{ width:100%; border-collapse:collapse; font-size:9.6pt; }
+  .cover__meta td{ padding:7px 0; border-top:1px solid var(--line); vertical-align:top; }
+  .cover__meta td:first-child{
+    width:1.85in; font-family:"Liberation Sans",Arial,sans-serif; font-size:8.4pt;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+  }
+  .confidential{
+    margin-top:20px; font-family:"Liberation Sans",Arial,sans-serif;
+    font-size:7.8pt; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  }
+
+  /* ---------- Body ---------- */
+  h2{
+    font-size:11.5pt; letter-spacing:.02em; color:var(--ink);
+    margin:26px 0 8px; padding-bottom:5px; border-bottom:2px solid var(--blue);
+    page-break-after:avoid;
+  }
+  h3{ font-size:10.2pt; margin:15px 0 4px; color:var(--slate); page-break-after:avoid; }
+  p{ margin:0 0 8px; }
+  ol,ul{ margin:0 0 9px; padding-left:20px; }
+  li{ margin-bottom:4px; }
+  .clause{ page-break-inside:avoid; }
+  .lead{ font-size:10.8pt; color:var(--muted); margin-bottom:14px; }
+
+  table.grid{ width:100%; border-collapse:collapse; margin:8px 0 12px; font-size:9.6pt; }
+  table.grid th, table.grid td{
+    border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;
+  }
+  table.grid th{
+    background:var(--soft); font-family:"Liberation Sans",Arial,sans-serif;
+    font-size:8.4pt; letter-spacing:.08em; text-transform:uppercase; color:var(--slate);
+  }
+  table.grid td.num{ text-align:right; white-space:nowrap; }
+  table.grid tr.total td{ background:var(--soft); font-weight:bold; }
+
+  .callout{
+    border-left:3px solid var(--blue); background:var(--soft);
+    padding:10px 13px; margin:10px 0 13px; page-break-inside:avoid;
+  }
+  .callout p:last-child{ margin-bottom:0; }
+
+  .fill{ display:inline-block; min-width:2.6in; border-bottom:1px solid var(--slate); }
+  .fill--block{ display:block; min-width:0; width:100%; height:15px; }
+  .lbl-mini{
+    display:block; font-size:7.4pt; letter-spacing:.09em; color:var(--muted);
+    margin:1px 0 9px;
+  }
+
+  /* ---------- Signatures ---------- */
+  .sigwrap{ page-break-inside:avoid; margin-top:16px; }
+  .sigblock{
+    border:1px solid var(--line); padding:16px 18px 20px; margin-bottom:16px;
+    page-break-inside:avoid;
+  }
+  .sigblock h4{
+    margin:0 0 12px; font-size:8.6pt; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--blue);
+  }
+  .sigline{ margin-top:22px; }
+  .sigline .line{ border-bottom:1px solid var(--slate); height:26px; }
+  .sigline .lbl{
+    font-family:"Liberation Sans",Arial,sans-serif; font-size:8pt;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    padding-top:4px;
+  }
+  .sigrow{ display:flex; gap:26px; }
+  .sigrow > div{ flex:1; }
+  .page-break{ page-break-before:always; }
+</style>
+</head>
+<body>
+
+<!-- ============================ COVER ============================ -->
+<section class="cover">
+  <div>
+    <div class="cover__mark">
+      <svg viewBox="0 0 512 512" role="img" aria-label="Built By Hodges">
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g stroke="#2A7CC0" stroke-width="42">
+            <path d="M150 128 H74 V384 H150"/><path d="M362 128 H438 V384 H362"/>
+          </g>
+          <g stroke="#3E4A57">
+            <path d="M210 200 L148 256 L210 312" stroke-width="34"/>
+            <path d="M306 150 L240 362" stroke-width="30"/>
+            <path d="M328 200 L390 256 L328 312" stroke-width="34"/>
+          </g>
+        </g>
+      </svg>
+      <span class="wordmark">BUILT BY HODGES</span>
+    </div>
+    <div class="rule"></div>
+  </div>
+
+  <div class="cover__title">
+    <p class="kicker">Statement of Work</p>
+    <h1>Campaign Website<br>Design, Build &amp; Hosting</h1>
+    <p class="sub">Prepared for Rep. Leigh Hulsey<br>Alabama House of Representatives, District&nbsp;15</p>
+  </div>
+
+  <div class="cover__meta">
+    <table>
+      <tr><td>SOW Number</td><td>BBH&#8209;2026&#8209;001</td></tr>
+      <tr><td>Effective Date</td><td>________________, 2026</td></tr>
+      <tr><td>Prepared By</td><td>Will Hodges, Built By Hodges &middot; builtbyhodges@gmail.com</td></tr>
+      <tr><td>Prepared For</td><td>Jake Rasmussen &middot; jake@rspot.us &middot; (520)&nbsp;979&#8209;0495</td></tr>
+      <tr><td>Valid Through</td><td>Thirty (30) days from the date of issue</td></tr>
+    </table>
+    <p class="confidential">Confidential &mdash; for the intended recipient only</p>
+  </div>
+</section>
+
+<!-- ============================ BODY ============================ -->
+
+<h2>1. Parties and Purpose</h2>
+<p class="lead">This Statement of Work (this &ldquo;<strong>SOW</strong>&rdquo;) sets out the services, deliverables, fees and terms under which Built By Hodges will design, build, deploy and maintain a campaign website for Rep.&nbsp;Leigh Hulsey.</p>
+
+<table class="grid">
+  <tr>
+    <th style="width:50%">Provider</th>
+    <th style="width:50%">Client</th>
+  </tr>
+  <tr>
+    <td>
+      <strong>Built By Hodges</strong><br>
+      Will Hodges, Owner<br>
+      builtbyhodges@gmail.com<br>
+      (&ldquo;Provider&rdquo;)
+    </td>
+    <td>
+      <span class="fill fill--block">&nbsp;</span>
+      <span class="sans lbl-mini">LEGAL ENTITY NAME</span>
+      <span class="fill fill--block">&nbsp;</span>
+      <span class="sans lbl-mini">BILLING ADDRESS</span>
+      Attn: Jake Rasmussen &middot; jake@rspot.us<br>
+      (&ldquo;Client&rdquo;)
+    </td>
+  </tr>
+</table>
+
+<p>Provider and Client are each a &ldquo;<strong>Party</strong>&rdquo; and together the &ldquo;<strong>Parties</strong>.&rdquo; The website is being produced for the benefit of Rep.&nbsp;Leigh Hulsey and her campaign committee (the &ldquo;<strong>Beneficiary</strong>&rdquo;). Client represents that it is authorized to enter into this SOW on the Beneficiary's behalf and to bind the paying party. If the Beneficiary, and not Client, is to be invoiced, Client shall identify that entity in the Client block above; Client remains responsible for payment unless Provider agrees otherwise in writing.</p>
+
+<h2>2. Definitions</h2>
+<ul>
+  <li><strong>&ldquo;Website&rdquo;</strong> &mdash; the six-page website described in Section&nbsp;3 and Exhibit&nbsp;A.</li>
+  <li><strong>&ldquo;Client Materials&rdquo;</strong> &mdash; all text, photographs, logos, artwork, video, data, account credentials and other content supplied by or on behalf of Client.</li>
+  <li><strong>&ldquo;Third&#8209;Party Services&rdquo;</strong> &mdash; services operated by parties other than Provider, including the domain registrar, the donation processor, email and forms providers, analytics, and social platforms.</li>
+  <li><strong>&ldquo;Launch&rdquo;</strong> &mdash; the date the Website is publicly reachable at Client's domain.</li>
+  <li><strong>&ldquo;Change Order&rdquo;</strong> &mdash; a written authorization for work outside this SOW, in the form of Exhibit&nbsp;C.</li>
+  <li><strong>&ldquo;Business Day&rdquo;</strong> &mdash; Monday through Friday, excluding United States federal holidays.</li>
+</ul>
+
+<h2>3. Scope of Services</h2>
+
+<h3>3.1 Design and Build</h3>
+<p>Provider will design and build a custom, mobile&#8209;first website of <strong>six (6) pages</strong>, itemized in Exhibit&nbsp;A: Home, About, On the Issues, News, Contact, and Donate. The build includes:</p>
+<ul>
+  <li>A custom visual design derived from the Beneficiary's existing logo and color palette. No third&#8209;party theme or page&#8209;builder template will be resold as original design work.</li>
+  <li>Responsive layouts verified on current versions of Chrome, Safari, Edge and Firefox, on both mobile and desktop viewports.</li>
+  <li>Semantic markup, descriptive alternative text on images supplied with captions, keyboard&#8209;operable navigation, and visible focus states.</li>
+  <li>Page titles, meta descriptions, social sharing preview tags, a sitemap, and a robots file.</li>
+  <li>Performance work appropriate to a static site: compressed and correctly sized images, deferred non&#8209;critical assets, and no render&#8209;blocking third&#8209;party scripts added by Provider.</li>
+</ul>
+
+<h3>3.2 Third&#8209;Party Connections</h3>
+<p>Provider will connect the Website to Third&#8209;Party Services designated by Client, including a donation platform (for example WinRed or Anedot), an email&#8209;list or contact&#8209;form endpoint, and social media profiles. Connection means linking to, embedding, or posting to the interface those services publish.</p>
+<div class="callout">
+  <p><strong>Provider does not build, host or operate payment processing.</strong> Donations are processed entirely by Client's chosen donation platform under Client's own account and agreement with that platform. Provider never takes custody of contributor funds or payment card data, and is not a processor, vendor or agent of that platform.</p>
+</div>
+
+<h3>3.3 Self&#8209;Service Publishing</h3>
+<p>Provider will configure the Website so that Client can create, edit and publish news and blog posts without Provider's involvement, and will supply written instructions and one (1) live walkthrough of up to sixty (60) minutes. Client is solely responsible for the content it publishes through this facility.</p>
+
+<h3>3.4 Hosting, Deployment and DNS</h3>
+<p>Provider will host the Website on Vercel within a deployment environment Provider controls, and will configure DNS so that Client's domain resolves to it, including issuance and renewal of a TLS certificate. Provider retains control of the hosting stack, source repository and build pipeline for the duration of the Maintenance Term, which is what allows Provider to support the Website at the rate set out in Section&nbsp;9.</p>
+
+<h3>3.5 Ongoing Maintenance</h3>
+<p>From Launch, and for so long as the monthly fee is paid, Provider will provide:</p>
+<ul>
+  <li>Hosting, TLS certificate renewal, DNS record management, and uptime monitoring.</li>
+  <li>Correction of defects &mdash; failures of the Website to work as built &mdash; at no additional charge.</li>
+  <li>Security and dependency updates, and off&#8209;site backups of the source repository.</li>
+  <li><strong>Up to sixty (60) minutes per calendar month</strong> of small content edits: swapping or adding text, replacing or adding images, updating links, and similar changes that do not alter layout or add functionality. Unused minutes do not carry forward.</li>
+  <li>Response to support requests within <strong>one (1) Business Day</strong>, and to a total outage of the Website within <strong>four (4) hours</strong> of Provider becoming aware of it.</li>
+</ul>
+<p>Work beyond these inclusions is billed under Section&nbsp;9.4 or by Change Order.</p>
+
+<h2>4. Out of Scope</h2>
+<p>The following are expressly excluded from this SOW and from the monthly fee. Any of them may be added by Change Order.</p>
+<table class="grid">
+  <tr><th style="width:34%">Category</th><th>Excluded</th></tr>
+  <tr><td>Pages and features</td><td>Any page beyond the six in Exhibit&nbsp;A; membership or login areas; e&#8209;commerce or merchandise stores; event ticketing; calendars; interactive maps; forums; multilingual versions.</td></tr>
+  <tr><td>Content</td><td>Copywriting, editing, proofreading, messaging or research; photography, videography, or photo retouching; logo or brand identity design.</td></tr>
+  <tr><td>Marketing</td><td>Search engine optimization campaigns, paid advertising, ad pixels beyond simple installation, email marketing execution, social media management, list acquisition.</td></tr>
+  <tr><td>Third&#8209;party costs</td><td>Domain registration and renewal; donation platform fees, transaction fees and chargebacks; paid email, CRM, analytics or API services; stock photography licenses.</td></tr>
+  <tr><td>Compliance</td><td>Legal, accounting or campaign&#8209;finance advice; preparation or review of disclaimers or disclosure language; accessibility certification or audit against WCAG or Section&nbsp;508.</td></tr>
+  <tr><td>Other</td><td>Migration of the Website to hosting Provider does not control (see Section&nbsp;11.4); support for browsers more than two major versions out of date; recovery of data or accounts held by Client at Third&#8209;Party Services.</td></tr>
+</table>
+
+<h2>5. Client Responsibilities</h2>
+<p>Provider's ability to deliver on schedule depends on Client. Client shall:</p>
+<ol>
+  <li><strong>Domain.</strong> Purchase and maintain, in Client's or the Beneficiary's own name, the domain the Website will use, and provide Provider with the access necessary to configure DNS. Provider will not purchase, own or renew the domain.</li>
+  <li><strong>Content.</strong> Supply all Client Materials &mdash; all final text and all images &mdash; in usable digital form. Images should be supplied at the highest resolution available; Provider is not responsible for the appearance of images supplied below the resolution at which they are displayed.</li>
+  <li><strong>Accounts.</strong> Open and maintain, in Client's own name, all Third&#8209;Party Service accounts, and provide the credentials or access needed for connection.</li>
+  <li><strong>A single point of contact.</strong> Designate one individual authorized to give feedback, approve work and incur charges. Provider may rely on instructions from that individual. Consolidated feedback from that one contact avoids conflicting direction.</li>
+  <li><strong>Timely response.</strong> Respond to requests for content, feedback or approval within <strong>five (5) Business Days</strong>.</li>
+  <li><strong>Rights.</strong> Ensure Client holds all rights necessary for Provider to use and publish the Client Materials.</li>
+</ol>
+<div class="callout">
+  <p><strong>Effect of delay.</strong> Dates in Section&nbsp;6 are measured from receipt of the complete Client Materials. If Client does not respond within the period in item&nbsp;5 above, the schedule extends by the length of the delay, and Provider may reallocate the reserved time to other clients and reschedule remaining work to the next available window. If Client is unresponsive for <strong>thirty (30) consecutive days</strong>, Provider may treat the project as suspended, invoice for all work performed to that point, and charge a reactivation fee of <strong>$250</strong> to resume.</p>
+</div>
+
+<h2>6. Schedule and Milestones</h2>
+<table class="grid">
+  <tr><th>#</th><th>Milestone</th><th style="width:2.05in">Target</th></tr>
+  <tr><td>1</td><td>SOW executed; deposit received; kickoff</td><td>Day 0</td></tr>
+  <tr><td>2</td><td>Client delivers complete Client Materials and domain access</td><td>By Day 5</td></tr>
+  <tr><td>3</td><td>Design concept presented for the Home page</td><td>Within 5 Business Days of Milestone&nbsp;2</td></tr>
+  <tr><td>4</td><td>Client consolidated feedback; design approved</td><td>Within 5 Business Days of Milestone&nbsp;3</td></tr>
+  <tr><td>5</td><td>Full six&#8209;page build on a private preview URL</td><td>Within 10 Business Days of Milestone&nbsp;4</td></tr>
+  <tr><td>6</td><td>Client review and acceptance (Section&nbsp;8)</td><td>Within 7 Business Days of Milestone&nbsp;5</td></tr>
+  <tr><td>7</td><td>DNS cutover, Launch, publishing walkthrough; balance invoiced</td><td>Within 2 Business Days of Milestone&nbsp;6</td></tr>
+</table>
+<p>Targets assume Client meets Section&nbsp;5. DNS propagation is performed by the global domain name system and is outside Provider's control; Provider does not warrant a propagation time.</p>
+
+<h2>7. Revisions</h2>
+<p>The fee in Section&nbsp;9.1 includes <strong>two (2) rounds of revisions</strong> at the design stage (Milestone&nbsp;4) and <strong>one (1) round</strong> after the full build is presented (Milestone&nbsp;6). A &ldquo;round&rdquo; is one consolidated set of written feedback delivered by Client's designated contact.</p>
+<p>A revision means adjustment within the approved direction &mdash; copy, imagery, color, spacing, ordering of sections. A change of creative direction after design approval, the addition of pages or features, or a restructuring of the approved layout is <strong>not</strong> a revision and requires a Change Order. Further rounds beyond those included are billed at the rate in Section&nbsp;9.4.</p>
+
+<h2>8. Acceptance</h2>
+<p>On presentation of the completed build, Client shall have <strong>seven (7) Business Days</strong> to test the Website and either accept it or deliver a single written list of specific, reproducible failures to conform to this SOW. Provider will correct conforming failures and re&#8209;present, beginning a new five (5) Business Day review limited to the items previously raised.</p>
+<p><strong>Deemed acceptance.</strong> The Website is deemed accepted on the earliest of: (a) Client's written acceptance; (b) expiry of a review period without a written list of failures; or (c) Client's use of the Website in public, including any publication of its address to voters or supporters. Matters of taste, or content Client itself supplied, are not failures to conform.</p>
+
+<h2>9. Fees and Payment</h2>
+
+<h3>9.1 One&#8209;Time Project Fee</h3>
+<p>A fixed fee of <strong>Two Thousand Dollars ($2,000.00)</strong> for the design, build, connection and deployment described in Section&nbsp;3, payable:</p>
+<table class="grid">
+  <tr><th>Installment</th><th>Trigger</th><th class="num" style="width:1.15in">Amount</th></tr>
+  <tr><td>Deposit &mdash; 50%</td><td>On execution of this SOW. Work begins on receipt; the deposit is non&#8209;refundable and reserves Provider's schedule.</td><td class="num">$1,000.00</td></tr>
+  <tr><td>Balance &mdash; 50%</td><td>On acceptance under Section&nbsp;8, invoiced at Launch.</td><td class="num">$1,000.00</td></tr>
+  <tr class="total"><td colspan="2">Total one&#8209;time investment</td><td class="num">$2,000.00</td></tr>
+</table>
+
+<h3>9.2 Ongoing Monthly Fee</h3>
+<p>A recurring fee of <strong>Forty&#8209;Five Dollars ($45.00) per month</strong> for the hosting, maintenance, care, small edits and defect correction described in Section&nbsp;3.5. The monthly fee begins on the first day of the calendar month following Launch, is billed monthly in advance, and is due on receipt.</p>
+<p>The monthly fee is fixed for the first twelve (12) months following Launch. Thereafter Provider may adjust it on <strong>sixty (60) days'</strong> written notice, and Client may terminate under Section&nbsp;10.3 rather than accept the adjustment.</p>
+
+<h3>9.3 Invoicing and Late Payment</h3>
+<p>Invoices are payable within <strong>fifteen (15) days</strong>. Amounts unpaid after that accrue interest at 1.5% per month, or the maximum permitted by Alabama law if lower. If any amount remains unpaid <strong>thirty (30) days</strong> past due, Provider may, on seven (7) days' written notice, suspend the Website and support until the account is brought current; Provider is not liable for any consequence of a suspension properly noticed under this Section. All fees are exclusive of taxes, which are Client's responsibility. Fees are stated in United States dollars.</p>
+
+<h3>9.4 Additional Work</h3>
+<p>Work outside this SOW, additional revision rounds, and content edits beyond the monthly allowance are billed at <strong>$85.00 per hour</strong>, in quarter&#8209;hour increments, on a Change Order approved in writing in advance. Provider will not perform chargeable work without that approval.</p>
+
+<h3>9.5 Third&#8209;Party Costs</h3>
+<p>All Third&#8209;Party Service costs are paid by Client directly to the provider of that service and are not included in any fee under this SOW. Provider's hosting of the Website on its own Vercel account is included in the monthly fee; should Client's traffic or usage exceed the limits of that account's plan, the Parties will agree in writing on how the excess is met before any additional cost is incurred.</p>
+
+<h2>10. Term and Termination</h2>
+<p><strong>10.1 Term.</strong> This SOW begins on the Effective Date and continues through Launch, and thereafter for successive one&#8209;month periods for so long as the monthly fee is paid (the &ldquo;Maintenance Term&rdquo;).</p>
+<p><strong>10.2 Termination during the build.</strong> Either Party may terminate on fifteen (15) days' written notice. On termination, Client shall pay for all work performed to the date of termination, and the deposit is retained. If Client terminates after design approval but before Launch, Client shall pay <strong>seventy&#8209;five percent (75%)</strong> of the one&#8209;time fee, less amounts already paid.</p>
+<p><strong>10.3 Termination of maintenance.</strong> After Launch, either Party may terminate the Maintenance Term on <strong>thirty (30) days'</strong> written notice, effective at the end of the then&#8209;current paid month. Monthly fees already paid are not refundable.</p>
+<p><strong>10.4 Termination for cause.</strong> Either Party may terminate immediately if the other materially breaches and fails to cure within fifteen (15) days of written notice. Provider may terminate immediately if Client uses the Website for anything unlawful.</p>
+<p><strong>10.5 Effect.</strong> On any termination, and provided all sums due have been paid, Provider will within thirty (30) days deliver an export of the Website source and content in a standard format, and cooperate reasonably in transferring the domain's DNS to a destination Client nominates. Provider is not obliged to continue hosting past the effective date of termination. Sections 11 through 19 survive.</p>
+
+<h2>11. Intellectual Property</h2>
+<p><strong>11.1 Client Materials.</strong> Client retains all right, title and interest in the Client Materials, and grants Provider a license to use, reproduce and modify them as needed to perform this SOW.</p>
+<p><strong>11.2 Deliverables.</strong> On receipt of payment in full of the one&#8209;time fee, Provider assigns to Client all right, title and interest in the final page designs, layouts and site&#8209;specific source code produced for the Website. <strong>Until payment in full is received, all deliverables remain the property of Provider</strong>, and any license to use them is revoked on non&#8209;payment.</p>
+<p><strong>11.3 Provider tools.</strong> Provider retains ownership of its pre&#8209;existing and general&#8209;purpose materials &mdash; frameworks, libraries, build tooling, code patterns and know&#8209;how &mdash; and of anything of general application developed in the course of this SOW. Provider grants Client a perpetual, non&#8209;exclusive, royalty&#8209;free license to use those materials as embedded in the Website. Nothing in this SOW prevents Provider from performing similar work for others.</p>
+<p><strong>11.4 Portability.</strong> The Website is a standard static site with no proprietary lock&#8209;in. On termination Client receives the source under Section&nbsp;10.5 and may host it elsewhere. Provider does not warrant the Website's operation on infrastructure Provider does not control, and support under Section&nbsp;3.5 ends when hosting moves.</p>
+<p><strong>11.5 Portfolio.</strong> Provider may identify Client and the Beneficiary as clients and display images of and link to the Website in Provider's portfolio and marketing, using only material already public. Client may withdraw this permission by written notice.</p>
+<p><strong>11.6 Attribution.</strong> Provider may place a discreet &ldquo;Built by Hodges&rdquo; credit with a link in the Website footer. Client may request its removal in writing at no charge.</p>
+
+<h2>12. Political Content and Compliance</h2>
+<div class="callout">
+  <p>The Website is political material. Responsibility for its lawfulness rests with Client, which controls the message and has access to counsel; Provider builds to Client's direction and does not review content for legal sufficiency.</p>
+</div>
+<p>Client is solely responsible for: the accuracy and lawfulness of all Client Materials and all content Client publishes; the wording and placement of any required &ldquo;paid for by&rdquo; or other disclaimer; compliance with the Alabama Fair Campaign Practices Act, the rules of the Alabama Secretary of State and Ethics Commission, and any applicable federal law; solicitation and reporting of contributions; and any privacy notice or data&#8209;handling obligation arising from information collected through the Website. Provider will place disclaimer text supplied by Client where Client directs, and that is the limit of Provider's role in the matter.</p>
+<p>Provider makes no representation that the Website complies with any campaign&#8209;finance, election, advertising, accessibility or privacy law. Client should have counsel review the Website before Launch.</p>
+
+<h2>13. Warranties and Disclaimers</h2>
+<p><strong>13.1 Provider.</strong> Provider warrants that it will perform in a professional and workmanlike manner consistent with generally accepted industry practice, and that for <strong>thirty (30) days</strong> after Launch the Website will operate substantially as described in this SOW. Provider's entire obligation for breach of this warranty is to correct the defect at no charge. Beyond this warranty period, defect correction continues for so long as the monthly fee is paid.</p>
+<p><strong>13.2 Client.</strong> Client warrants that it holds all rights necessary to the Client Materials, that they do not infringe any third party's rights or defame any person, and that Client is authorized to enter into this SOW.</p>
+<p><strong>13.3 Disclaimers.</strong> Except as expressly stated in Section&nbsp;13.1, the Website and services are provided &ldquo;as is,&rdquo; and Provider disclaims all other warranties, express or implied, including merchantability, fitness for a particular purpose, and non&#8209;infringement. Provider does not warrant uninterrupted or error&#8209;free operation. <strong>Provider makes no representation or guarantee as to search rankings, traffic, donations raised, votes, or any other outcome.</strong> Provider is not responsible for the acts, omissions, outages, pricing, policy changes or discontinuation of any Third&#8209;Party Service, including Vercel, the domain registrar and the donation platform.</p>
+
+<h2>14. Limitation of Liability</h2>
+<p><strong>Neither Party is liable for indirect, incidental, special, consequential, exemplary or punitive damages, or for lost profits, lost donations, lost votes, lost data or loss of goodwill, however caused and on any theory of liability, even if advised of the possibility.</strong></p>
+<p><strong>Provider's total aggregate liability arising out of or relating to this SOW shall not exceed the total fees actually paid by Client to Provider under this SOW in the twelve (12) months preceding the event giving rise to the claim.</strong> These limits apply to the maximum extent permitted by law and do not apply to a Party's obligations under Section&nbsp;15, to Client's obligation to pay fees due, or to liability that cannot lawfully be limited.</p>
+
+<h2>15. Indemnification</h2>
+<p>Client shall defend, indemnify and hold harmless Provider and its owner from and against any claim, demand, suit, loss, liability, damage, cost and expense (including reasonable attorneys' fees) arising out of or relating to: (a) the Client Materials or any content Client publishes, including any claim of infringement, defamation, false statement or violation of publicity or privacy rights; (b) Client's violation of any campaign&#8209;finance, election, advertising, accessibility or privacy law; (c) Client's use or operation of any Third&#8209;Party Service; and (d) Client's breach of this SOW.</p>
+<p>Provider shall defend, indemnify and hold harmless Client against any third&#8209;party claim that the original code or design created by Provider, used as delivered and excluding the Client Materials, infringes that third party's United States intellectual property rights, subject to the cap in Section&nbsp;14.</p>
+
+<h2>16. Confidentiality</h2>
+<p>Each Party shall keep confidential the other's non&#8209;public information disclosed in connection with this SOW &mdash; including credentials, strategy, unreleased content, pricing and this SOW itself &mdash; use it only to perform this SOW, and protect it with at least reasonable care. This does not apply to information that is or becomes public without breach, was already lawfully known, is independently developed, or must be disclosed by law, provided the disclosing Party is given notice where lawful. Credentials shall be transmitted by a secure method and, on termination, returned or destroyed.</p>
+
+<h2>17. Independent Contractor</h2>
+<p>Provider is an independent contractor. Nothing in this SOW creates a partnership, joint venture, agency or employment relationship. Provider controls the manner and means of the work, supplies its own equipment, and is responsible for its own taxes, insurance and expenses. Neither Party may bind the other. Provider is not a vendor, agent or representative of the Beneficiary's campaign committee for any purpose other than performing this SOW.</p>
+
+<h2>18. Non&#8209;Solicitation of Personnel</h2>
+<p>During the term and for twelve (12) months after, neither Party shall knowingly solicit for employment any individual introduced by the other in connection with this SOW, without written consent. General advertising not directed at such an individual is not a solicitation.</p>
+
+<h2>19. General</h2>
+<p><strong>19.1 Governing law and venue.</strong> This SOW is governed by the laws of the State of Alabama, without regard to conflict&#8209;of&#8209;laws rules. The Parties submit to the exclusive jurisdiction of the state and federal courts sitting in Shelby County, Alabama.</p>
+<p><strong>19.2 Dispute resolution.</strong> Before filing suit, the Parties shall attempt in good faith to resolve any dispute by direct discussion between the individuals signing below, for a period of thirty (30) days after written notice of the dispute. Either Party may seek injunctive relief at any time. The prevailing Party in any action to enforce this SOW is entitled to recover its reasonable attorneys' fees and costs.</p>
+<p><strong>19.3 Force majeure.</strong> Neither Party is liable for delay or failure caused by events beyond its reasonable control, including acts of God, war, civil unrest, labor dispute, epidemic, governmental action, and failure of internet, hosting or utility services. The affected Party shall give prompt notice and resume as soon as practicable.</p>
+<p><strong>19.4 Notices.</strong> Notices shall be in writing and are effective when sent by email to the addresses in Section&nbsp;1 with confirmation of delivery, or three (3) days after mailing by certified mail. Either Party may change its address by notice.</p>
+<p><strong>19.5 Assignment.</strong> Neither Party may assign this SOW without the other's written consent, except to a successor to substantially all of its business or assets on written notice.</p>
+<p><strong>19.6 Entire agreement; amendment.</strong> This SOW, with its Exhibits, is the entire agreement between the Parties as to its subject matter and supersedes all prior proposals, quotes, emails and discussions. <strong>No change is binding unless in writing and signed by both Parties</strong> (a Change Order under Exhibit&nbsp;C satisfies this for scope and fees). Any purchase order or Client terms are of no effect.</p>
+<p><strong>19.7 Severability; waiver.</strong> If any provision is held unenforceable, it shall be modified to the minimum extent necessary and the remainder shall continue in force. A failure to enforce is not a waiver.</p>
+<p><strong>19.8 Counterparts; electronic signature.</strong> This SOW may be executed in counterparts, each an original and together one instrument. Signatures delivered electronically, including by scanned image or a recognized electronic signature service, have the same effect as originals.</p>
+<p><strong>19.9 Headings.</strong> Headings are for convenience only and do not affect interpretation.</p>
+
+<!-- ============================ SIGNATURES ============================ -->
+<div class="page-break"></div>
+<h2>20. Acceptance and Signatures</h2>
+<p>By signing below, each Party agrees to be bound by this Statement of Work, including all Exhibits, and represents that the individual signing is authorized to do so.</p>
+
+<div class="sigwrap">
+  <div class="sigblock">
+    <h4>Provider &mdash; Built By Hodges</h4>
+    <div class="sigrow">
+      <div>
+        <div class="sigline"><div class="line"></div><div class="lbl">Signature</div></div>
+      </div>
+      <div style="flex:0 0 1.7in">
+        <div class="sigline"><div class="line"></div><div class="lbl">Date</div></div>
+      </div>
+    </div>
+    <div class="sigrow" style="margin-top:6px">
+      <div><div class="sigline"><div class="line"></div><div class="lbl">Printed name</div></div></div>
+      <div><div class="sigline"><div class="line"></div><div class="lbl">Title</div></div></div>
+    </div>
+    <p style="margin-top:12px;font-size:9pt;color:#5C6874">Will Hodges, Owner &middot; builtbyhodges@gmail.com</p>
+  </div>
+
+  <div class="sigblock">
+    <h4>Client</h4>
+    <div class="sigrow">
+      <div>
+        <div class="sigline"><div class="line"></div><div class="lbl">Signature</div></div>
+      </div>
+      <div style="flex:0 0 1.7in">
+        <div class="sigline"><div class="line"></div><div class="lbl">Date</div></div>
+      </div>
+    </div>
+    <div class="sigrow" style="margin-top:6px">
+      <div><div class="sigline"><div class="line"></div><div class="lbl">Printed name</div></div></div>
+      <div><div class="sigline"><div class="line"></div><div class="lbl">Title</div></div></div>
+    </div>
+    <div class="sigline"><div class="line"></div><div class="lbl">Entity name and billing address</div></div>
+  </div>
+</div>
+
+<p style="font-size:9pt;color:#5C6874;margin-top:14px">Please return one signed copy to builtbyhodges@gmail.com. Provider will countersign and return a fully executed copy. Work begins on receipt of the signed SOW and the deposit under Section&nbsp;9.1.</p>
+
+<!-- ============================ EXHIBIT A ============================ -->
+<div class="page-break"></div>
+<h2>Exhibit A &mdash; Sitemap and Page Detail</h2>
+<p>The six pages comprising the Website. Section content is illustrative of the agreed structure; the final wording is Client's, supplied under Section&nbsp;5.</p>
+<table class="grid">
+  <tr><th style="width:1.35in">Page</th><th>Included</th></tr>
+  <tr>
+    <td><strong>1. Home</strong></td>
+    <td>Header with logo and navigation; hero with photograph, name and office; headline statistics; biography summary linking to About; full&#8209;width photograph feature; priorities preview; record and district summary; latest three news posts; email signup; donate call to action; footer with social links and disclaimer.</td>
+  </tr>
+  <tr>
+    <td><strong>2. About</strong></td>
+    <td>Page banner; full biography with photographs; pull quote; fact panel (hometown, education, family, business, office held); calls to action.</td>
+  </tr>
+  <tr>
+    <td><strong>3. On the Issues</strong></td>
+    <td>Page banner; six issue sections, each with a heading and Client&#8209;supplied position text; supporting photograph; call to action.</td>
+  </tr>
+  <tr>
+    <td><strong>4. News</strong></td>
+    <td>Page banner; card listing of all posts with category filter and keyword search; an individual page per post with social sharing and previous/next navigation; RSS feed. Client publishes posts itself under Section&nbsp;3.3.</td>
+  </tr>
+  <tr>
+    <td><strong>5. Contact</strong></td>
+    <td>Page banner; volunteer and contact form with validation and interest checkboxes, delivering to a Client&#8209;designated endpoint or address; sidebar with photograph and contact details.</td>
+  </tr>
+  <tr>
+    <td><strong>6. Donate</strong></td>
+    <td>Page banner; amount and frequency selector handing off to Client's donation platform with the selection carried through; explanation of use of funds; required disclaimer text as supplied by Client. Processing occurs entirely at the donation platform (Section&nbsp;3.2).</td>
+  </tr>
+</table>
+<p><strong>Site&#8209;wide:</strong> consistent header and footer; mobile navigation; sticky donate and volunteer bar on mobile; 404 page; favicon and social preview image; sitemap and robots file.</p>
+
+<!-- ============================ EXHIBIT B ============================ -->
+<h2>Exhibit B &mdash; Investment Summary</h2>
+<table class="grid">
+  <tr><th>Item</th><th style="width:1.5in">Frequency</th><th class="num" style="width:1.2in">Amount</th></tr>
+  <tr><td>Design, build, third&#8209;party connection and deployment of the six&#8209;page Website</td><td>One time</td><td class="num">$2,000.00</td></tr>
+  <tr><td>Hosting, maintenance, care, small edits and defect correction (Section&nbsp;3.5)</td><td>Per month</td><td class="num">$45.00</td></tr>
+  <tr><td>Additional work, extra revision rounds, edits beyond the monthly allowance</td><td>Per hour, by Change Order</td><td class="num">$85.00</td></tr>
+  <tr><td>Reactivation after 30 days of Client unresponsiveness (Section&nbsp;5)</td><td>If incurred</td><td class="num">$250.00</td></tr>
+</table>
+<table class="grid">
+  <tr><th>First&#8209;year total, assuming Launch and twelve months of service</th><th class="num" style="width:1.2in">Amount</th></tr>
+  <tr><td>One&#8209;time project fee</td><td class="num">$2,000.00</td></tr>
+  <tr><td>Monthly service, 12 &times; $45.00</td><td class="num">$540.00</td></tr>
+  <tr class="total"><td>Total first&#8209;year investment</td><td class="num">$2,540.00</td></tr>
+  <tr><td>Each year thereafter, 12 &times; $45.00</td><td class="num">$540.00</td></tr>
+</table>
+<p style="font-size:9pt;color:#5C6874">Excludes Third&#8209;Party Service costs paid by Client directly, which typically comprise domain registration (approximately $15&ndash;$25 per year) and any donation platform fees. Excludes taxes.</p>
+
+<!-- ============================ EXHIBIT C ============================ -->
+<div class="page-break"></div>
+<h2>Exhibit C &mdash; Change Order Form</h2>
+<p>Work outside the scope of this SOW proceeds only on a Change Order signed by both Parties. Copy this page as needed.</p>
+<table class="grid">
+  <tr><td style="width:1.6in"><strong>Change Order No.</strong></td><td>CO&#8209;______ &nbsp;&nbsp;&nbsp; to SOW BBH&#8209;2026&#8209;001</td></tr>
+  <tr><td><strong>Date</strong></td><td>&nbsp;</td></tr>
+  <tr><td><strong>Requested by</strong></td><td>&nbsp;</td></tr>
+  <tr><td style="height:1.35in"><strong>Description of the change</strong></td><td>&nbsp;</td></tr>
+  <tr><td><strong>Effect on scope</strong></td><td>&nbsp;</td></tr>
+  <tr><td><strong>Effect on schedule</strong></td><td>&nbsp;</td></tr>
+  <tr><td><strong>Estimated hours</strong></td><td>________ hours &nbsp;&times;&nbsp; $85.00/hour</td></tr>
+  <tr><td><strong>Fixed price, if agreed</strong></td><td>$________________</td></tr>
+  <tr><td><strong>Effect on monthly fee</strong></td><td>$________________ per month, effective ________________</td></tr>
+</table>
+<p>All other terms of the SOW remain in full force and apply to this Change Order.</p>
+<div class="sigrow" style="margin-top:26px">
+  <div>
+    <div class="sigline"><div class="line"></div><div class="lbl">Provider signature &amp; date</div></div>
+  </div>
+  <div>
+    <div class="sigline"><div class="line"></div><div class="lbl">Client signature &amp; date</div></div>
+  </div>
+</div>
+
+</body>
+</html>
