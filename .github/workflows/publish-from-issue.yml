@@ -75,7 +75,7 @@ jobs:
 
       - name: Rebuild the news pages
         if: steps.make.outputs.status == 'published'
-        run: node build-news.js
+        run: npm run build
 
       - name: Commit and publish
         if: steps.make.outputs.status == 'published'

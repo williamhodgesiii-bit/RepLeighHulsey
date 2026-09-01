@@ -1419,6 +1419,10 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
   .hero .btn-row .btn { flex: 1 1 0; width: auto; min-width: 0; padding: .8rem .5rem; font-size: .95rem; }
   .portrait { width: min(258px, 64vw); }
   .portrait__img { border-width: 5px; }
+  /* The red offset block and the badge hang 14px below the portrait's own box,
+     which left the star rule underneath sitting almost against them. Reserve
+     that overhang so the space below the photo matches the space above it. */
+  .hero__photo { padding-bottom: 14px; }
 
   /* Dark panels are edged in red on both sides, matching the hero and the
      photo band, so every change of background reads as a deliberate seam. */

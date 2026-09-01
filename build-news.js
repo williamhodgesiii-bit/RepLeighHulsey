@@ -363,7 +363,7 @@ function postPage(post, older, newer) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${B}assets/css/site.css">
+<link rel="stylesheet" href="${B}assets/css/site.css?v=223fd9ad">
 <script>document.documentElement.className += " js";</script>
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 </head>
@@ -487,8 +487,8 @@ ${post.bodyHTML}
   </div>
 </footer>
 
-<script src="${B}assets/js/posts.js"></script>
-<script src="${B}assets/js/site.js"></script>
+<script src="${B}assets/js/posts.js?v=829ceb0a"></script>
+<script src="${B}assets/js/site.js?v=3bf77139"></script>
 </body>
 </html>
 `;

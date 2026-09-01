@@ -32,7 +32,7 @@ jobs:
           node-version: "20"
 
       - name: Rebuild the news pages
-        run: node build-news.js
+        run: npm run build
 
       - name: Commit the regenerated pages
         run: |

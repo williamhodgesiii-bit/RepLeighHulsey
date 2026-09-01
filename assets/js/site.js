@@ -170,7 +170,7 @@ window.SITE = {
     var media = p.image
       ? '<div class="news-item__media media media--wide">' +
           '<img src="' + escapeHTML(p.image) + '" alt="' + escapeHTML(p.imageAlt || p.title) +
-          '" loading="lazy" decoding="async">' +
+          '" width="1600" height="900" loading="lazy" decoding="async">' +
         "</div>"
       : "";
     return (
@@ -178,7 +178,7 @@ window.SITE = {
         (p.url || ("news/" + p.slug + ".html")) + '" data-fade>' +
         media +
         '<div class="news-item__top">' +
-          '<img src="assets/img/mark.png" alt="" aria-hidden="true">' +
+          '<img src="assets/img/mark.png" width="101" height="138" alt="" aria-hidden="true">' +
           '<span class="news-item__cat">' + escapeHTML(p.category) + "</span>" +
           '<span class="news-item__date">' + formatDate(p.date) + "</span>" +
         "</div>" +
