@@ -95,21 +95,27 @@
 
   </div>
 
-  <div class="wrap hero__stats" data-fade>
-    <div class="hero__stat">
-      <b>2022</b>
-      <span>Serving District 15 since</span>
-    </div>
-    <div class="hero__stat">
-      <b>$360,000+</b>
-      <span>In grant funding secured</span>
-    </div>
-    <div class="hero__stat">
-      <b>2</b>
-      <span>Hulsey bills signed into law</span>
+</section>
+
+<!-- ===================== FACT BAR ===================== -->
+<div class="factbar">
+  <div class="wrap">
+    <div class="factbar__grid">
+      <div class="factbar__item">
+        <span class="factbar__num">2022</span>
+        <span class="factbar__label">Serving House District 15 since</span>
+      </div>
+      <div class="factbar__item">
+        <span class="factbar__num">$360,000+</span>
+        <span class="factbar__label">In grant funding brought back to the district</span>
+      </div>
+      <div class="factbar__item">
+        <span class="factbar__num">2</span>
+        <span class="factbar__label">Hulsey bills signed into law</span>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- ===================== ABOUT ===================== -->
 <section class="section">
@@ -277,20 +283,7 @@
     </div>
 
     <div data-fade>
-      <figure style="margin:0">
-        <div class="lockup__media media media--wide">
-          <img src="assets/img/leigh-house-floor.jpg"
-               alt="Leigh Hulsey speaking at the lectern on the floor of the Alabama House of Representatives"
-               width="738" height="414" loading="lazy" decoding="async">
-        </div>
-        <figcaption class="lockup__caption">
-          <strong>On the House floor</strong>
-          Rep. Hulsey speaks during a session of the Alabama House of Representatives
-          in Montgomery.
-        </figcaption>
-      </figure>
-
-      <div class="section-title" style="margin-top:var(--s-4)">
+      <div class="section-title">
         <p class="brandrule" aria-hidden="true"><i></i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg><i></i></p>
         <h2>District 15</h2>
       </div>
@@ -309,6 +302,21 @@
       </div>
     </div>
   </div>
+
+  <!-- Closes the panel across both columns. Capped at the file's own 738px so
+       it is never scaled up. -->
+  <figure class="wrap record-figure" data-fade>
+    <div class="lockup__media media media--wide">
+      <img src="assets/img/leigh-house-floor.jpg"
+           alt="Leigh Hulsey speaking at the lectern on the floor of the Alabama House of Representatives"
+           width="738" height="414" loading="lazy" decoding="async">
+    </div>
+    <figcaption class="lockup__caption">
+      <strong>On the House floor</strong>
+      Rep. Hulsey speaks during a session of the Alabama House of Representatives
+      in Montgomery.
+    </figcaption>
+  </figure>
 </section>
 
 <!-- ===================== NEWS + SIGNUP ===================== -->

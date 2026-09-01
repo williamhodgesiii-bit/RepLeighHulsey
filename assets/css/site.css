@@ -419,6 +419,50 @@ h4 { font-size: 1.05rem; }
 }
 
 /* ==========================================================================
+   Fact bar — its own narrow strip under the hero, in grey rather than navy, so
+   the three headline numbers read as a separate beat between the opening panel
+   and the biography.
+   ========================================================================== */
+.factbar {
+  background: var(--gray);
+  background-image: var(--stars-dark);
+  border-bottom: 1px solid var(--line);
+}
+.factbar__grid { display: grid; }
+@media (min-width: 700px) { .factbar__grid { grid-template-columns: repeat(3, 1fr); } }
+
+.factbar__item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.1rem .25rem;
+  border-bottom: 1px solid var(--line);
+}
+.factbar__item:last-child { border-bottom: 0; }
+@media (min-width: 700px) {
+  .factbar__item {
+    flex-direction: column; text-align: center; gap: .3rem;
+    padding: 1.85rem 1.25rem;
+    border-bottom: 0;
+    border-left: 1px solid var(--line);
+  }
+  .factbar__item:first-child { border-left: 0; }
+}
+.factbar__num {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 5vw, 2.05rem);
+  color: var(--red);
+  line-height: 1;
+  flex: none;
+  min-width: 5.5rem;
+}
+@media (min-width: 700px) { .factbar__num { min-width: 0; } }
+.factbar__label {
+  font-size: .92rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
    Column layouts
    ========================================================================== */
 .cols { display: grid; gap: var(--s-4); align-items: start; }
@@ -1244,55 +1288,17 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
 .photo-band--slim .photo-band__content h2 { font-size: clamp(1.45rem, 3.2vw, 1.9rem); }
 
 /* ==========================================================================
-   Statistics strip — sits inside the navy hero rather than as its own band,
-   so the opening screen reads as one block instead of two.
+   Framed photograph on a navy panel. On the home page this closes the record
+   section across both text columns; the width is capped at the file's own
+   738px so the picture is shown at full resolution and never scaled up.
    ========================================================================== */
-.hero__stats {
-  position: relative;
-  z-index: 2;
-  margin-top: var(--s-4);
-  padding-top: var(--s-3);
-  border-top: 1px solid rgba(255, 255, 255, .18);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: .5rem 1rem;
+.record-figure {
+  width: min(100% - 2.25rem, 738px);
+  margin: var(--s-5) auto 0;
 }
-.hero__stat { text-align: center; }
-@media (min-width: 560px) {
-  .hero__stat { position: relative; }
-  .hero__stat + .hero__stat::before {
-    content: "";
-    position: absolute;
-    left: calc(-.5rem - 1px); top: 12%; bottom: 12%;
-    border-left: 1px solid rgba(255, 255, 255, .16);
-  }
-}
-.hero__stat b {
-  display: block;
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: clamp(1.2rem, 4.8vw, 1.95rem);
-  line-height: 1.05;
-  color: #fff;
-  letter-spacing: .01em;
-}
-.hero__stat span {
-  display: block;
-  margin-top: .3rem;
-  font-size: clamp(.72rem, 2.2vw, .86rem);
-  line-height: 1.35;
-  color: rgba(255, 255, 255, .66);
-}
+@media (min-width: 560px) { .record-figure { width: min(100% - 3rem, 738px); } }
+.record-figure .lockup__caption { text-align: center; }
 
-/* ==========================================================================
-   Photo lockup — a wide photograph paired with a block of text on the navy
-   record panel. The 16:9 House floor picture is shown at its own proportions.
-   ========================================================================== */
-.lockup { display: grid; gap: var(--s-3); align-items: center; }
-@media (min-width: 900px) {
-  .lockup { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-5); }
-  .lockup--reverse > :first-child { order: 2; }
-}
 .lockup__media {
   position: relative;
   border: 5px solid #fff;
@@ -1432,7 +1438,7 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
   body.has-mobile-cta { padding-bottom: 4.5rem; }
 
   /* The star texture is proportionally much louder on a small screen. */
-  .section--gray { background-size: 108px 108px; }
+  .section--gray, .factbar { background-size: 108px 108px; }
 }
 
 @media (max-width: 400px) {
