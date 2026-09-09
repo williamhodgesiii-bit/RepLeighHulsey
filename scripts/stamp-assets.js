@@ -46,7 +46,8 @@ const versions = {};
 ASSETS.forEach(function (a) { versions[a] = hash(a); });
 
 const files = pagesIn(".").concat(fs.existsSync(path.join(ROOT, "news")) ? pagesIn("news") : []);
-files.push("build-news.js"); // so generated pages carry the stamp too
+files.push("build-news.js");            // so generated pages carry the stamp too
+files.push("assets/js/post-template.js"); // the page template lives here now
 
 let changed = 0;
 files.forEach(function (rel) {
@@ -70,6 +71,33 @@ files.forEach(function (rel) {
     changed++;
   }
 });
+
+/* The editor at admin/ links its own files by name rather than by site path,
+   so it gets a short pass of its own. Without it a staffer keeps yesterday's
+   editor out of the browser cache. */
+const ADMIN_PAGE = "admin/index.html";
+const ADMIN_ASSETS = {
+  "admin.css": "admin/admin.css",
+  "admin.js": "admin/admin.js",
+  "../assets/js/markdown.js": "assets/js/markdown.js",
+  "../assets/js/post-template.js": "assets/js/post-template.js",
+};
+if (fs.existsSync(path.join(ROOT, ADMIN_PAGE))) {
+  const full = path.join(ROOT, ADMIN_PAGE);
+  let text = fs.readFileSync(full, "utf8");
+  const before = text;
+  Object.keys(ADMIN_ASSETS).forEach(function (written) {
+    const v = hash(ADMIN_ASSETS[written]);
+    if (!v) return;
+    const escaped = written.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp('((?:href|src)=")' + escaped + '(?:\\?v=[a-f0-9]+)?(")', "g");
+    text = text.replace(re, '$1' + written + "?v=" + v + '$2');
+  });
+  if (text !== before) {
+    fs.writeFileSync(full, text);
+    changed++;
+  }
+}
 
 console.log(
   "Stamped " + changed + " file" + (changed === 1 ? "" : "s") + ": " +

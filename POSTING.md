@@ -1,5 +1,11 @@
 # Posting to the News page
 
+> **There is an easier way.** The website has an editor at
+> **hulseyforhouse.com/admin** where you write a post, drop in a photo and see
+> exactly how it will look before it goes up. **[`EDITOR.md`](EDITOR.md)** is the
+> guide to it. Everything below still works and writes the same posts — use
+> whichever you prefer.
+
 Everything on the News page is managed from the **Issues** tab of this
 repository. There is no separate login, no password to remember, and nothing
 you can break — every change is recorded and can be undone.

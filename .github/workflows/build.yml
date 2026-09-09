@@ -10,6 +10,8 @@ on:
     paths:
       - "content/news/**"
       - "build-news.js"
+      - "assets/js/markdown.js"
+      - "assets/js/post-template.js"
   workflow_dispatch: {}
 
 permissions:

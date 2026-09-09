@@ -77,7 +77,36 @@ account anyone needs.
 
 ---
 
-## Step 5 — (Optional) Try the daily news robot now
+## Step 5 — Hand out the editor
+
+The website has an editing screen at **your-site-address/admin** — for example
+`https://hulseyforhouse.com/admin`. It needs no setup at all beyond Step 4: each
+person signs in there with the GitHub account you just added, and the page walks
+them through it the first time.
+
+Hand them **EDITOR.md**. It is two pages, written for someone who has never seen
+GitHub.
+
+### Optional: turn the sign-in into one button
+
+By default a staffer fetches an access key from GitHub once and pastes it in.
+The page explains how, but if you would rather they just pressed **Sign in with
+GitHub**, and the site is hosted somewhere that runs functions (Vercel, Netlify):
+
+1. Go to **github.com/settings/developers** → **New OAuth App**.
+   - Homepage: your site address
+   - Authorization callback URL: your site address + `/api/github-auth`
+2. Press **Generate a new client secret** and copy both the client ID and the
+   secret.
+3. In your hosting project's settings, add two environment variables:
+   `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`.
+4. Redeploy.
+
+The editor notices and shows the button on its own. Nothing else changes.
+
+---
+
+## Step 6 — (Optional) Try the daily news robot now
 
 It runs on its own every morning, but you can kick it off immediately:
 
@@ -91,10 +120,13 @@ for a thumbs-up. See **POSTING.md** for how to approve them.
 
 ## You're done
 
-Hand your team **POSTING.md** — it's written for them, no technical background
-needed. From now on:
+Hand your team **EDITOR.md** — it's written for them, no technical background
+needed. **POSTING.md** covers the GitHub Issues route for anyone who prefers it.
+From now on:
 
-- A staffer posts to the blog by filling in a form. It appears on its own.
+- A staffer writes a post in the editor, sees exactly how it will look, and
+  presses Publish.
+- Or posts by filling in a GitHub issue form, which publishes on its own.
 - Anyone can submit a news link; a staffer approves it with one click.
 - Each morning the robot suggests fresh, positive news for a staffer to approve.
 

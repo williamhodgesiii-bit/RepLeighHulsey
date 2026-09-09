@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Website Editor | Hulsey for House</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#262262">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css?v=5be987b2">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="topbar__brand" href="#/posts">
+    <img src="../assets/img/mark.png" width="101" height="138" alt="">
+    <span>Website Editor</span>
+  </a>
+  <div class="topbar__right">
+    <button class="ghost" type="button" data-action="help">Help</button>
+    <div id="account"></div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ====================================================================
+       Welcome / sign in
+       ==================================================================== -->
+  <section class="view view--center" id="view-signin" hidden>
+    <div class="welcome">
+      <h1>Update the website</h1>
+      <p class="welcome__lead">Write a post, add a photo, see exactly how it will
+        look, and publish it. Everything you put here goes on
+        <span data-site-host>hulseyforhouse.com</span>.</p>
+
+      <div class="signin-card" id="signin-card"><!-- filled by admin.js --></div>
+
+      <p class="welcome__demo">
+        Just looking? <button class="linklike" type="button" data-action="demo">Try the editor
+        without signing in</button> — nothing you do is saved or published.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       All posts
+       ==================================================================== -->
+  <section class="view" id="view-list" hidden>
+    <div class="list-head">
+      <div>
+        <h1>Posts</h1>
+        <p class="muted" id="list-count"></p>
+      </div>
+      <div class="list-head__actions">
+        <input class="search" id="list-search" type="search" placeholder="Search posts" aria-label="Search posts" autocomplete="off">
+        <button class="btn btn--primary" type="button" data-action="new">Write a post</button>
+      </div>
+    </div>
+
+    <div class="filters" id="list-filters" role="group" aria-label="Filter posts">
+      <button type="button" class="is-active" data-filter="all">All</button>
+      <button type="button" data-filter="live">Live</button>
+      <button type="button" data-filter="hidden">Hidden</button>
+    </div>
+
+    <div id="list-body"><!-- filled by admin.js --></div>
+  </section>
+
+  <!-- ====================================================================
+       Editor
+       ==================================================================== -->
+  <section class="view view--editor" id="view-editor" hidden>
+
+    <div class="editbar">
+      <button class="ghost editbar__back" type="button" data-action="back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        All posts
+      </button>
+      <p class="editbar__status" id="edit-status" aria-live="polite"></p>
+      <div class="editbar__actions">
+        <button class="btn btn--quiet" type="button" data-action="save-hidden">Save as hidden</button>
+        <button class="btn btn--primary" type="button" data-action="publish">Publish</button>
+      </div>
+    </div>
+
+    <div class="panes" id="panes">
+      <!-- Mobile switch between writing and preview -->
+      <div class="paneswitch" role="group" aria-label="Show">
+        <button type="button" class="is-active" data-pane="write">Write</button>
+        <button type="button" data-pane="preview">Preview</button>
+      </div>
+
+      <!-- ---------------- writing ---------------- -->
+      <div class="pane pane--form" id="pane-write">
+        <form id="post-form" autocomplete="off" novalidate>
+
+          <div class="field">
+            <label for="f-title">Headline</label>
+            <textarea id="f-title" class="input input--title" rows="1"
+                      placeholder="Hulsey to Host Town Hall in Helena"></textarea>
+            <p class="hint">What people see on the news card, at the top of the post,
+              and in Google. Eight to twelve words works best.</p>
+          </div>
+
+          <div class="field">
+            <label for="f-excerpt">One-sentence summary</label>
+            <textarea id="f-excerpt" class="input" rows="2"
+                      placeholder="Rep. Hulsey will hold an open town hall at Helena City Hall on September 27."></textarea>
+            <p class="hint">
+              <span id="excerpt-count" class="counter"></span>
+              This is the line under the headline on the news page, the preview
+              Facebook and text messages show, and the description Google puts
+              under your link. Write a complete sentence.
+            </p>
+          </div>
+
+          <div class="field">
+            <label>Photo</label>
+            <div class="dropzone" id="dropzone" tabindex="0" role="button"
+                 aria-label="Add a photo">
+              <div class="dropzone__empty">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l5-6 4 5 3-3 6 7H3z"/><circle cx="8" cy="7" r="2"/></svg>
+                <p><strong>Drag a photo here</strong> or click to pick one</p>
+                <small>Landscape photos work best. Big files are fine — they get
+                  resized for you.</small>
+              </div>
+              <div class="dropzone__filled" hidden>
+                <img id="photo-preview" alt="">
+                <div class="dropzone__meta">
+                  <span id="photo-note"></span>
+                  <button class="linklike" type="button" data-action="replace-photo">Replace</button>
+                  <button class="linklike linklike--warn" type="button" data-action="remove-photo">Remove</button>
+                </div>
+              </div>
+              <input type="file" id="photo-input" accept="image/*" hidden>
+            </div>
+          </div>
+
+          <div class="field" id="alt-field" hidden>
+            <label for="f-alt">What is happening in the photo?</label>
+            <input id="f-alt" class="input" type="text"
+                   placeholder="Rep. Hulsey speaks with residents at Helena City Hall.">
+            <p class="hint">Shown as the caption under the photo. It is also what a
+              blind visitor and Google are told the picture shows.</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-category">Category</label>
+              <input id="f-category" class="input" type="text" list="categories" placeholder="News">
+              <datalist id="categories"></datalist>
+              <p class="hint">Becomes a filter button on the news page.</p>
+            </div>
+            <div class="field">
+              <label for="f-date">Date</label>
+              <input id="f-date" class="input" type="date">
+              <p class="hint">Posts are ordered newest first.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-body">The post</label>
+            <div class="toolbar" role="toolbar" aria-label="Formatting">
+              <button type="button" data-md="h2" title="Section heading">H</button>
+              <button type="button" data-md="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+              <button type="button" data-md="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+              <button type="button" data-md="bullet" title="Bulleted list">&bull;&nbsp;List</button>
+              <button type="button" data-md="quote" title="Quotation">&ldquo;&nbsp;Quote</button>
+              <button type="button" data-md="link" title="Link (Ctrl+K)">Link</button>
+            </div>
+            <textarea id="f-body" class="input input--body" rows="16"
+                      placeholder="Write the post here.&#10;&#10;A blank line starts a new paragraph."></textarea>
+            <p class="hint">Write normally. Nothing here needs to be code — the
+              buttons above add the formatting for you.</p>
+          </div>
+
+          <div class="checks" id="checks" aria-live="polite"></div>
+
+          <div class="danger" id="danger-zone" hidden>
+            <div>
+              <strong>Delete this post</strong>
+              <p class="muted">It comes off the website, the news feed and the
+                sitemap. To take it down for a while instead, save it as hidden.</p>
+            </div>
+            <button class="btn btn--danger" type="button" data-action="delete">Delete</button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- ---------------- preview ---------------- -->
+      <div class="pane pane--preview" id="pane-preview">
+        <div class="previewbar">
+          <div class="tabs" role="tablist" aria-label="Preview">
+            <button type="button" role="tab" class="is-active" data-preview="page" aria-selected="true">The page</button>
+            <button type="button" role="tab" data-preview="card" aria-selected="false">News card</button>
+            <button type="button" role="tab" data-preview="share" aria-selected="false">When shared</button>
+          </div>
+          <div class="sizes" id="size-toggle" role="group" aria-label="Screen size">
+            <button type="button" data-size="phone" title="Phone" aria-label="Phone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <button type="button" class="is-active" data-size="desktop" title="Computer" aria-label="Computer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="stage" id="stage">
+          <iframe id="preview-frame" title="Preview of the post"></iframe>
+        </div>
+
+        <p class="stage__note" id="stage-note"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<dialog class="modal" id="modal">
+  <div class="modal__body" id="modal-body"></div>
+</dialog>
+
+<script src="../assets/js/markdown.js?v=7c8b0089"></script>
+<script src="../assets/js/post-template.js?v=f93c4b74"></script>
+<script src="admin.js?v=055c5dd9"></script>
+</body>
+</html>

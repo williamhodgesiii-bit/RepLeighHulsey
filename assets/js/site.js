@@ -191,6 +191,11 @@ window.SITE = {
     );
   }
 
+  /* The website editor (admin/) renders its "how the card will look" preview
+     by calling this exact function, so the preview and the real news page can
+     never drift apart. */
+  window.SiteCards = { newsItemHTML: newsItemHTML, formatDate: formatDate };
+
   /* ---------- News index: filters and search ---------- */
   function newsIndex() {
     var list = $("#news-list");

@@ -26,20 +26,24 @@ build step. Open `index.html` in a browser and it works.
 ## Posting without a developer
 
 The campaign can add everything on the News page from the browser, with no build
-step and no developer involved. Two short guides cover it:
+step and no developer involved. There are two ways in, and they write the same
+files:
 
-- **[`SETUP.md`](SETUP.md)** — the one-time setup the repo owner does once (about
-  five minutes, all in browser settings).
-- **[`POSTING.md`](POSTING.md)** — the everyday guide to hand the team. Three ways
-  to post, all no-code:
-  1. **Write a blog post** — fill in an issue form; it publishes itself.
-  2. **Add a news link** — paste a URL; it's auto-formatted after a one-click approval.
-  3. **Approve a suggested story** — a daily robot proposes fresh, positive news to
-     review.
+- **The editor at [`/admin`](admin/index.html)** — a real editing screen with a
+  live preview of the finished page. This is the one to hand the team.
+  **[`EDITOR.md`](EDITOR.md)** is its guide, written for someone with no
+  technical background.
+- **GitHub issue forms** — fill-in-the-blanks forms for people who would rather
+  not sign into anything new, plus a daily robot that proposes fresh news for a
+  one-click approval. **[`POSTING.md`](POSTING.md)** covers those.
 
-How that works under the hood is in [How the automation works](#how-the-automation-works)
-below. The Markdown format described next still works too, and is what everything
-ultimately produces.
+**[`SETUP.md`](SETUP.md)** is the one-time setup the repo owner does once (about
+five minutes, all in browser settings).
+
+How all of it works under the hood is in
+[The website editor](#the-website-editor) and
+[How the automation works](#how-the-automation-works) below. The Markdown format
+described next still works too, and is what everything ultimately produces.
 
 ## The news section
 
@@ -190,6 +194,66 @@ drafts, not approved language.
 
 ---
 
+## The website editor
+
+`admin/` is a single page that reads and writes the Markdown files in
+`content/news/` through GitHub's API. No server, no database, no build step, no
+dependencies — the same philosophy as the rest of the project. Publishing is one
+commit; the existing build Action turns it into the live pages a minute later.
+
+**The preview is the published page.** This is the part worth protecting. The
+editor does not approximate the post page — it calls the same code that writes
+it:
+
+| Shared module | Used by |
+|---|---|
+| `assets/js/markdown.js` | `build-news.js` and the editor, for the Markdown rules |
+| `assets/js/post-template.js` | `build-news.js` and the editor, for the page itself |
+| `assets/js/site.js` (`window.SiteCards`) | the news page and the editor, for the news card |
+
+Both modules run unchanged in Node and in the browser. If the template changes,
+the preview changes with it, and there is no second copy to forget. The editor
+asks the template for a script-free page (`scripts: false`); post pages need no
+JavaScript to read, so what it shows is what a visitor sees.
+
+**What it does**
+
+- Writes, edits, hides and deletes posts, with the same front matter
+  `scripts/lib.js` writes, so a post from the editor and one from an issue form
+  are the same file.
+- Resizes photographs in the browser before upload (max 1600px wide, JPEG) and
+  commits them to `assets/img/news/` named after the post.
+- Publishes the post and its photograph in **one commit** through the git data
+  API, so the site is never briefly pointing at an image that has not arrived.
+- Watches the build Action and reports "live" when it actually is.
+- Warns if someone else changed the post while it was open.
+- Keeps unsaved work in the browser, so a closed tab loses nothing.
+- Three previews: the page, the news card, and what Facebook, a text message and
+  Google show.
+
+**Signing in.** Two options, and the editor picks on its own:
+
+1. **Access key (works anywhere, including GitHub Pages).** A staffer follows a
+   prefilled link, generates a GitHub token and pastes it once. It is kept in
+   that browser only.
+2. **One-click sign in (needs a host that runs functions — Vercel, Netlify).**
+   Deploy `api/github-auth.js`, create a GitHub OAuth app and set
+   `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`. Setup notes are at the top of
+   that file. The editor probes for it on load and shows the button if it is
+   there.
+
+Reading needs no sign-in at all while the repository is public: anyone can open
+the editor and preview posts, and it only asks who you are at the moment
+something is published.
+
+**Settings.** `DEFAULTS` at the top of `admin/admin.js` holds the owner, repo,
+branch and canonical site address. They can also be changed from Help → Settings
+in the editor itself, which stores an override in that browser — handy if the
+repository is renamed. `robots.txt` disallows `/admin/` and the page carries a
+`noindex` tag.
+
+---
+
 ## How the automation works
 
 All of it runs on GitHub Actions and plain Node with **no dependencies** — the same
@@ -201,6 +265,7 @@ itself.
 
 | Piece | File | What it does |
 |---|---|---|
+| The editor | `admin/` | Writes the same Markdown files from a browser, with a live preview. See above. |
 | Auto-build | `.github/workflows/build.yml` | On any change to `content/news/**`, runs `build-news.js` and commits the regenerated pages, feed and sitemap. Removes the "run the build" step entirely. |
 | Post / link forms | `.github/ISSUE_TEMPLATE/new-post.yml`, `news-link.yml` | Fill-in-the-blanks issue forms so non-technical staff never touch Markdown. |
 | Publish from a form | `.github/workflows/publish-from-issue.yml` → `scripts/issue-to-post.js` | Turns a submitted form into a post. Team posts auto-publish; links publish after a team member adds the **`approved`** label or comments `/approve`. |
