@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=5be987b2">
+<link rel="stylesheet" href="admin.css?v=8fdf6898">
 </head>
 <body>
 
@@ -19,6 +19,12 @@
     <img src="../assets/img/mark.png" width="101" height="138" alt="">
     <span>Website Editor</span>
   </a>
+  <nav class="sections" id="sections" aria-label="Sections">
+    <a href="#/pages" data-section="pages">Pages</a>
+    <a href="#/posts" data-section="posts">News</a>
+    <a href="#/media" data-section="media">Photos</a>
+    <a href="#/settings" data-section="settings">Settings</a>
+  </nav>
   <div class="topbar__right">
     <button class="ghost" type="button" data-action="help">Help</button>
     <div id="account"></div>
@@ -219,6 +225,96 @@
     </div>
   </section>
 
+  <!-- ====================================================================
+       Pages
+       ==================================================================== -->
+  <section class="view" id="view-pages" hidden>
+    <div class="list-head">
+      <div>
+        <h1>Pages</h1>
+        <p class="muted">Everything on the website that is not a news post.</p>
+      </div>
+    </div>
+    <div id="pages-body"></div>
+  </section>
+
+  <!-- ====================================================================
+       One page
+       ==================================================================== -->
+  <section class="view view--editor" id="view-page" hidden>
+    <div class="editbar">
+      <button class="ghost editbar__back" type="button" data-action="pages-back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>All pages</span>
+      </button>
+      <p class="editbar__status" id="page-status" aria-live="polite"></p>
+      <div class="editbar__actions">
+        <button class="btn btn--quiet" type="button" data-action="page-revert">Undo my changes</button>
+        <button class="btn btn--primary" type="button" data-action="page-publish">Publish</button>
+      </div>
+    </div>
+
+    <div class="panes" id="page-panes">
+      <div class="paneswitch" role="group" aria-label="Show">
+        <button type="button" class="is-active" data-pane2="write">Edit</button>
+        <button type="button" data-pane2="preview">Preview</button>
+      </div>
+
+      <div class="pane pane--form" id="page-form"></div>
+
+      <div class="pane pane--preview">
+        <div class="previewbar">
+          <p class="previewbar__note">Click anything in the page to jump to it</p>
+          <div class="sizes" id="page-size" role="group" aria-label="Screen size">
+            <button type="button" data-size2="phone" title="Phone" aria-label="Phone">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <button type="button" class="is-active" data-size2="desktop" title="Computer" aria-label="Computer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="stage" id="page-stage">
+          <iframe id="page-frame" title="Preview of the page"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       Photos
+       ==================================================================== -->
+  <section class="view" id="view-media" hidden>
+    <div class="list-head">
+      <div>
+        <h1>Photos</h1>
+        <p class="muted" id="media-count"></p>
+      </div>
+      <div class="list-head__actions">
+        <input class="search" id="media-search" type="search" placeholder="Search photos" aria-label="Search photos">
+        <button class="btn btn--primary" type="button" data-action="media-upload">Add photos</button>
+        <input type="file" id="media-input" accept="image/*" multiple hidden>
+      </div>
+    </div>
+    <div id="media-body"></div>
+  </section>
+
+  <!-- ====================================================================
+       Settings
+       ==================================================================== -->
+  <section class="view" id="view-settings" hidden>
+    <div class="list-head">
+      <div>
+        <h1>Settings</h1>
+        <p class="muted">Applies to every page on the website.</p>
+      </div>
+      <div class="list-head__actions">
+        <button class="btn btn--primary" type="button" data-action="settings-save">Publish settings</button>
+      </div>
+    </div>
+    <div id="settings-body"></div>
+  </section>
+
 </main>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
@@ -228,7 +324,9 @@
 </dialog>
 
 <script src="../assets/js/markdown.js?v=7c8b0089"></script>
-<script src="../assets/js/post-template.js?v=f93c4b74"></script>
-<script src="admin.js?v=055c5dd9"></script>
+<script src="../assets/js/cms.js?v=b91b2e64"></script>
+<script src="../assets/js/post-template.js?v=074292bb"></script>
+<script src="admin.js?v=4bab5362"></script>
+<script src="pages.js?v=f1938606"></script>
 </body>
 </html>

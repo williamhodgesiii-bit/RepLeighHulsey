@@ -1,14 +1,16 @@
 # The website editor
 
-There is a page on the website where you write a post, drop in a photo, see
-exactly how it will look, and put it up. It is at:
+There is a page on the website where you change anything on it — the home page,
+the biography, the issues, the photos, the menu — see exactly how it will look,
+and put it up. It is at:
 
 ```
 hulseyforhouse.com/admin
 ```
 
 Bookmark it. That address is not linked from anywhere on the site and search
-engines are told to ignore it, so nobody finds it by accident.
+engines are told to ignore it, so nobody finds it by accident. It is not a
+secret, though — what keeps the website safe is the sign-in, not the address.
 
 ---
 
@@ -22,6 +24,91 @@ after that the editor remembers you.
 **Before signing in you can still look around.** Every post can be opened and
 previewed signed out. The editor only asks who you are at the moment you try to
 publish something.
+
+---
+
+## What you can change
+
+Four tabs across the top:
+
+| | |
+| --- | --- |
+| **Pages** | The Home, About, Issues, Contact and Donate pages — every heading, paragraph, photo, button and number on them |
+| **News** | Posts and announcements |
+| **Photos** | Every picture on the website, in one place |
+| **Settings** | The menu, the donation link, the campaign email, social links and the "Paid for by" line |
+
+---
+
+## Editing a page
+
+Open **Pages** and pick one. The page appears on the right, and everything you
+can change is listed on the left, grouped by where it sits — "Top of the page",
+"About Leigh", "Photo band", and so on.
+
+**Type on the left, watch the right.** The page beside you is the real page,
+updating as you type. What you see is what gets published.
+
+**Or click the page instead of hunting for the field.** Move your mouse over the
+preview and anything editable outlines itself. Click it and the editor jumps
+straight to that field. This is usually the fastest way to find something.
+
+Nothing is on the website until you press **Publish**. If you change your mind
+before then, **Undo my changes** puts the page back the way it was.
+
+### Adding and removing things
+
+Some parts of a page are lists — the priority cards on the home page, the
+headline numbers, the quick facts on the About page, the suggested amounts on
+the Donate page. Those show as numbered blocks with three small buttons:
+
+| | |
+| --- | --- |
+| ↑ ↓ | move it up or down |
+| × | remove it |
+| **Add** | a new one, copied from the shape of the first |
+
+The editor won't let you go past what the design can hold — the counter above
+each list says how many you have and how many fit.
+
+### Photos on a page
+
+Every photo field shows the picture with a **Choose a photo** button. That opens
+the photo library, where you either pick one already on the website or add a new
+one. Photos are resized on the way in, so a picture straight off a phone is fine.
+
+Under each photo is a description box. It shows as the caption where the design
+has one, and it is what a blind visitor and Google are told the picture shows.
+
+---
+
+## Photos
+
+The **Photos** tab is every picture on the website. Drag new ones in with **Add
+photos** — several at once is fine. They are resized as they arrive so the site
+stays fast.
+
+---
+
+## Settings
+
+These apply to every page at once.
+
+**The menu.** The links across the top of every page. Add, rename, reorder or
+remove them, and every page changes together — the news posts included.
+
+**Donation page.** Where the Donate buttons send people. The amount someone
+picks on the donate page is added to the end of this address.
+
+**Form address.** Where the contact and volunteer forms send what people type.
+Leave it blank and the forms open the visitor's own email program instead.
+
+**Campaign email**, **social links** (leave one blank to hide that icon), and
+**Paid for by** — the disclaimer that appears in the footer and on the donate
+page. That one has to match the campaign's filing with the Secretary of State.
+
+Press **Publish settings** when you are done. It may touch a dozen files at
+once; that is normal, and it is one change you can undo like any other.
 
 ---
 

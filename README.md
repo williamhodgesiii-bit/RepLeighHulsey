@@ -210,14 +210,77 @@ it:
 | `assets/js/markdown.js` | `build-news.js` and the editor, for the Markdown rules |
 | `assets/js/post-template.js` | `build-news.js` and the editor, for the page itself |
 | `assets/js/site.js` (`window.SiteCards`) | the news page and the editor, for the news card |
+| `assets/js/cms.js` | `scripts/cms-check.js` and the editor, for reading and writing the pages |
 
 Both modules run unchanged in Node and in the browser. If the template changes,
 the preview changes with it, and there is no second copy to forget. The editor
 asks the template for a script-free page (`scripts: false`); post pages need no
 JavaScript to read, so what it shows is what a visitor sees.
 
+### Editing the pages themselves
+
+The news section is generated from Markdown, so editing it is a matter of
+writing a file. The other five pages are hand-written HTML, and rewriting them
+as templates would have meant giving up the thing that makes them worth having.
+So the editor edits them where they are.
+
+**One attribute makes an element editable.** Nothing else is needed:
+
+```html
+<h2 data-cms="home.about.heading" data-cms-label="Heading">About Leigh</h2>
+```
+
+`assets/js/cms.js` scans a page for those attributes, reads what is inside them,
+and writes new content back into exactly that slice of the file. Everything
+else — the markup, the classes, the indentation, the comments — is untouched.
+
+| Attribute | What it does |
+|---|---|
+| `data-cms="path"` | this element's content is a field |
+| `data-cms-type` | `text` (default), `inline` (bold, links, line breaks), `rich` (headings and lists too), `url` |
+| `data-cms-attr="src:path, alt:path"` | an attribute is a field — images and links |
+| `data-cms-list="path"` + `data-cms-item` | the children repeat, and can be added, removed and reordered |
+| `data-cms-label` / `-help` / `-group` | what the editor calls it, the hint under it, which section it sits in |
+| `data-cms-min` / `-max` / `-item-label` | how many items a list may hold, and what to call one |
+
+**The form is derived from the page.** There is no schema file to keep in step:
+`CMS.schema(html)` reads the annotations and the editor draws controls from
+them. Annotating an element is the whole job of making it editable.
+
+**A value is stored as the exact text already in the page**, so reading a page
+and writing it straight back returns the identical file, byte for byte.
+`scripts/cms-check.js` asserts that on every page on every build, which is what
+makes this safe: if an annotation is put somewhere the scanner cannot match — a
+list whose items are not all built the same way, say — the build fails there
+rather than the editor mangling a page later. Only a field somebody actually
+edits ever changes.
+
+**The preview is the file that will be committed.** `CMS.write()` produces it,
+the iframe shows it, and Publish commits it. Hovering the preview outlines what
+is editable and clicking jumps to the field, through a small script injected
+into the preview only.
+
+Currently 110 fields and 14 repeatable lists across the five pages. To make
+something else editable, add the attribute and run `npm run build`.
+
+**Two things are not annotated on purpose.** The `<p class="legal">` block on
+the donate page carries `<span data-disclaimer>`, which `site.js` fills from
+settings at runtime — editing that paragraph as text would drop the span, so the
+disclaimer is edited under Settings instead. The volunteer form's fields are
+structure rather than content.
+
+**The menu** is the one thing that is the same on every page and different on
+each, since the current page's link is marked. `CMS.navWrite()` rebuilds it per
+page, and saving it in Settings commits every page plus `post-template.js`
+together, so the news posts follow.
+
 **What it does**
 
+- Edits every page of the website: headings, paragraphs, photos, buttons,
+  captions, page titles and search descriptions, plus lists that can grow and
+  shrink — priority cards, headline numbers, quick facts, suggested amounts.
+- Keeps a photo library: every picture on the site, with upload and reuse.
+- Holds the site-wide settings and the menu in one place.
 - Writes, edits, hides and deletes posts, with the same front matter
   `scripts/lib.js` writes, so a post from the editor and one from an issue form
   are the same file.
@@ -265,7 +328,8 @@ itself.
 
 | Piece | File | What it does |
 |---|---|---|
-| The editor | `admin/` | Writes the same Markdown files from a browser, with a live preview. See above. |
+| The editor | `admin/` | Writes the same Markdown files, and the pages themselves, from a browser with a live preview. See above. |
+| Editor safety check | `scripts/cms-check.js` | Fails the build if any page can no longer be edited without damage. |
 | Auto-build | `.github/workflows/build.yml` | On any change to `content/news/**`, runs `build-news.js` and commits the regenerated pages, feed and sitemap. Removes the "run the build" step entirely. |
 | Post / link forms | `.github/ISSUE_TEMPLATE/new-post.yml`, `news-link.yml` | Fill-in-the-blanks issue forms so non-technical staff never touch Markdown. |
 | Publish from a form | `.github/workflows/publish-from-issue.yml` → `scripts/issue-to-post.js` | Turns a submitted form into a post. Team posts auto-publish; links publish after a team member adds the **`approved`** label or comments `/approve`. |

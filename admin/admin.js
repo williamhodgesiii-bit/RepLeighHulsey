@@ -317,8 +317,17 @@
   /* ========================================================================
      Views
      ======================================================================== */
+  const VIEWS = ["signin", "list", "editor", "pages", "page", "media", "settings"];
+  const SECTION_OF = { list: "posts", editor: "posts", pages: "pages", page: "pages", media: "media", settings: "settings" };
+
   function show(view) {
-    ["signin", "list", "editor"].forEach((v) => { $("#view-" + v).hidden = v !== view; });
+    VIEWS.forEach(function (v) {
+      const el = $("#view-" + v);
+      if (el) el.hidden = v !== view;
+    });
+    const section = SECTION_OF[view] || "";
+    $$("#sections a").forEach((a) => a.classList.toggle("is-active", a.dataset.section === section));
+    $("#sections").hidden = view === "signin";
     window.scrollTo(0, 0);
   }
 
@@ -331,6 +340,13 @@
       return;
     }
     if (route === "/new") { await openEditor(null); return; }
+
+    // The rest of the website — pages, photos and settings — lives in pages.js.
+    if (window.SitePages && route.indexOf("/page") === 0) { await window.SitePages.route(route); return; }
+    if (window.SitePages && (route === "/media" || route === "/settings")) {
+      await window.SitePages.route(route);
+      return;
+    }
 
     show("list");
     if (!state.posts || force) await refreshList();
@@ -1343,8 +1359,36 @@
     }
     renderAccount();
     renderSignin();
-    await go(location.hash);
+    if (window.SitePages && window.SitePages.ready) window.SitePages.ready();
+    await go(location.hash || "#/pages");
   }
+
+  /* ========================================================================
+     Shared with pages.js, which edits the rest of the website
+     ======================================================================== */
+  window.Editor = {
+    config: config,
+    state: state,
+    store: store,
+    esc: esc,
+    gh: gh,
+    ghRaw: ghRaw,
+    repo: REPO,
+    commitFiles: commitFiles,
+    waitForBuild: waitForBuild,
+    prepareImage: prepareImage,
+    confirmDialog: confirmDialog,
+    canPublish: canPublish,
+    requireSignin: requireSignin,
+    signedOutNotice: signedOutNotice,
+    show: show,
+    toast: toast,
+    busy: busy,
+    busyDone: busyDone,
+    debounce: debounce,
+    autogrow: autogrow,
+    today: today,
+  };
 
   boot();
 })();

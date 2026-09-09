@@ -79,6 +79,8 @@ const ADMIN_PAGE = "admin/index.html";
 const ADMIN_ASSETS = {
   "admin.css": "admin/admin.css",
   "admin.js": "admin/admin.js",
+  "pages.js": "admin/pages.js",
+  "../assets/js/cms.js": "assets/js/cms.js",
   "../assets/js/markdown.js": "assets/js/markdown.js",
   "../assets/js/post-template.js": "assets/js/post-template.js",
 };

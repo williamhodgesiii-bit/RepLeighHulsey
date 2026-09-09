@@ -707,3 +707,207 @@ label {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ==========================================================================
+   Sections — pages, news, photos, settings
+   ========================================================================== */
+.sections { display: flex; gap: .15rem; }
+.sections a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-family: Oswald, sans-serif;
+  font-size: .88rem;
+  letter-spacing: .03em;
+  padding: .4rem .75rem;
+  border-radius: var(--r-sm);
+  white-space: nowrap;
+}
+.sections a:hover { background: var(--surface-2); color: var(--ink); }
+.sections a.is-active { background: var(--ground); color: var(--ink); }
+@media (max-width: 720px) {
+  .topbar__brand span { display: none; }
+  .sections a { padding: .4rem .5rem; font-size: .82rem; }
+}
+
+/* ---- page cards ---- */
+.cards { display: grid; gap: .5rem; }
+.card {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: border-color .15s var(--ease), transform .1s var(--ease);
+}
+.card:hover { border-color: var(--ink-faint); }
+.card:active { transform: translateY(1px); }
+.card__icon {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+.card__icon svg { width: 22px; height: 22px; fill: var(--accent); }
+.card__name { display: block; font-family: Oswald, sans-serif; font-size: 1.05rem; }
+.card__note { display: block; font-size: .84rem; color: var(--ink-soft); }
+.card__go { color: var(--ink-faint); font-size: .82rem; }
+@media (max-width: 560px) { .card__go { display: none; } }
+
+/* ---- grouped form ---- */
+.formlead { color: var(--ink-soft); font-size: .875rem; margin-bottom: 1.25rem; }
+.group {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  margin-bottom: .6rem;
+  overflow: hidden;
+}
+.group > summary {
+  cursor: pointer;
+  padding: .8rem 1rem;
+  font-family: Oswald, sans-serif;
+  font-size: .95rem;
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  list-style: none;
+}
+.group > summary::-webkit-details-marker { display: none; }
+.group > summary::after {
+  content: "";
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ink-faint);
+  border-bottom: 2px solid var(--ink-faint);
+  transform: rotate(45deg);
+  transition: transform .15s var(--ease);
+  margin-left: auto;
+}
+.group[open] > summary::after { transform: rotate(-135deg); }
+.group > summary:hover { background: var(--surface-2); }
+.group__count {
+  font-family: "Open Sans", sans-serif;
+  font-size: .7rem;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .05rem .45rem;
+}
+.group__body { padding: 1rem; border-top: 1px solid var(--line); }
+.group__body .field:last-child { margin-bottom: 0; }
+
+/* ---- repeating items ---- */
+.repeater { margin-bottom: 1.25rem; }
+.repeater__head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
+.repeater__head label { margin-bottom: .3rem; }
+.item {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: .75rem;
+  margin-bottom: .5rem;
+  background: var(--surface-2);
+}
+.item--row { display: grid; grid-template-columns: 1fr 1fr auto; gap: .5rem; align-items: center; }
+@media (max-width: 560px) { .item--row { grid-template-columns: 1fr; } }
+.item__bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+.item__n { font-size: .72rem; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-faint); }
+.item__tools { display: flex; gap: .2rem; }
+.icon {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+  font-size: .9rem;
+}
+.icon:hover:not([disabled]) { border-color: var(--ink-faint); color: var(--ink); }
+.icon[disabled] { opacity: .35; cursor: not-allowed; }
+.icon--warn:hover:not([disabled]) { border-color: var(--danger); color: var(--danger); }
+.btn--add { width: 100%; border-style: dashed; color: var(--ink-soft); }
+
+/* ---- a photo field ---- */
+.photofield { display: grid; grid-template-columns: 120px 1fr; gap: .75rem; align-items: start; }
+.photofield img {
+  width: 120px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  display: block;
+}
+.photofield__none {
+  width: 120px; aspect-ratio: 4 / 3;
+  display: grid; place-items: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-sm);
+  color: var(--ink-faint);
+  font-size: .75rem;
+}
+.photofield__side { display: grid; gap: .4rem; justify-items: start; }
+.photofield__path {
+  font-size: .72rem;
+  color: var(--ink-faint);
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ---- photo library ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: .75rem;
+}
+.tile {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--surface);
+  position: relative;
+}
+.tile[data-use] { cursor: pointer; }
+.tile[data-use]:hover { border-color: var(--accent); }
+.tile img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: var(--surface-2); }
+.tile figcaption {
+  padding: .5rem .6rem;
+  font-size: .76rem;
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+  word-break: break-all;
+}
+.tile figcaption span { color: var(--ink-faint); white-space: nowrap; }
+.tile__use {
+  position: absolute;
+  inset: 0 0 auto auto;
+  margin: .4rem;
+  background: var(--navy);
+  color: #fff;
+  font-size: .7rem;
+  padding: .2rem .5rem;
+  border-radius: 999px;
+  opacity: 0;
+  transition: opacity .15s var(--ease);
+}
+.tile[data-use]:hover .tile__use { opacity: 1; }
+
+/* ---- preview bar note ---- */
+.previewbar__note { margin: 0; font-size: .78rem; color: var(--ink-faint); }
+
+/* ---- settings ---- */
+.settings { max-width: 720px; }

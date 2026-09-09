@@ -5,6 +5,7 @@
    ========================================================================== */
 
 :root {
+  --p-gap: 1.2em;          /* the gap under a paragraph */
   --red: #ed2424;
   --red-dark: #c81a1a;
   --red-deep: #a81414;
@@ -65,8 +66,15 @@ body {
 img, svg { max-width: 100%; display: block; }
 a { color: var(--red); }
 button { font: inherit; color: inherit; }
-p { margin: 0 0 1.2em; }
+p { margin: 0 0 var(--p-gap); }
 p:last-child { margin-bottom: 0; }
+
+/* A run of paragraphs the website editor can add to or remove from sits in its
+   own container (see data-cms-list in assets/js/cms.js). That makes the last
+   paragraph of the run a :last-child, which drops the margin separating it from
+   the heading or photograph that follows. This puts that margin back — from the
+   same variable, so it stays right at every screen size. */
+[data-cms-list] > p:last-child { margin-bottom: var(--p-gap); }
 ul { margin: 0 0 1.2em; padding-left: 1.25em; }
 li { margin-bottom: .5em; }
 
@@ -1399,7 +1407,7 @@ html.js .media > img.is-loaded { opacity: 1; transform: none; }
   }
 
   body { font-size: 16.5px; line-height: 1.62; }
-  p { margin-bottom: 1.05em; }
+  :root { --p-gap: 1.05em; }
 
   .brand img { height: 40px; }
   .header::after { height: 3px; }

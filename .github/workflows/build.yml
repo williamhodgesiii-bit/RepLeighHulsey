@@ -12,6 +12,7 @@ on:
       - "build-news.js"
       - "assets/js/markdown.js"
       - "assets/js/post-template.js"
+      - "assets/js/cms.js"
   workflow_dispatch: {}
 
 permissions:
