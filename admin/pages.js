@@ -88,6 +88,14 @@
     const meta = PAGES.filter((p) => p.file === file)[0];
     if (!meta) { location.hash = "#/pages"; return; }
 
+    // Returning to a page that is already open with unsaved work must not read
+    // it back from GitHub — that would silently discard the work.
+    if (s.page && s.page.file === file && s.dirty) {
+      E.show("page");
+      updatePreview();
+      return;
+    }
+
     E.show("page");
     $("#page-form").innerHTML = '<div class="skeleton" style="height:60vh"></div>';
 
@@ -386,7 +394,10 @@
                 "<figcaption>" + esc(m.name) +
                   '<span>' + Math.round((m.size || 0) / 1024) + " KB</span>" +
                 "</figcaption>" +
-                (s.pickingFor ? '<span class="tile__use">Use this</span>' : "") +
+                (s.pickingFor
+                  ? '<span class="tile__use">Use this</span>'
+                  : '<button class="tile__remove" type="button" title="Remove this photo" ' +
+                    'aria-label="Remove ' + esc(m.name) + '" data-del-photo="' + esc(m.path) + '">&times;</button>') +
               "</figure>"
             );
           }).join("") + "</div>"
@@ -419,13 +430,78 @@
     }
   }
 
+  /* A photo still shown somewhere must not disappear without warning, so the
+     pages and the posts are read and searched before anything is removed. */
+  async function photoUses(photoPath) {
+    const where = [];
+    const look = function (text, name) {
+      if (text && text.indexOf(photoPath) > -1 && where.indexOf(name) === -1) where.push(name);
+    };
+
+    for (const page of PAGES) {
+      try { look(await readFile(page.file), page.name); } catch (e) { /* skip */ }
+    }
+    try {
+      const posts = await E.gh(fileUrl("content/news"));
+      for (const f of posts.filter((x) => x.type === "file" && /\.md$/i.test(x.name))) {
+        try { look(await readFile(f.path), "the post “" + f.name.replace(/\.md$/i, "") + "”"); }
+        catch (e) { /* skip */ }
+      }
+    } catch (e) { /* the news folder is optional */ }
+
+    return where;
+  }
+
+  async function deletePhoto(photoPath) {
+    if (!E.canPublish()) { await E.requireSignin("remove a photo"); return; }
+
+    E.busy("Checking where this photo is used…");
+    let used = [];
+    try { used = await photoUses(photoPath); } catch (e) { /* fall through to the warning */ }
+    E.busyDone("");
+
+    const name = photoPath.split("/").pop();
+    const ok = await E.confirmDialog({
+      title: "Remove “" + name + "”?",
+      body: used.length
+        ? "This photo is still being used on " + listWords(used) + ". Removing it leaves " +
+          "a broken picture there until you choose another one. Change those first if you can."
+        : "It is not used anywhere on the website, so removing it changes nothing " +
+          "visitors can see. It stays in the site's history and can be brought back.",
+      confirm: used.length ? "Remove it anyway" : "Remove it",
+      danger: true,
+    });
+    if (!ok) return;
+
+    try {
+      E.busy("Removing…");
+      await E.commitFiles([{ path: photoPath, remove: true }], "Remove photo: " + name + who());
+      E.busyDone("Removed.");
+      await openMedia();
+    } catch (err) {
+      E.busyDone("Could not remove: " + err.message);
+    }
+  }
+
+  // "the Home page", "the Home page and the About page", "A, B and C".
+  function listWords(items) {
+    if (items.length === 1) return items[0];
+    return items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
+  }
+
   function usePhoto(path) {
     const target = s.pickingFor;
     s.pickingFor = null;
     if (!target || !s.page) { location.hash = "#/media"; return; }
     s.page.values[target] = path;
     s.dirty = true;
-    location.hash = "#/page/" + encodeURIComponent(s.page.file);
+
+    // Back to the page by hand rather than through the address bar. Setting the
+    // hash would send the router through openPage again, which re-reads the
+    // file from GitHub — and that would throw away this photo along with
+    // everything else typed since the page was opened.
+    history.replaceState(null, "", "#/page/" + encodeURIComponent(s.page.file));
+    E.show("page");
     refreshForm();
     updatePreview();
     setStatus("Photo changed — press Publish to put it on the website", true);
@@ -576,6 +652,9 @@
     document.addEventListener("click", async function (ev) {
       const card = ev.target.closest("[data-page]");
       if (card) { location.hash = "#/page/" + encodeURIComponent(card.dataset.page); return; }
+
+      const del = ev.target.closest("[data-del-photo]");
+      if (del) { ev.stopPropagation(); deletePhoto(del.dataset.delPhoto); return; }
 
       const use = ev.target.closest("[data-use]");
       if (use) { usePhoto(use.dataset.use); return; }

@@ -1020,6 +1020,8 @@
   let toastTimer;
   function toast(message, sticky) {
     const el = $("#toast");
+    // Nothing to say: clear the spinner rather than leaving an empty bar up.
+    if (!message) { clearTimeout(toastTimer); el.hidden = true; return; }
     el.innerHTML = message;
     el.hidden = false;
     clearTimeout(toastTimer);
@@ -1308,7 +1310,9 @@
       const meta = e.metaKey || e.ctrlKey;
       if (!meta) return;
       const inBody = document.activeElement === $("#f-body");
-      if (e.key === "s") {
+      // Only while a post is open. Everywhere else this is the browser's own
+      // Save, and taking it over would promise something that never happened.
+      if (e.key === "s" && !$("#view-editor").hidden) {
         e.preventDefault();
         saveLocal();
         toast("Kept on this computer. Press Publish to put it on the website.");
@@ -1360,6 +1364,14 @@
     renderAccount();
     renderSignin();
     if (window.SitePages && window.SitePages.ready) window.SitePages.ready();
+
+    // Somebody arriving at /admin for the first time with nobody signed in gets
+    // the welcome screen, which is the only place the sign-in steps are
+    // explained. A link straight to a page or a post is still honoured — all of
+    // this can be read and previewed signed out.
+    const deepLink = (location.hash || "").replace(/^#/, "");
+    if (!state.token && !state.demo && !deepLink) { show("signin"); return; }
+
     await go(location.hash || "#/pages");
   }
 

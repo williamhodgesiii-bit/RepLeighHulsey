@@ -16,10 +16,10 @@ secret, though — what keeps the website safe is the sign-in, not the address.
 
 ## Signing in
 
-You need to sign in once on each computer or phone you use. Follow whatever the
-page shows you — either a **Sign in with GitHub** button, or a short set of
-steps to fetch an access key and paste it in. Either way it is a one-time thing;
-after that the editor remembers you.
+Opening the editor without being signed in shows the welcome screen. Follow
+whatever it shows you — either a **Sign in with GitHub** button, or a short
+set of steps to fetch an access key and paste it in. Either way it is a
+one-time thing; after that the editor remembers you.
 
 **Before signing in you can still look around.** Every post can be opened and
 previewed signed out. The editor only asks who you are at the moment you try to
@@ -87,6 +87,11 @@ has one, and it is what a blind visitor and Google are told the picture shows.
 The **Photos** tab is every picture on the website. Drag new ones in with **Add
 photos** — several at once is fine. They are resized as they arrive so the site
 stays fast.
+
+To take one out, hover it and press the **×** in its corner. The editor looks
+through the website first and tells you where the picture is still being used,
+so you are never removing something out from under a page by accident. Photos
+you remove stay in the site's history and can be brought back.
 
 ---
 
