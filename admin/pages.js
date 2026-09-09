@@ -41,6 +41,7 @@
     dirty: false,
     media: null,
     pickingFor: null,  // the image field waiting for a photo
+    previewReady: false,   // is the preview loaded and listening?
     settings: null,
   };
 
@@ -267,26 +268,77 @@
   }
 
   /* ------------------------------------------------------------- preview -- */
-  const PREVIEW_HOOK =
-    "<style>[data-fade]{opacity:1!important;transform:none!important}" +
-    "[data-cms],[data-cms-list],[data-cms-attr]{cursor:pointer}" +
-    "[data-cms]:hover,[data-cms-list]:hover,[data-cms-attr]:hover{" +
-    "outline:2px dashed rgba(237,36,36,.85);outline-offset:4px}" +
-    ".cms-flash{outline:3px solid #ED2424!important;outline-offset:4px}</style>" +
-    "<script>(function(){" +
-    "document.addEventListener('click',function(e){" +
-    "var el=e.target.closest('[data-cms],[data-cms-attr],[data-cms-list]');" +
-    "e.preventDefault();e.stopPropagation();if(!el)return;" +
-    "var p=el.getAttribute('data-cms')||el.getAttribute('data-cms-list')||" +
-    "((el.getAttribute('data-cms-attr')||'').split(':')[1]||'').split(',')[0];" +
-    "parent.postMessage({cms:'select',path:(p||'').trim()},'*');},true);" +
-    "addEventListener('message',function(e){if(!e.data||e.data.cms!=='highlight')return;" +
-    "var q='[data-cms=\"'+e.data.path+'\"],[data-cms-list=\"'+e.data.path+'\"]';" +
-    "var el=document.querySelector(q);if(!el)return;" +
-    "el.scrollIntoView({block:'center',behavior:'smooth'});" +
-    "el.classList.add('cms-flash');setTimeout(function(){el.classList.remove('cms-flash');},1400);});" +
-    "})();<\/script>";
+  /* The script that rides along inside the preview. It does three jobs: it
+     reports what was clicked (with the list item it belongs to, so the third
+     card is not mistaken for the first), it scrolls to whatever the editor is
+     pointing at, and it accepts a single field's new content so that typing
+     never has to reload the page underneath the reader. */
+  const PREVIEW_HOOK = [
+    "<style>",
+    "[data-fade]{opacity:1!important;transform:none!important}",
+    "[data-cms],[data-cms-list],[data-cms-attr]{cursor:pointer}",
+    "[data-cms]:hover,[data-cms-attr]:hover{outline:2px dashed rgba(237,36,36,.85);outline-offset:4px}",
+    ".cms-flash{outline:3px solid #ED2424!important;outline-offset:4px;",
+    "transition:outline-color .3s ease}",
+    "</style>",
+    "<script>(function(){",
 
+    // The items of one list, in document order.
+    "function items(list){",
+    "if(!list)return[];",
+    "return [].slice.call(list.querySelectorAll('[data-cms-item]')).filter(function(it){",
+    "return it.closest('[data-cms-list]')===list;});}",
+
+    // The element a path (plus optional list and index) points at.
+    "function find(m){",
+    "var list=m.list?document.querySelector('[data-cms-list=\"'+m.list+'\"]'):null;",
+    "var scope=document;",
+    "if(list&&m.index!=null){var it=items(list)[m.index];if(!it)return list;scope=it;}",
+    "else if(list&&!m.path)return list;",
+    "if(!m.path)return list;",
+    "return scope.querySelector('[data-cms=\"'+m.path+'\"]')||",
+    "scope.querySelector('[data-cms-attr*=\"'+m.path+'\"]')||list;}",
+
+    // Clicking anything editable tells the editor which field it was.
+    "document.addEventListener('click',function(e){",
+    "var el=e.target.closest('[data-cms],[data-cms-attr]');",
+    "e.preventDefault();e.stopPropagation();",
+    "if(!el)return;",
+    "var path=el.getAttribute('data-cms')||",
+    "((el.getAttribute('data-cms-attr')||'').split(':')[1]||'').split(',')[0];",
+    "var item=el.closest('[data-cms-item]');",
+    "var list=item?item.closest('[data-cms-list]'):null;",
+    "parent.postMessage({cms:'select',path:(path||'').trim(),",
+    "list:list?list.getAttribute('data-cms-list'):null,",
+    "index:list?items(list).indexOf(item):null},'*');},true);",
+
+    "addEventListener('message',function(e){",
+    "var m=e.data;if(!m||!m.cms)return;",
+
+    // The editor is pointing at a field: show where it is.
+    "if(m.cms==='highlight'){",
+    "var el=find(m);if(!el)return;",
+    "var box=el.getBoundingClientRect();",
+    "if(box.top<0||box.bottom>innerHeight)",
+    "el.scrollIntoView({block:'center',behavior:'smooth'});",
+    "el.classList.add('cms-flash');",
+    "clearTimeout(el.__flash);",
+    "el.__flash=setTimeout(function(){el.classList.remove('cms-flash');},1200);",
+    "return;}",
+
+    // One field changed: put the new content in without reloading anything.
+    "if(m.cms==='set'){",
+    "var t=find(m);if(!t)return;",
+    "if(m.attr){t.setAttribute(m.attr,m.value);}",
+    "else{t.innerHTML=m.value;}",
+    "return;}",
+    "});",
+    "})();<\/script>",
+  ].join("");
+
+  // A full redraw. Only for changes the page's shape depends on — adding,
+  // removing or reordering items, a new photo, or opening a page. Typing goes
+  // through patchPreview instead, which leaves the reader where they were.
   const updatePreview = E.debounce(function () {
     if (!s.page) return;
     const frame = $("#page-frame");
@@ -297,10 +349,67 @@
     );
     html = html.replace("<head>", '<head><base href="' + new URL("../", location.href).href + '">');
     html = html.replace("</body>", PREVIEW_HOOK + "</body>");
+
     const scroll = (function () { try { return frame.contentWindow.scrollY; } catch (e) { return 0; } })();
+    s.previewReady = false;
     frame.srcdoc = html;
-    frame.onload = function () { try { frame.contentWindow.scrollTo(0, scroll); } catch (e) {} };
+    frame.onload = function () {
+      s.previewReady = true;
+      // Photographs settle after load and move everything below them, so the
+      // place the reader was looking is restored again once they have.
+      const put = function () { try { frame.contentWindow.scrollTo(0, scroll); } catch (e) {} };
+      put();
+      try {
+        const doc = frame.contentWindow.document;
+        const late = [].slice.call(doc.images).filter((i) => !i.complete);
+        let left = late.length;
+        if (!left) return;
+        late.forEach(function (img) {
+          const done = function () { if (--left <= 0) put(); };
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+        });
+      } catch (e) { /* nothing to wait for */ }
+    };
   }, 200);
+
+  // One field's new content, handed straight to the preview. Nothing reloads,
+  // so the place the reader is looking at, and the box they are typing in, both
+  // stay exactly where they were.
+  function patchPreview(el) {
+    if (!s.page) return;
+    // Nothing is listening yet, and postMessage would go nowhere: redraw
+    // instead, so an edit made the moment a page opens is not lost.
+    if (!s.previewReady) { updatePreview(); return; }
+    const frame = $("#page-frame");
+    const type = el.dataset.type || "text";
+    const isAttr = el.type === "hidden" || type === "url";
+    const value = isAttr ? el.value : CMS.fromEditable(el.value, type);
+    try {
+      frame.contentWindow.postMessage({
+        cms: "set",
+        path: el.dataset.path,
+        list: el.dataset.list || null,
+        index: el.dataset.index != null ? +el.dataset.index : null,
+        attr: isAttr ? attrNameFor(el) : null,
+        value: value,
+      }, "*");
+    } catch (e) { updatePreview(); }
+  }
+
+  // A hidden field stands for an attribute — a photo is a src, a button is an
+  // href. The schema knows which; this asks it.
+  function attrNameFor(el) {
+    const path = el.dataset.path;
+    const inList = el.dataset.list;
+    let fields = s.page.schema;
+    if (inList) {
+      const list = s.page.schema.filter((f) => f.path === inList)[0];
+      fields = list ? list.fields : [];
+    }
+    const field = fields.filter((f) => f.path === path)[0];
+    return field && field.attr ? field.attr : "src";
+  }
 
   /* ------------------------------------------------------------- editing -- */
   function setValue(el) {
@@ -319,7 +428,7 @@
     }
     s.dirty = true;
     setStatus("Not published yet — press Publish to put this on the website", true);
-    updatePreview();
+    patchPreview(el);
   }
 
   function blankItem(list) {
@@ -757,27 +866,52 @@
       if (el.id === "media-search") renderMedia();
     });
 
-    // Focusing a field points at it in the page beside you.
+    // Focusing a field points at it in the page beside you — at the third card
+    // when it is the third card's field, not merely at the run of cards.
     document.addEventListener("focusin", function (ev) {
       const el = ev.target;
       if (!s.page || !el.dataset || !el.dataset.path) return;
-      const path = el.dataset.list || el.dataset.path;
       const frame = $("#page-frame");
-      try { frame.contentWindow.postMessage({ cms: "highlight", path: path }, "*"); } catch (e) {}
+      try {
+        frame.contentWindow.postMessage({
+          cms: "highlight",
+          path: el.dataset.path,
+          list: el.dataset.list || null,
+          index: el.dataset.index != null ? +el.dataset.index : null,
+        }, "*");
+      } catch (e) { /* the preview is still loading */ }
     });
 
-    // Clicking the page beside you jumps to the field that controls it.
+    // Clicking the page beside you jumps to the field that controls it. Inside a
+    // repeating region that means the field of the item actually clicked.
     window.addEventListener("message", function (ev) {
       if (!ev.data || ev.data.cms !== "select" || !s.page) return;
-      const path = ev.data.path;
-      const field = $('[data-path="' + cssEscape(path) + '"]') ||
-        $('[data-repeater="' + cssEscape(path) + '"] [data-path]') ||
-        $('[data-list="' + cssEscape(path) + '"]');
+      const d = ev.data;
+      const p = cssEscape(d.path || "");
+
+      const field =
+        (d.list != null && d.index != null
+          ? $('[data-list="' + cssEscape(d.list) + '"][data-index="' + d.index + '"][data-path="' + p + '"]') ||
+            $('[data-list="' + cssEscape(d.list) + '"][data-index="' + d.index + '"]')
+          : null) ||
+        $('[data-path="' + p + '"]') ||
+        $('[data-repeater="' + p + '"] [data-path]') ||
+        $('[data-list="' + p + '"]');
       if (!field) return;
+
       const group = field.closest("details");
       if (group) group.open = true;
-      field.scrollIntoView({ block: "center", behavior: "smooth" });
-      field.focus({ preventScroll: true });
+
+      // A photo is a hidden field standing for an attribute: there is nothing
+      // to put a cursor in, so the whole box is shown and marked instead.
+      const box = field.closest(".field") || field;
+      box.scrollIntoView({ block: "center", behavior: "smooth" });
+      if (field.type !== "hidden") field.focus({ preventScroll: true });
+
+      // A moment's outline, so it is obvious which box was landed on.
+      box.classList.add("is-found");
+      clearTimeout(box.__found);
+      box.__found = setTimeout(() => box.classList.remove("is-found"), 1200);
     });
 
     $("#media-input").addEventListener("change", function () { uploadMedia(this.files); this.value = ""; });

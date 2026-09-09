@@ -906,6 +906,15 @@ label {
 }
 .tile[data-use]:hover .tile__use { opacity: 1; }
 
+/* The box the preview just sent you to. A short outline so the eye finds it
+   without the form flashing every time something is clicked. */
+.field.is-found > .input,
+.field.is-found > .photofield,
+.field.is-found > .toolbar + .input {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
 /* Removing a photo. Hidden until the tile is hovered or the button is focused,
    so the grid stays calm, but always reachable from the keyboard. */
 .tile__remove {
