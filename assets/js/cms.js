@@ -456,11 +456,20 @@
      ======================================================================== */
   function schema(html) {
     const out = [];
+    // The page title and the search-engine lines are annotated on <meta> tags,
+    // so they come first in the file and would otherwise be the first thing the
+    // editor shows. Marking them lets it put the page itself first instead.
+    const headEnd = html.search(/<\/head>/i);
+    const inHead = (at) => headEnd > -1 && at < headEnd;
+
     fieldsIn(html).forEach(function (field) {
       if (field.kind !== "list") {
         // One element can expose several fields — an image is a picture and a
         // description — so this flattens rather than taking the first.
-        describeMany([field]).forEach((f) => out.push(f));
+        describeMany([field]).forEach(function (f) {
+          f.head = inHead(field.at);
+          out.push(f);
+        });
         return;
       }
       out.push((function () {
@@ -562,7 +571,10 @@
 
   function inline(s) {
     return decode(String(s)
-      .replace(/<br\s*\/?>/gi, "\n")
+      // The whitespace after a line break is the file's own indentation, not
+      // part of the line. Leaving it in put a space at the start of the next
+      // line, and another one every time the field was saved again.
+      .replace(/<br\s*\/?>[ \t]*\n?[ \t]*/gi, "\n")
       .replace(/<(strong|b)[^>]*>([\s\S]*?)<\/\1>/gi, "**$2**")
       .replace(/<(em|i)[^>]*>([\s\S]*?)<\/\1>/gi, "*$2*")
       .replace(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, "[$2]($1)")

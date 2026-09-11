@@ -13,6 +13,10 @@ on:
       - "assets/js/markdown.js"
       - "assets/js/post-template.js"
       - "assets/js/cms.js"
+      # The editor's own files carry a content stamp in admin/index.html so a
+      # staffer is never left running yesterday's editor out of the browser
+      # cache. Changing one has to re-stamp the page that loads it.
+      - "admin/**"
   workflow_dispatch: {}
 
 permissions:

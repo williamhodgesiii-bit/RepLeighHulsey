@@ -27,6 +27,19 @@ publish something.
 
 ---
 
+## Finding anything in one step
+
+Press <kbd>Ctrl</kbd>+<kbd>K</kbd> — <kbd>⌘</kbd>+<kbd>K</kbd> on a Mac — anywhere
+in the editor, or click **Find anything** at the top right. Start typing the name
+of a page, a post, a photo or a setting and press <kbd>Enter</kbd>.
+
+You do not have to type it exactly. "twn hll" finds the town hall post. The
+arrow keys move through the list, <kbd>Esc</kbd> closes it.
+
+This is usually the fastest way to get anywhere, and it is worth learning first.
+
+---
+
 ## What you can change
 
 Four tabs across the top:
@@ -47,7 +60,16 @@ can change is listed on the left, grouped by where it sits — "Top of the page"
 "About Leigh", "Photo band", and so on.
 
 **Type on the left, watch the right.** The page beside you is the real page,
-updating as you type. What you see is what gets published.
+updating as you type — in place, without reloading, so it does not jump away
+from the part you are looking at. What you see is what gets published.
+
+**If there is a lot on the page,** type into **Find a field on this page** above
+the groups. It narrows the list to whatever matches — the name of the field,
+the guidance under it, or the words already in it — and opens the group it is
+in. **Expand all** opens everything at once.
+
+**A field you have changed is marked "edited"** until you publish, so a page
+half-written yesterday tells you which half it was.
 
 **Or click the page instead of hunting for the field.** Move your mouse over the
 preview and anything editable outlines itself. Click it and the editor jumps
@@ -55,6 +77,11 @@ straight to that field. This is usually the fastest way to find something.
 
 Nothing is on the website until you press **Publish**. If you change your mind
 before then, **Undo my changes** puts the page back the way it was.
+
+**Your work is kept as you type.** Leave the page, look at another one, close the
+tab, come back tomorrow — what you typed is still there, waiting to be published,
+and the editor says so when you open it. A dot beside **Pages** or **Settings**
+means there is work on that screen that is not on the website yet.
 
 ### Adding and removing things
 
@@ -74,8 +101,10 @@ each list says how many you have and how many fit.
 ### Photos on a page
 
 Every photo field shows the picture with a **Choose a photo** button. That opens
-the photo library, where you either pick one already on the website or add a new
-one. Photos are resized on the way in, so a picture straight off a phone is fine.
+the photo library, which says at the top which photo it is choosing — "the
+Portrait on Home" — so there is no doubt about where it will land. Pick one
+already on the website or add a new one. Photos are resized on the way in, so a
+picture straight off a phone is fine.
 
 Under each photo is a description box. It shows as the caption where the design
 has one, and it is what a blind visitor and Google are told the picture shows.
@@ -87,6 +116,10 @@ has one, and it is what a blind visitor and Google are told the picture shows.
 The **Photos** tab is every picture on the website. Drag new ones in with **Add
 photos** — several at once is fine. They are resized as they arrive so the site
 stays fast.
+
+Two photos off a phone are often both called the same thing. A new photo never
+lands on top of one already on the website — it gets a number after its name
+instead.
 
 To take one out, hover it and press the **×** in its corner. The editor looks
 through the website first and tells you where the picture is still being used,
@@ -112,8 +145,9 @@ Leave it blank and the forms open the visitor's own email program instead.
 **Paid for by** — the disclaimer that appears in the footer and on the donate
 page. That one has to match the campaign's filing with the Secretary of State.
 
-Press **Publish settings** when you are done. It may touch a dozen files at
-once; that is normal, and it is one change you can undo like any other.
+Press **Publish settings** when you are done. The editor lists exactly what is
+about to change and asks once before it does anything. It may touch a dozen files
+at once; that is normal, and it is one change you can undo like any other.
 
 ---
 
@@ -144,15 +178,22 @@ have to type anything that looks like code.
 Then press **Publish**. The post is live in about a minute. The editor tells you
 when it is up and gives you the link.
 
+**To start from a post you have already written,** open it and press **Make a
+copy**. Everything comes across — the photo, the category, the text — under a new
+headline, and the copy is hidden until you publish it.
+
 ---
 
 ## The preview
 
-The right-hand side shows what you are making, updating as you type. Three tabs:
+The right-hand side shows what you are making, updating as you type, and it stays
+where you left it rather than jumping to the top on every keystroke. Three tabs:
 
 **The page** — the actual post page. Not an impression of it: the editor builds
 it with the same template the website uses, so this is the page, a minute early.
-The phone and computer buttons at the top right switch screen size.
+The phone, tablet and computer buttons at the top right switch screen size, and
+the arrow beside them opens the preview in a tab of its own — for showing
+somebody across the room, or putting on the screen at a meeting.
 
 **News card** — how it will look on the news page and the home page.
 
@@ -199,8 +240,13 @@ be undone by whoever looks after the site.
 **Nothing goes live until you press Publish.** Not while you are typing, not if
 you close the tab.
 
-**Your typing is kept as you go.** If your laptop dies or you close the tab by
-mistake, the editor has your unsaved work when you come back.
+**Your typing is kept as you go.** Posts, pages and settings alike. If your laptop
+dies or you close the tab by mistake, the editor has your unsaved work when you
+come back, and tells you so.
+
+**The editor follows your computer's light or dark setting.** The half-circle at
+the top right switches between that, always light, and always dark — useful on a
+laptop under stage lights.
 
 **Two people editing the same post.** If someone else changed a post while you
 had it open, the editor says so before it publishes and lets you decide.
@@ -216,9 +262,10 @@ a clear headline, a real sentence in the summary box, and a photo.
 
 | | |
 | --- | --- |
+| <kbd>Ctrl</kbd>+<kbd>K</kbd> | Find anything — a page, a post, a photo, a setting |
 | <kbd>Ctrl</kbd>+<kbd>B</kbd> | Bold |
 | <kbd>Ctrl</kbd>+<kbd>I</kbd> | Italic |
-| <kbd>Ctrl</kbd>+<kbd>K</kbd> | Link |
+| <kbd>Ctrl</kbd>+<kbd>K</kbd> | Link, while the cursor is in the post |
 | <kbd>Ctrl</kbd>+<kbd>S</kbd> | Keep a copy on this computer |
 
 On a Mac use <kbd>⌘</kbd> instead of <kbd>Ctrl</kbd>. You can also paste a photo

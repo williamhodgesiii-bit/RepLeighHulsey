@@ -36,8 +36,12 @@
   color-scheme: light;
 }
 
+/* Dark is whatever the computer is set to, unless the editor has been told
+   otherwise. The two blocks below are the same list of colours twice — once
+   for the computer's own setting and once for the switch in the top bar — and
+   they have to stay in step with each other. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --ink: #ececf4;
     --ink-soft: #a6a6bd;
     --ink-faint: #7c7c96;
@@ -55,6 +59,25 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --ink: #ececf4;
+  --ink-soft: #a6a6bd;
+  --ink-faint: #7c7c96;
+  --ground: #121220;
+  --surface: #1b1b2c;
+  --surface-2: #212134;
+  --line: #2e2e46;
+  --line-strong: #3d3d5a;
+  --accent: #8f8ce0;
+  --good: #4bbd85;
+  --warn: #e0b062;
+  --warn-bg: #2a2312;
+  --danger: #f0685e;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -178,10 +201,64 @@ a { color: var(--accent); }
 .topbar__brand img { width: 18px; height: auto; display: block; }
 .topbar__right { display: flex; align-items: center; gap: .5rem; }
 
+.ghost--icon { padding: .35rem; line-height: 0; border-radius: 6px; }
+.ghost--icon svg { width: 18px; height: 18px; fill: currentColor; }
+.ghost--icon[data-theme="light"] svg path:first-child { display: none; }
+.ghost--icon[data-theme="dark"] svg circle { fill: currentColor; }
+
+/* The way in to everything, said out loud rather than hidden behind a
+   shortcut nobody was told about. */
+.findbtn {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: .82rem;
+  padding: .3rem .5rem .3rem .65rem;
+  cursor: pointer;
+  transition: border-color .15s var(--ease), color .15s var(--ease);
+}
+.findbtn:hover { border-color: var(--ink-faint); color: var(--ink); }
+.findbtn svg { width: 15px; height: 15px; flex: none; }
+@media (max-width: 940px) { .findbtn__text, .findbtn kbd { display: none; } }
+
+kbd {
+  font: 600 .68rem/1.5 "Open Sans", sans-serif;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 0 .35rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
 .account { display: flex; align-items: center; gap: .5rem; font-size: .875rem; }
 .account img { width: 26px; height: 26px; border-radius: 50%; display: block; }
 .account__name { color: var(--ink-soft); }
-@media (max-width: 620px) { .account__name { display: none; } }
+
+/* A phone at a campaign event. Everything still has to fit across the top, so
+   the pieces that are only shortcuts give way first: Help and Sign out both
+   live in the command bar, and the face beside the name is decoration. */
+@media (max-width: 620px) {
+  .account__name { display: none; }
+  .topbar { gap: .4rem; }
+  .topbar > * { min-width: 0; }
+  .topbar__right { gap: .15rem; flex: none; }
+  .topbar__right [data-action="help"] { display: none; }
+  .account img { display: none; }
+  /* Four sections and no room: they slide rather than push the rest away. */
+  .sections { overflow-x: auto; scrollbar-width: none; }
+  .sections::-webkit-scrollbar { display: none; }
+}
+@media (max-width: 420px) {
+  .sections a { padding: .35rem .4rem; font-size: .78rem; }
+}
 
 .pill {
   font-size: .7rem;
@@ -239,7 +316,7 @@ a { color: var(--accent); }
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
-.list-head__actions { display: flex; gap: .5rem; align-items: center; }
+.list-head__actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
 .search {
   appearance: none;
   border: 1px solid var(--line-strong);
@@ -252,9 +329,27 @@ a { color: var(--accent); }
   width: 190px;
 }
 @media (max-width: 560px) {
-  .list-head__actions { width: 100%; }
-  .search { flex: 1; width: auto; }
+  .list-head__actions { width: 100%; flex-wrap: wrap; }
+  .search { flex: 1 1 100%; width: auto; min-width: 0; }
+  .sortby { flex: 1 1 auto; min-width: 0; }
+  .sortby .select { width: 100%; }
 }
+
+.sortby { display: flex; align-items: center; gap: .4rem; }
+.sortby__label { font-size: .78rem; color: var(--ink-faint); }
+.select {
+  appearance: none;
+  font: inherit;
+  font-size: .85rem;
+  color: var(--ink);
+  background: var(--surface) linear-gradient(45deg, transparent 49%, var(--ink-faint) 50%) no-repeat right .85rem top 55%/5px 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  padding: .55rem 1.9rem .55rem .75rem;
+  cursor: pointer;
+}
+.select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (max-width: 560px) { .sortby__label { display: none; } }
 
 .filters { display: flex; gap: .4rem; margin-bottom: 1rem; flex-wrap: wrap; }
 .filters button {
@@ -599,6 +694,7 @@ label {
 }
 .tabs button.is-active { background: var(--ground); color: var(--ink); }
 
+.previewbar__tools { display: flex; align-items: center; gap: .35rem; flex: none; }
 .sizes { display: flex; gap: .15rem; }
 .sizes button {
   appearance: none;
@@ -635,6 +731,7 @@ label {
   display: block;
 }
 .stage[data-size="phone"] iframe { width: 390px; max-width: 100%; }
+.stage[data-size="tablet"] iframe { width: 834px; max-width: 100%; }
 .stage__note {
   margin: 0;
   padding: .5rem 1rem;
@@ -708,6 +805,118 @@ label {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
+/* --------------------------------------------------------------------------
+   The command bar
+
+   Ctrl+K. A single box over the top of everything, because by the time
+   somebody is looking for a post, naming it beats hunting for it.
+   -------------------------------------------------------------------------- */
+.palette {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  width: min(620px, calc(100vw - 2rem));
+  margin-top: max(8vh, 3rem);
+  color: var(--ink);
+  overflow: visible;
+}
+.palette::backdrop { background: rgba(16, 16, 30, .45); backdrop-filter: blur(2px); }
+.palette__box {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.palette__field {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.palette__field svg { width: 18px; height: 18px; color: var(--ink-faint); flex: none; }
+.palette__field input {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  padding: .1rem 0;
+}
+.palette__field input:focus { outline: none; }
+
+.palette__list {
+  list-style: none;
+  margin: 0;
+  padding: .35rem;
+  max-height: min(50vh, 420px);
+  overflow: auto;
+}
+.palette__group {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--ink-faint);
+  padding: .6rem .65rem .25rem;
+}
+.palette__item {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: .6rem;
+  padding: .55rem .65rem;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.palette__item.is-at { background: var(--ground); }
+.palette__item.is-at .palette__icon { color: var(--accent); }
+.palette__icon { color: var(--ink-faint); text-align: center; font-size: .9rem; }
+.palette__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.palette__hint {
+  font-size: .76rem;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  justify-self: end;
+  padding-left: .75rem;
+}
+.palette__item { grid-template-columns: 22px minmax(0, 1fr) minmax(0, auto); }
+.palette__none { padding: 1.25rem .65rem; color: var(--ink-soft); text-align: center; }
+.palette__list:empty { display: none; }
+.palette__foot {
+  margin: 0;
+  padding: .5rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: .74rem;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  flex-wrap: wrap;
+}
+@media (max-width: 560px) {
+  .palette__hint { display: none; }
+  .palette__foot { display: none; }
+}
+
+.modal__list {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  font-size: .9rem;
+  color: var(--ink);
+}
+.modal__list li { margin-bottom: .35rem; }
+
 /* ==========================================================================
    Sections — pages, news, photos, settings
    ========================================================================== */
@@ -724,6 +933,16 @@ label {
 }
 .sections a:hover { background: var(--surface-2); color: var(--ink); }
 .sections a.is-active { background: var(--ground); color: var(--ink); }
+/* Work typed on another screen and not published yet. */
+.sections a.has-unsaved { position: relative; }
+.sections a.has-unsaved::after {
+  content: "";
+  position: absolute;
+  top: .3rem; right: .3rem;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+}
 @media (max-width: 720px) {
   .topbar__brand span { display: none; }
   .sections a { padding: .4rem .5rem; font-size: .82rem; }
@@ -763,7 +982,15 @@ label {
 @media (max-width: 560px) { .card__go { display: none; } }
 
 /* ---- grouped form ---- */
-.formlead { color: var(--ink-soft); font-size: .875rem; margin-bottom: 1.25rem; }
+.formlead { color: var(--ink-soft); font-size: .875rem; margin-bottom: .75rem; }
+.formbar { display: flex; gap: .5rem; align-items: center; margin-bottom: .35rem; }
+.formbar .search { flex: 1; min-width: 0; }
+.formcount {
+  font-size: .78rem;
+  color: var(--ink-faint);
+  margin: 0 0 1rem;
+}
+.group.is-empty { display: none; }
 .group {
   border: 1px solid var(--line);
   border-radius: var(--r);
@@ -805,6 +1032,29 @@ label {
 }
 .group__body { padding: 1rem; border-top: 1px solid var(--line); }
 .group__body .field:last-child { margin-bottom: 0; }
+
+/* Changed here, not yet on the website. A quiet mark, so a page half-edited
+   yesterday says which parts were the half. */
+.is-changed { position: relative; }
+.is-changed > label::after {
+  content: "edited";
+  font-family: "Open Sans", sans-serif;
+  font-size: .62rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--warn);
+  border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+  background: var(--warn-bg);
+  border-radius: 999px;
+  padding: .05rem .4rem;
+  margin-left: .5rem;
+  vertical-align: middle;
+}
+
+.notice--warn {
+  border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+  background: var(--warn-bg);
+}
 
 /* ---- repeating items ---- */
 .repeater { margin-bottom: 1.25rem; }
@@ -889,9 +1139,16 @@ label {
   gap: .5rem;
   color: var(--ink-soft);
   border-top: 1px solid var(--line);
-  word-break: break-all;
 }
 .tile figcaption span { color: var(--ink-faint); white-space: nowrap; }
+/* A long filename shortens rather than breaking across lines mid-word; the
+   whole of it is on the tile's tooltip. */
+.tile__name {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
 .tile__use {
   position: absolute;
   inset: 0 0 auto auto;
@@ -940,7 +1197,8 @@ label {
 .tile__remove:hover { background: var(--red); }
 
 /* ---- preview bar note ---- */
-.previewbar__note { margin: 0; font-size: .78rem; color: var(--ink-faint); }
+.previewbar__note { margin: 0; flex: 1; min-width: 0; font-size: .78rem; color: var(--ink-faint); }
+@media (max-width: 620px) { .previewbar__note { display: none; } }
 
 /* ---- settings ---- */
 .settings { max-width: 720px; }

@@ -61,6 +61,11 @@
 
   const today = () => new Date().toISOString().slice(0, 10);
 
+  // Where the website's own files are, as a full address. Worked out from
+  // wherever the editor is being served rather than assumed, so the previews
+  // are right whether this is a live domain, a staging host or a laptop.
+  const siteRoot = () => new URL("../", location.href).href;
+
   function debounce(fn, ms) {
     let t;
     return function () {
@@ -69,6 +74,42 @@
       t = setTimeout(() => fn.apply(null, args), ms);
     };
   }
+
+  /* A preview is redrawn by writing srcdoc, and the reader has to end up
+     looking at the same part of the page afterwards.
+
+     Both of those used to be arranged from out here, in the frame's load
+     event, and neither happened. Setting frame.onload after frame.srcdoc is
+     already too late — the browser has begun the load and stopped reading the
+     property — and even attached properly, that event waits on the webfonts:
+     on a hotel wifi at a campaign event the fonts can hang for a minute, and
+     the preview would spend that minute redrawing itself from scratch on every
+     keystroke and throwing the reader back to the top each time.
+
+     So the preview carries its own instructions instead. This little script
+     goes in at the end of the document, runs while the page is still parsing,
+     and puts the reader back where they were — again as each photograph
+     arrives and pushes everything below it down. The page editor also asks it
+     to say so out loud, which is the signal that typing can be handed to the
+     preview directly instead of drawing the whole thing again. */
+  function scrollKeeper(top, announce) {
+    return "<script>(function(){" +
+      "var y=" + (Math.max(0, parseInt(top, 10) || 0)) + ";" +
+      "function put(){if(y)scrollTo(0,y);}" +
+      "function watch(){var m=document.images;" +
+      "for(var i=0;i<m.length;i++){if(m[i].complete||m[i].__seen)continue;" +
+      "m[i].__seen=1;m[i].addEventListener('load',put,{once:true});" +
+      "m[i].addEventListener('error',put,{once:true});}}" +
+      "put();watch();" +
+      "document.addEventListener('DOMContentLoaded',function(){put();watch();});" +
+      "addEventListener('load',put);" +
+      (announce ? "try{parent.postMessage({cms:'ready'},'*');}catch(e){}" : "") +
+      "})();<\/script>";
+  }
+
+  const frameScroll = function (frame) {
+    try { return frame.contentWindow.scrollY; } catch (e) { return 0; }
+  };
 
   function niceDate(iso) {
     const p = String(iso || "").split("-");
@@ -92,6 +133,9 @@
     pendingImage: null,   // {base64, mime, dataUrl, ext, note}
     previewTab: "page",
     previewSize: "desktop",
+    previewHTML: "",      // what the preview is showing, for opening in a tab
+    sort: "newest",
+    theme: "system",
     oauth: false,
   };
 
@@ -203,24 +247,30 @@
   }
 
   /* The build Action turns a commit into pages. Watching it lets the editor
-     say "live" when it is actually live rather than guessing. */
-  async function waitForBuild(onStage) {
+     say "live" when it is actually live rather than guessing.
+
+     The run is matched on the commit this publish just made. Asking only for
+     the newest run on the branch would sometimes answer with the nightly
+     news-discovery job instead, and report its result as the post's. */
+  async function waitForBuild(onStage, sha) {
     const started = Date.now();
     await new Promise((r) => setTimeout(r, 4000));
     while (Date.now() - started < 180000) {
       try {
-        const runs = await gh(`/repos/${REPO()}/actions/runs?branch=${encodeURIComponent(config.branch)}&per_page=3`);
-        const run = (runs.workflow_runs || [])[0];
-        if (run && run.status === "completed" && new Date(run.created_at).getTime() > started - 120000) {
-          return run.conclusion === "success";
+        const runs = await gh(`/repos/${REPO()}/actions/runs?branch=${encodeURIComponent(config.branch)}&per_page=20`);
+        const mine = (runs.workflow_runs || []).filter((r) => !sha || r.head_sha === sha);
+        if (mine.length) {
+          // More than one workflow can answer for a commit. It is finished when
+          // all of them are, and it went wrong if any of them did.
+          if (mine.some((r) => r.status !== "completed")) onStage("Building the page…");
+          else return !mine.some((r) => r.conclusion === "failure" || r.conclusion === "timed_out");
         }
-        if (run && run.status !== "completed") onStage("Building the page…");
       } catch (e) {
         return null;   // no permission to watch, or offline: not an error worth showing
       }
       await new Promise((r) => setTimeout(r, 5000));
     }
-    return null;
+    return null;   // nothing to report either way within three minutes
   }
 
   /* ========================================================================
@@ -397,13 +447,21 @@
       "when you want to publish a change.</div>";
   }
 
+  const SORTS = {
+    newest: (a, b) => (a.meta.date < b.meta.date ? 1 : a.meta.date > b.meta.date ? -1 : 0),
+    oldest: (a, b) => (a.meta.date > b.meta.date ? 1 : a.meta.date < b.meta.date ? -1 : 0),
+    title: (a, b) => String(a.meta.title || a.slug).localeCompare(String(b.meta.title || b.slug)),
+  };
+
   function renderList() {
     const posts = (state.posts || []).filter((p) => {
       const hidden = String(p.meta.draft || "").toLowerCase() === "true";
       if (state.filter === "live" && hidden) return false;
       if (state.filter === "hidden" && !hidden) return false;
       if (!state.query) return true;
-      return (p.meta.title + " " + p.meta.excerpt + " " + p.body).toLowerCase().indexOf(state.query) > -1;
+      const hay = [p.meta.title, p.meta.excerpt, p.meta.category, p.slug, p.body]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.indexOf(state.query) > -1;
     });
 
     const total = (state.posts || []).length;
@@ -411,6 +469,8 @@
     $("#list-count").textContent =
       total + (total === 1 ? " post" : " posts") +
       (hiddenCount ? " · " + hiddenCount + " hidden" : "");
+
+    posts.sort(SORTS[state.sort] || SORTS.newest);
 
     if (!posts.length) {
       $("#list-body").innerHTML = signedOutNotice() + '<div class="empty"><p>' +
@@ -487,6 +547,7 @@
     updatePreview();
     setStatus(state.editing.isNew ? "New post" : (state.editing.draft ? "Hidden from the site" : "Live on the site"));
     $("#danger-zone").hidden = state.editing.isNew;
+    $("[data-action='duplicate']").hidden = state.editing.isNew;
     $("[data-action='save-hidden']").textContent = state.editing.draft ? "Save as hidden" : "Hide from site";
 
     // Category suggestions come from the posts that already exist.
@@ -727,7 +788,7 @@
       // A relative <base> is discarded inside a srcdoc frame, so the site root
       // is worked out here and given absolutely. This keeps the card preview
       // correct even when the site is served from a subfolder.
-      '<base href="' + new URL("../", location.href).href + '">' +
+      '<base href="' + siteRoot() + '">' +
       // The webfont link is loaded without blocking: a stylesheet still on its
       // way stops the scripts below from running, and on a hotel wifi at a
       // campaign event that would leave the preview stuck on an empty box.
@@ -746,7 +807,7 @@
     const post = previewPost();
     const host = config.siteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
     const url = config.siteUrl + "/news/" + post.slug + ".html";
-    const image = post.image ? "../" + post.image : "../assets/img/logo.png";
+    const image = siteRoot() + (post.image || "assets/img/logo.png");
     const summary = post.excerpt || "Add a one-sentence summary — this is the line people see.";
 
     return (
@@ -792,7 +853,7 @@
       "<h4>Google search result</h4>" +
       '<div class="g">' +
         '<div class="g__crumb">' +
-          '<div class="g__dot"><img src="../assets/img/mark.png" alt=""></div>' +
+          '<div class="g__dot"><img src="' + siteRoot() + 'assets/img/mark.png" alt=""></div>' +
           "<div>" +
             '<div class="g__site">' + esc(config.siteName) + "</div>" +
             '<div class="g__url">' + esc(url.replace(/^https?:\/\//, "").replace(/\.html$/, "")) + "</div>" +
@@ -814,23 +875,75 @@
 
   const updatePreview = debounce(function () {
     const frame = $("#preview-frame");
-    const scroll = (function () {
-      try { return frame.contentWindow.scrollY; } catch (e) { return 0; }
-    })();
+    const scroll = frameScroll(frame);
 
     const html = state.previewTab === "card" ? cardPreviewHTML()
       : state.previewTab === "share" ? sharePreviewHTML()
       : pagePreviewHTML();
 
-    frame.srcdoc = html;
-    frame.onload = function () {
-      try { frame.contentWindow.scrollTo(0, scroll); } catch (e) {}
-    };
+    state.previewHTML = html.replace("</body>", scrollKeeper(scroll) + "</body>");
+    frame.srcdoc = state.previewHTML;
 
     $("#stage").dataset.size = state.previewSize;
     $("#stage-note").textContent = NOTES[state.previewTab];
     $("#size-toggle").hidden = state.previewTab === "share";
   }, 180);
+
+  /* The preview in a tab of its own — to show somebody across the room, or to
+     put on the screen at a meeting. It is the same HTML the frame is showing,
+     with every address absolute so the page stands up on its own. */
+  function openPreviewTab() {
+    const html = $("#view-page").hidden
+      ? previewTabHTML()
+      : (window.SitePages ? window.SitePages.previewHTML() : "");
+    if (!html) { toast("There is nothing to show yet."); return; }
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+    if (!window.open(url, "_blank", "noopener")) {
+      toast("The browser blocked that tab. Allow pop-ups for this page and try again.");
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  function previewTabHTML() {
+    if (state.previewTab !== "page") return state.previewHTML;
+    const html = PostTemplate.render(previewPost(), {
+      siteUrl: config.siteUrl,
+      siteName: config.siteName,
+      base: siteRoot(),
+      scripts: false,
+    });
+    return withPendingPhoto(nonBlockingFonts(html).replace("</head>", FORCE_VISIBLE + "</head>"));
+  }
+
+  /* Most posts are a version of one that already exists — the same shape, the
+     same photo, a different week. Starting from the last one beats starting
+     from an empty box. The copy is hidden until somebody publishes it. */
+  function duplicatePost() {
+    const e = readForm();
+    state.editing = {
+      slug: null, path: null, sha: null, isNew: true,
+      title: e.title ? e.title + " (copy)" : "",
+      excerpt: e.excerpt,
+      category: e.category,
+      date: today(),
+      image: e.image,
+      imageAlt: e.imageAlt,
+      draft: true,
+      source: "",
+      body: e.body,
+    };
+    state.dirty = true;
+    history.replaceState(null, "", "#/new");
+    fillForm();
+    show("editor");
+    updatePreview();
+    setStatus("A copy — nothing is on the website yet", "warn");
+    $("#danger-zone").hidden = true;
+    $("[data-action='save-hidden']").textContent = "Save as hidden";
+    $("#f-title").focus();
+    $("#f-title").select();
+    toast("A copy of that post. Nothing is on the website until you publish it.");
+  }
 
   /* ========================================================================
      Local autosave — nothing typed is ever lost to a closed tab
@@ -944,7 +1057,7 @@
 
     try {
       busy(e.draft ? "Saving…" : "Publishing…");
-      await commitFiles(files, verb + " post: " + meta.title + who);
+      const commit = await commitFiles(files, verb + " post: " + meta.title + who);
 
       // Success: the file is committed. Everything after this is reporting.
       store.remove(draftKey());
@@ -956,6 +1069,11 @@
       $("#danger-zone").hidden = false;
       history.replaceState(null, "", "#/edit/" + encodeURIComponent(slug));
 
+      // This publish is now the newest version of the file. Without recording
+      // that, the next one would announce that somebody else had changed the
+      // post — and a warning that cries wolf is worse than no warning at all.
+      state.editing.sha = await currentSha(path);
+
       if (e.draft) {
         busyDone("Saved, and hidden from the site.");
         setStatus("Hidden from the site");
@@ -964,7 +1082,7 @@
       }
 
       busy("Building the page…");
-      const ok = await waitForBuild((s) => busy(s));
+      const ok = await waitForBuild((s) => busy(s), commit);
       // The link is built from where the editor is being served, which is by
       // definition a live address, rather than from the canonical domain, which
       // may not be pointed at the site yet.
@@ -979,7 +1097,6 @@
       }
       setStatus("Live on the site");
       $("[data-action='save-hidden']").textContent = "Hide from site";
-      state.editing.sha = await currentSha(path);
     } catch (err) {
       busyDone("Could not publish: " + err.message);
       setStatus("Not published", "warn");
@@ -1038,8 +1155,11 @@
     return new Promise(function (resolve) {
       const modal = $("#modal");
       $("#modal-body").innerHTML =
-        "<h2>" + esc(o.title) + "</h2>" +
+        '<h2 id="modal-title">' + esc(o.title) + "</h2>" +
         "<p>" + esc(o.body) + "</p>" +
+        (o.list && o.list.length
+          ? '<ul class="modal__list">' + o.list.map((li) => "<li>" + esc(li) + "</li>").join("") + "</ul>"
+          : "") +
         '<div class="modal__actions">' +
           '<button class="btn" type="button" data-modal="cancel">Cancel</button>' +
           '<button class="btn ' + (o.danger ? "btn--danger" : "btn--primary") + '" type="button" data-modal="ok">' +
@@ -1060,7 +1180,7 @@
     const modal = $("#modal");
     $("#modal-body").innerHTML =
       '<div class="help">' +
-      "<h2>How this works</h2>" +
+      '<h2 id="modal-title">How this works</h2>' +
       "<dl>" +
         "<dt>Where does what I write go?</dt>" +
         "<dd>Press Publish and the post is saved to the campaign's GitHub repository. " +
@@ -1106,6 +1226,161 @@
         go("#/posts", true);
       }
     };
+  }
+
+  /* ========================================================================
+     Appearance
+
+     The editor follows whatever the computer is set to, which is right almost
+     always and wrong in exactly one place: a laptop on a dark desk under
+     stage lights at eight in the evening. So it can also be told.
+     ======================================================================== */
+  const THEMES = ["system", "light", "dark"];
+  const THEME_LABEL = { system: "Match my computer", light: "Light", dark: "Dark" };
+
+  function applyTheme(name) {
+    const theme = THEMES.indexOf(name) > -1 ? name : "system";
+    state.theme = theme;
+    document.documentElement.dataset.theme = theme;
+    store.set("theme", theme);
+    const button = $("[data-action='theme']");
+    if (button) {
+      button.setAttribute("aria-label", "Appearance: " + THEME_LABEL[theme]);
+      button.title = "Appearance: " + THEME_LABEL[theme];
+      button.dataset.theme = theme;
+    }
+  }
+
+  const nextTheme = () => THEMES[(THEMES.indexOf(state.theme) + 1) % THEMES.length];
+
+  /* ========================================================================
+     The command bar
+
+     Five pages, a growing pile of posts, a photo library and the settings. By
+     the time somebody is looking for one of them, naming it is quicker than
+     hunting for it — so Ctrl+K, anywhere, and start typing.
+     ======================================================================== */
+  const palette = { items: [], shown: [], at: 0 };
+
+  function paletteItems() {
+    const items = [];
+    const add = (o) => items.push(o);
+
+    add({ group: "Write", label: "Write a post", hint: "A new announcement or update", go: "#/new", icon: "✎" });
+    (state.posts || []).forEach(function (p) {
+      const hidden = String(p.meta.draft || "").toLowerCase() === "true";
+      add({
+        group: "Posts",
+        label: p.meta.title || p.slug,
+        hint: (hidden ? "Hidden · " : "") + (p.meta.category || "News") + " · " + niceDate(p.meta.date),
+        go: "#/edit/" + encodeURIComponent(p.slug),
+        icon: "▤",
+      });
+    });
+
+    ((window.SitePages && window.SitePages.pages) || []).forEach(function (p) {
+      add({ group: "Pages", label: p.name, hint: p.note, go: "#/page/" + encodeURIComponent(p.file), icon: "▢" });
+    });
+
+    add({ group: "Go to", label: "All posts", hint: "Everything on the news page", go: "#/posts", icon: "▤" });
+    add({ group: "Go to", label: "All pages", hint: "The rest of the website", go: "#/pages", icon: "▢" });
+    add({ group: "Go to", label: "Photos", hint: "Every picture on the website", go: "#/media", icon: "▣" });
+    add({ group: "Go to", label: "Settings", hint: "Menu, donate link, email, social links", go: "#/settings", icon: "⚙" });
+
+    add({ group: "This editor", label: "Appearance: " + THEME_LABEL[state.theme],
+          hint: "Switch to " + THEME_LABEL[nextTheme()].toLowerCase(), run: () => applyTheme(nextTheme()), icon: "◐" });
+    add({ group: "This editor", label: "Help", hint: "How publishing works", run: openHelp, icon: "?" });
+    if (state.token) add({ group: "This editor", label: "Sign out", hint: "Forget this computer", run: () => signOut(), icon: "→" });
+    else add({ group: "This editor", label: "Sign in", hint: "Needed only to publish", run: () => { show("signin"); renderSignin(); }, icon: "→" });
+
+    return items;
+  }
+
+  // Every letter typed has to appear, in order, somewhere in the label — so
+  // "twn hll" finds the town hall — and a run of them together scores best.
+  function fuzzy(text, query) {
+    if (!query) return 0;
+    const haystack = text.toLowerCase();
+    let at = 0, score = 0, run = 0;
+    for (let i = 0; i < query.length; i++) {
+      const found = haystack.indexOf(query[i], at);
+      if (found === -1) return -1;
+      run = found === at && i > 0 ? run + 1 : 0;
+      score += found - at - run * 2;
+      at = found + 1;
+    }
+    return score + (haystack.indexOf(query) === 0 ? -20 : 0);
+  }
+
+  function renderPalette() {
+    const query = $("#palette-input").value.trim().toLowerCase();
+    palette.shown = palette.items
+      .map(function (item) {
+        const score = query ? fuzzy(item.label + " " + item.group, query) : 0;
+        return score < 0 ? null : { item: item, score: score };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 40)
+      .map((r) => r.item);
+
+    if (palette.at >= palette.shown.length) palette.at = 0;
+
+    if (!palette.shown.length) {
+      $("#palette-list").innerHTML = '<li class="palette__none">Nothing matches that.</li>';
+      return;
+    }
+
+    let group = "";
+    $("#palette-list").innerHTML = palette.shown.map(function (item, i) {
+      const head = item.group !== group && !query
+        ? '<li class="palette__group" role="presentation">' + esc(item.group) + "</li>"
+        : "";
+      group = item.group;
+      return head +
+        '<li role="option" id="palette-' + i + '" aria-selected="' + (i === palette.at) + '"' +
+          ' class="palette__item' + (i === palette.at ? " is-at" : "") + '" data-at="' + i + '">' +
+          '<span class="palette__icon" aria-hidden="true">' + item.icon + "</span>" +
+          '<span class="palette__label">' + esc(item.label) + "</span>" +
+          '<span class="palette__hint">' + esc(item.hint || "") + "</span>" +
+        "</li>";
+    }).join("");
+
+    const at = $("#palette-" + palette.at);
+    if (at) at.scrollIntoView({ block: "nearest" });
+    $("#palette-input").setAttribute("aria-activedescendant", "palette-" + palette.at);
+  }
+
+  function openPalette() {
+    palette.items = paletteItems();
+    palette.at = 0;
+    const dialog = $("#palette");
+    $("#palette-input").value = "";
+    renderPalette();
+    if (!dialog.open) dialog.showModal();
+    $("#palette-input").focus();
+
+    // The posts may not have been read yet. Fetch them quietly and put them in
+    // as they arrive rather than making anyone wait for a list to search.
+    if (!state.posts && state.token && !state.demo) {
+      loadPosts().then(function () {
+        if (dialog.open) { palette.items = paletteItems(); renderPalette(); }
+      }).catch(() => {});
+    }
+  }
+
+  function movePalette(by) {
+    if (!palette.shown.length) return;
+    palette.at = (palette.at + by + palette.shown.length) % palette.shown.length;
+    renderPalette();
+  }
+
+  function choosePalette(index) {
+    const item = palette.shown[index == null ? palette.at : index];
+    if (!item) return;
+    $("#palette").close();
+    if (item.run) item.run();
+    else if (item.go) location.hash = item.go;
   }
 
   /* ========================================================================
@@ -1192,6 +1467,10 @@
       if (el) {
         const action = el.dataset.action;
         if (action === "help") openHelp();
+        if (action === "find") openPalette();
+        if (action === "theme") applyTheme(nextTheme());
+        if (action === "open-preview") openPreviewTab();
+        if (action === "duplicate") duplicatePost();
         if (action === "signin") signIn($("#token-input").value);
         if (action === "go-signin" || action === "leave-demo") {
           state.demo = false; state.posts = null; renderAccount(); show("signin"); renderSignin();
@@ -1285,6 +1564,32 @@
       renderList();
     });
 
+    $("#list-sort").addEventListener("change", function () {
+      state.sort = this.value;
+      store.set("sort", state.sort);
+      renderList();
+    });
+
+    const paletteInput = $("#palette-input");
+    paletteInput.addEventListener("input", function () { palette.at = 0; renderPalette(); });
+    paletteInput.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); movePalette(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); movePalette(-1); }
+      else if (e.key === "Enter") { e.preventDefault(); choosePalette(); }
+    });
+    $("#palette-list").addEventListener("click", function (e) {
+      const row = e.target.closest("[data-at]");
+      if (row) choosePalette(+row.dataset.at);
+    });
+    // Clicking away from the box closes it, as a panel over a page should.
+    $("#palette").addEventListener("click", function (e) {
+      if (!e.target.closest(".palette__box")) $("#palette").close();
+    });
+    $("#palette-list").addEventListener("mousemove", function (e) {
+      const row = e.target.closest("[data-at]");
+      if (row && +row.dataset.at !== palette.at) { palette.at = +row.dataset.at; renderPalette(); }
+    });
+
     // Photo: click, drop, paste
     const zone = $("#dropzone");
     zone.addEventListener("click", () => $("#photo-input").click());
@@ -1308,6 +1613,17 @@
     // Keyboard
     document.addEventListener("keydown", function (e) {
       const meta = e.metaKey || e.ctrlKey;
+
+      // Ctrl+K is the way in and the way out, from anywhere.
+      if (meta && (e.key === "k" || e.key === "K") && !e.shiftKey) {
+        const inBody = document.activeElement === $("#f-body");
+        if (!inBody) {
+          e.preventDefault();
+          if ($("#palette").open) $("#palette").close();
+          else openPalette();
+          return;
+        }
+      }
       if (!meta) return;
       const inBody = document.activeElement === $("#f-body");
       // Only while a post is open. Everywhere else this is the browser's own
@@ -1342,9 +1658,19 @@
      Start
      ======================================================================== */
   async function boot() {
+    applyTheme(store.get("theme", "system"));
+    state.sort = store.get("sort", "newest");
+    const sort = $("#list-sort");
+    if (sort) sort.value = state.sort;
+
     $$("[data-site-host]").forEach((el) => {
       el.textContent = config.siteUrl.replace(/^https?:\/\//, "");
     });
+
+    // Ctrl on Windows and Linux, ⌘ on a Mac: the hint has to match the keyboard.
+    if (/Mac|iPhone|iPad/.test(navigator.platform || "")) {
+      $$("[data-key]").forEach((el) => (el.textContent = el.dataset.key.replace("Ctrl", "⌘")));
+    }
 
     // A token handed back by the optional sign-in helper arrives in the URL
     // fragment, which browsers never send to a server. Take it and tidy up.
@@ -1400,6 +1726,11 @@
     debounce: debounce,
     autogrow: autogrow,
     today: today,
+    scrollKeeper: scrollKeeper,
+    frameScroll: frameScroll,
+    timeAgo: timeAgo,
+    siteRoot: siteRoot,
+    niceDate: niceDate,
   };
 
   boot();

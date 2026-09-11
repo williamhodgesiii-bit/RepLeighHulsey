@@ -36,14 +36,62 @@
   const LINK_CHOICES = ["index.html", "about.html", "issues.html", "news.html",
                         "contact.html", "donate.html"];
 
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
   const s = {
     page: null,        // {file, name, html, values, schema}
     dirty: false,
+    restored: false,   // was unsaved work put back when this page opened?
+    query: "",         // narrowing the form to the field being looked for
     media: null,
-    pickingFor: null,  // the image field waiting for a photo
-    previewReady: false,   // is the preview loaded and listening?
+    pickingFor: null,  // {path, list, index} — the image field waiting for a photo
+    previewReady: false,   // is the preview there and listening?
+    previewHTML: "",   // what it is showing, for opening in a tab of its own
     settings: null,
   };
+
+  /* ========================================================================
+     Unsaved work
+
+     A page is read from GitHub every time it is opened, so anything typed and
+     not published used to disappear the moment somebody looked at a different
+     page. It is kept here as it is typed instead, in this browser, and offered
+     back when the page is opened again. Nothing about the website changes
+     until Publish; this only means the work is still there to publish.
+     ======================================================================== */
+  const draftKey = (file) => "page." + file;
+
+  const keepDraft = E.debounce(function () {
+    if (!s.page || E.state.demo) return;
+    E.store.set(draftKey(s.page.file), { values: s.page.values, at: Date.now() });
+    markUnsaved();
+  }, 500);
+
+  function dropDraft(file) {
+    E.store.remove(draftKey(file));
+    markUnsaved();
+  }
+
+  const keepSettingsDraft = E.debounce(function () {
+    if (!s.settings || E.state.demo) return;
+    E.store.set("settings", {
+      values: s.settings.values, nav: s.settings.nav, at: Date.now(),
+    });
+    markUnsaved();
+  }, 500);
+
+  // A dot beside Pages or Settings, so work left behind on another screen is
+  // visible from wherever the writer happens to be.
+  function markUnsaved() {
+    const anyPage = PAGES.some((p) => E.store.get(draftKey(p.file), null));
+    const settings = !!E.store.get("settings", null);
+    const mark = function (section, on) {
+      const link = $("#sections a[data-section='" + section + "']");
+      if (link) link.classList.toggle("has-unsaved", !!on);
+    };
+    mark("pages", anyPage);
+    mark("settings", settings);
+  }
 
   /* ========================================================================
      Reading and writing files in the repository
@@ -116,9 +164,26 @@
       schema: CMS.schema(html),
     };
     s.dirty = false;
-    setStatus(meta.name + " — as it is on the website now");
+    s.restored = false;
+    s.query = "";
+
+    // Anything typed here before and never published is put back. It is laid
+    // over what the website has now rather than replacing it, so a part of the
+    // page that has changed in the meantime still arrives.
+    const saved = E.store.get(draftKey(file), null);
+    if (saved && saved.values && !same(saved.values, s.page.values)) {
+      s.page.values = Object.assign({}, s.page.values, saved.values);
+      s.dirty = true;
+      s.restored = true;
+      setStatus("Your unsaved changes from " + E.timeAgo(saved.at) + " — not on the website yet", true);
+    } else {
+      if (saved) dropDraft(file);
+      setStatus(meta.name + " — as it is on the website now");
+    }
+
     renderForm();
     updatePreview();
+    markUnsaved();
   }
 
   function setStatus(text, warn) {
@@ -150,23 +215,114 @@
     s.page.schema.forEach(function (field) {
       const name = field.group || "Page";
       let g = groups.filter((x) => x.name === name)[0];
-      if (!g) { g = { name: name, fields: [] }; groups.push(g); }
+      if (!g) { g = { name: name, fields: [], head: true }; groups.push(g); }
+      if (!field.head) g.head = false;
       g.fields.push(field);
     });
 
+    // What the visitor sees comes first. A group that exists only in the
+    // <head> — the page title and the search-engine lines — is real work, but
+    // it is not the reason anybody opens this page, so it goes to the bottom.
+    const order = groups.filter((g) => !g.head).concat(groups.filter((g) => g.head));
+
     $("#page-form").innerHTML =
+      // Everything here can be read and previewed signed out. Saying so up
+      // front beats finding out at the moment somebody presses Publish.
+      E.signedOutNotice() +
+      (s.restored
+        ? '<div class="notice notice--warn">Your unsaved changes are back, exactly ' +
+          "as you left them. They are not on the website until you press Publish — " +
+          '<button class="linklike" type="button" data-action="page-revert">' +
+          "undo them</button> to go back to what is up now.</div>"
+        : "") +
       '<p class="formlead">Change anything below and watch the page beside it. ' +
       'Nothing is on the website until you press Publish.</p>' +
-      groups.map(function (g, i) {
+      '<div class="formbar">' +
+        '<input class="search" id="field-search" type="search" autocomplete="off" ' +
+          'placeholder="Find a field on this page" aria-label="Find a field on this page" ' +
+          'value="' + esc(s.query || "") + '">' +
+        '<button class="ghost" type="button" data-action="expand-all">Expand all</button>' +
+      "</div>" +
+      '<p class="formcount" id="field-count" aria-live="polite"></p>' +
+      order.map(function (g, i) {
         const isOpen = openState ? !!openState[g.name] : i < 2;
         return (
           '<details class="group"' + (isOpen ? " open" : "") + ">" +
-            "<summary>" + esc(g.name) + '<span class="group__count">' + g.fields.length + "</span></summary>" +
+            "<summary>" + esc(g.name) +
+              '<span class="group__count" data-total="' + g.fields.length + '">' +
+                g.fields.length + "</span></summary>" +
             '<div class="group__body">' + g.fields.map(control).join("") + "</div>" +
           "</details>"
         );
       }).join("");
     $$("#page-form textarea").forEach(E.autogrow);
+    renderCount();
+    if (s.query) filterFields(s.query);
+  }
+
+  // How much there is to change here, counted from what was actually drawn so
+  // it cannot drift from the form beside it.
+  function renderCount() {
+    const count = $("#field-count");
+    if (!count) return;
+    const n = $$("#page-form .field").length;
+    count.textContent = n + (n === 1 ? " thing" : " things") + " you can change on this page";
+  }
+
+  /* Nine groups and a hundred boxes is a lot to scroll past to change one
+     line. Typing narrows it to the fields whose name, help or contents match,
+     and opens whichever groups they are in. */
+  function filterFields(query) {
+    s.query = query;
+    const q = query.trim().toLowerCase();
+    const count = $("#field-count");
+
+    if (!q) {
+      $$("#page-form .field, #page-form .repeater, #page-form .item").forEach((el) => (el.hidden = false));
+      $$("#page-form details").forEach((d) => d.classList.remove("is-empty"));
+      $$("#page-form .group__count").forEach((b) => (b.textContent = b.dataset.total));
+      renderCount();
+      return;
+    }
+
+    let shown = 0;
+    const matches = function (box) {
+      const label = (box.querySelector("label") || {}).textContent || "";
+      const hint = (box.querySelector(".hint") || {}).textContent || "";
+      const input = box.querySelector("input, textarea");
+      const value = input ? input.value : "";
+      return (label + " " + hint + " " + value).toLowerCase().indexOf(q) > -1;
+    };
+
+    $$("#page-form .group").forEach(function (group) {
+      let any = false;
+      $$(".field", group).forEach(function (box) {
+        // A field inside a repeating item is judged on its own, but an item is
+        // kept whole when any of its fields match, so a card stays a card.
+        const item = box.closest(".item");
+        const hit = matches(box) || (item && $$(".field", item).some(matches));
+        box.hidden = !hit;
+        if (hit) { any = true; shown++; }
+      });
+      $$(".item", group).forEach(function (item) {
+        item.hidden = !$$(".field", item).some((f) => !f.hidden);
+      });
+      $$(".repeater", group).forEach(function (rep) {
+        rep.hidden = !$$(".field", rep).some((f) => !f.hidden);
+      });
+      // The badge counts what is in front of you, not what the group holds.
+      const badge = group.querySelector(".group__count");
+      const here = $$(".field", group).filter((f) => !f.hidden).length;
+      if (badge) badge.textContent = here + " of " + badge.dataset.total;
+      group.classList.toggle("is-empty", !any);
+      if (any) group.open = true;
+    });
+
+    if (count) {
+      count.textContent = shown
+        ? shown + (shown === 1 ? " field matches " : " fields match ") + "“" + query.trim() + "”"
+        : "Nothing on this page matches “" + query.trim() + "”";
+    }
   }
 
   function control(field) {
@@ -179,13 +335,17 @@
       ? (s.page.values[list.path][index] || {})[field.path]
       : s.page.values[field.path];
     const id = "f_" + String(list ? list.path + "_" + index + "_" + field.path : field.path).replace(/\W/g, "_");
+    // data-attr is the whole of how the rest of the file tells an attribute
+    // apart from an element's content. Guessing it back from the kind of box
+    // that got drawn used to write a button's link into the button's words.
     const data = ' data-path="' + esc(field.path) + '" data-type="' + esc(field.type || "text") + '"' +
+      (field.attr ? ' data-attr="' + esc(field.attr) + '"' : "") +
       (list ? ' data-list="' + esc(list.path) + '" data-index="' + index + '"' : "");
 
     const help = field.help ? '<p class="hint">' + esc(field.help) + "</p>" : "";
     const label = '<label for="' + id + '">' + esc(field.label) + "</label>";
 
-    if (field.attr === "src") return photoControl(field, id, data, value, label, help);
+    if (field.attr === "src") return photoControl(field, id, data, value, label, help, list, index);
 
     if (field.type === "url") {
       return '<div class="field">' + label +
@@ -221,14 +381,20 @@
       help + "</div>";
   }
 
-  function photoControl(field, id, data, value, label, help) {
+  function photoControl(field, id, data, value, label, help, list, index) {
     const src = value ? "../" + value : "";
+    // Which item's photo this is, so choosing one for the third card does not
+    // land on the first — or, worse, on nothing at all.
+    const where = list ? ' data-pick-list="' + esc(list.path) + '" data-pick-index="' + index + '"' : "";
     return '<div class="field">' + label +
       '<div class="photofield">' +
-        (src ? '<img src="' + esc(src) + '" alt="">' : '<div class="photofield__none">None</div>') +
+        (src
+          ? '<img src="' + esc(src) + '" alt="" loading="lazy">'
+          : '<div class="photofield__none">None</div>') +
         '<div class="photofield__side">' +
-          '<code class="photofield__path">' + esc(value || "") + "</code>" +
-          '<button class="btn" type="button" data-pick="' + esc(field.path) + '">Choose a photo</button>' +
+          '<code class="photofield__path">' + esc(value || "No photo chosen") + "</code>" +
+          '<button class="btn" type="button" data-pick="' + esc(field.path) + '"' + where + ">" +
+            (value ? "Change photo" : "Choose a photo") + "</button>" +
         "</div>" +
       "</div>" +
       '<input type="hidden" id="' + id + '" value="' + esc(value || "") + '"' + data + ">" +
@@ -289,6 +455,18 @@
     "return [].slice.call(list.querySelectorAll('[data-cms-item]')).filter(function(it){",
     "return it.closest('[data-cms-list]')===list;});}",
 
+    // Does this element carry that path — as its content, or as one of the
+    // attributes it exposes? An exact answer: "amount" must not match a
+    // neighbouring "amountNote", and a repeating item is usually the element
+    // itself rather than something inside it.
+    "function owns(el,path){",
+    "if(!el||!el.getAttribute)return false;",
+    "if(el.getAttribute('data-cms')===path)return true;",
+    "var a=el.getAttribute('data-cms-attr');if(!a)return false;",
+    "for(var p=a.split(','),i=0;i<p.length;i++)",
+    "if((p[i].split(':')[1]||'').trim()===path)return true;",
+    "return false;}",
+
     // The element a path (plus optional list and index) points at.
     "function find(m){",
     "var list=m.list?document.querySelector('[data-cms-list=\"'+m.list+'\"]'):null;",
@@ -296,8 +474,10 @@
     "if(list&&m.index!=null){var it=items(list)[m.index];if(!it)return list;scope=it;}",
     "else if(list&&!m.path)return list;",
     "if(!m.path)return list;",
-    "return scope.querySelector('[data-cms=\"'+m.path+'\"]')||",
-    "scope.querySelector('[data-cms-attr*=\"'+m.path+'\"]')||list;}",
+    "if(scope!==document&&owns(scope,m.path))return scope;",
+    "var all=scope.querySelectorAll('[data-cms],[data-cms-attr]');",
+    "for(var i=0;i<all.length;i++)if(owns(all[i],m.path))return all[i];",
+    "return list;}",
 
     // Clicking anything editable tells the editor which field it was.
     "document.addEventListener('click',function(e){",
@@ -313,7 +493,7 @@
     "index:list?items(list).indexOf(item):null},'*');},true);",
 
     "addEventListener('message',function(e){",
-    "var m=e.data;if(!m||!m.cms)return;",
+    "var m=e.data;if(!m||!m.cms||m.cms==='ready')return;",
 
     // The editor is pointing at a field: show where it is.
     "if(m.cms==='highlight'){",
@@ -342,35 +522,19 @@
   const updatePreview = E.debounce(function () {
     if (!s.page) return;
     const frame = $("#page-frame");
+    const scroll = E.frameScroll(frame);
+
     let html = CMS.write(s.page.html, s.page.values);
     html = html.replace(
       /<link href="https:\/\/fonts\.googleapis\.com([^"]*)" rel="stylesheet">/,
       '<link href="https://fonts.googleapis.com$1" rel="stylesheet" media="print" onload="this.media=\'all\'">'
     );
-    html = html.replace("<head>", '<head><base href="' + new URL("../", location.href).href + '">');
-    html = html.replace("</body>", PREVIEW_HOOK + "</body>");
+    html = html.replace("<head>", '<head><base href="' + E.siteRoot() + '">');
+    html = html.replace("</body>", PREVIEW_HOOK + E.scrollKeeper(scroll, true) + "</body>");
 
-    const scroll = (function () { try { return frame.contentWindow.scrollY; } catch (e) { return 0; } })();
     s.previewReady = false;
+    s.previewHTML = html;
     frame.srcdoc = html;
-    frame.onload = function () {
-      s.previewReady = true;
-      // Photographs settle after load and move everything below them, so the
-      // place the reader was looking is restored again once they have.
-      const put = function () { try { frame.contentWindow.scrollTo(0, scroll); } catch (e) {} };
-      put();
-      try {
-        const doc = frame.contentWindow.document;
-        const late = [].slice.call(doc.images).filter((i) => !i.complete);
-        let left = late.length;
-        if (!left) return;
-        late.forEach(function (img) {
-          const done = function () { if (--left <= 0) put(); };
-          img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
-        });
-      } catch (e) { /* nothing to wait for */ }
-    };
   }, 200);
 
   // One field's new content, handed straight to the preview. Nothing reloads,
@@ -382,42 +546,30 @@
     // instead, so an edit made the moment a page opens is not lost.
     if (!s.previewReady) { updatePreview(); return; }
     const frame = $("#page-frame");
-    const type = el.dataset.type || "text";
-    const isAttr = el.type === "hidden" || type === "url";
-    const value = isAttr ? el.value : CMS.fromEditable(el.value, type);
     try {
       frame.contentWindow.postMessage({
         cms: "set",
         path: el.dataset.path,
         list: el.dataset.list || null,
         index: el.dataset.index != null ? +el.dataset.index : null,
-        attr: isAttr ? attrNameFor(el) : null,
-        value: value,
+        attr: el.dataset.attr || null,
+        value: valueOf(el),
       }, "*");
     } catch (e) { updatePreview(); }
   }
 
-  // A hidden field stands for an attribute — a photo is a src, a button is an
-  // href. The schema knows which; this asks it.
-  function attrNameFor(el) {
-    const path = el.dataset.path;
-    const inList = el.dataset.list;
-    let fields = s.page.schema;
-    if (inList) {
-      const list = s.page.schema.filter((f) => f.path === inList)[0];
-      fields = list ? list.fields : [];
-    }
-    const field = fields.filter((f) => f.path === path)[0];
-    return field && field.attr ? field.attr : "src";
+  // What goes into the file. An attribute is stored exactly as typed — the
+  // writer escapes attributes itself, and escaping here as well turned an
+  // ampersand in a link into &amp;amp;.
+  function valueOf(el) {
+    if (el.dataset.attr) return el.value;
+    return CMS.fromEditable(el.value, el.dataset.type || "text");
   }
 
   /* ------------------------------------------------------------- editing -- */
   function setValue(el) {
     const path = el.dataset.path;
-    const type = el.dataset.type || "text";
-    const html = el.type === "hidden" || type === "url"
-      ? el.value
-      : CMS.fromEditable(el.value, type);
+    const html = valueOf(el);
 
     if (el.dataset.list) {
       const arr = s.page.values[el.dataset.list];
@@ -426,9 +578,20 @@
     } else {
       s.page.values[path] = html;
     }
+    touched(el);
+    patchPreview(el);
+  }
+
+  // One place for "this page now differs from the website": the flag, the
+  // line in the bar, and the copy kept on this computer.
+  function touched(el) {
     s.dirty = true;
     setStatus("Not published yet — press Publish to put this on the website", true);
-    patchPreview(el);
+    keepDraft();
+    if (el) {
+      const box = el.closest(".field") || el.closest(".item");
+      if (box) box.classList.add("is-changed");
+    }
   }
 
   function blankItem(list) {
@@ -453,6 +616,9 @@
         "Update the " + s.page.name + " page" + who());
       s.page.html = html;
       s.dirty = false;
+      s.restored = false;
+      dropDraft(s.page.file);
+      $$("#page-form .is-changed").forEach((el) => el.classList.remove("is-changed"));
       const root = /^https?:/.test(location.origin) ? location.origin : E.config.siteUrl;
       const link = root + "/" + (s.page.file === "index.html" ? "" : s.page.file);
       E.busyDone('Published. <a href="' + esc(link) + '" target="_blank" rel="noopener">See the page</a>');
@@ -494,14 +660,19 @@
     const shown = (s.media || []).filter((m) => !q || m.path.toLowerCase().indexOf(q) > -1);
     $("#media-count").textContent = (s.media || []).length + " photos on the website";
     $("#media-body").innerHTML = E.signedOutNotice() +
-      (s.pickingFor ? '<div class="notice">Choose a photo to use, or add a new one.</div>' : "") +
+      (s.pickingFor
+        ? '<div class="notice">Choose the photo for <strong>' +
+          esc(pickingLabel()) + "</strong>, or add a new one. " +
+          '<button class="linklike" type="button" data-action="picking-cancel">Never mind</button></div>'
+        : "") +
       (shown.length
         ? '<div class="grid">' + shown.map(function (m) {
             return (
               '<figure class="tile"' + (s.pickingFor ? ' data-use="' + esc(m.path) + '"' : "") + ">" +
                 '<img src="../' + esc(m.path) + '" alt="" loading="lazy">' +
-                "<figcaption>" + esc(m.name) +
-                  '<span>' + Math.round((m.size || 0) / 1024) + " KB</span>" +
+                '<figcaption title="' + esc(m.path) + '">' +
+                  '<span class="tile__name">' + esc(m.name) + "</span>" +
+                  "<span>" + fileSize(m.size) + "</span>" +
                 "</figcaption>" +
                 (s.pickingFor
                   ? '<span class="tile__use">Use this</span>'
@@ -513,6 +684,21 @@
         : '<div class="empty"><p>No photos match that.</p></div>');
   }
 
+  // The name of the field a photo is being chosen for, as the editor calls it.
+  function pickingLabel() {
+    if (!s.pickingFor || !s.page) return "this photo";
+    const inList = s.pickingFor.list;
+    const fields = inList
+      ? ((s.page.schema.filter((f) => f.path === inList)[0] || {}).fields || [])
+      : s.page.schema;
+    const field = fields.filter((f) => f.path === s.pickingFor.path)[0];
+    const where = s.page.name + (inList && s.pickingFor.index != null ? " · item " + (s.pickingFor.index + 1) : "");
+    return (field ? field.label : "this photo") + " on " + where;
+  }
+
+  // "0 KB" beside a picture that plainly exists reads like something is wrong.
+  const fileSize = (bytes) => (!bytes ? "" : bytes < 1024 ? "under 1 KB" : Math.round(bytes / 1024) + " KB");
+
   async function uploadMedia(files) {
     if (!E.canPublish()) { await E.requireSignin("add a photo"); return; }
     const list = Array.prototype.slice.call(files).filter((f) => /^image\//.test(f.type));
@@ -520,15 +706,20 @@
     try {
       E.busy("Getting " + (list.length === 1 ? "the photo" : list.length + " photos") + " ready…");
       const commits = [];
+      const taken = (s.media || []).map((m) => m.path);
       for (const file of list) {
         const ready = await E.prepareImage(file);
         const name = file.name.replace(/\.[^.]+$/, "").toLowerCase()
           .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 50) || "photo";
-        commits.push({
-          path: "assets/img/" + name + "." + ready.ext,
-          content: ready.base64,
-          encoding: "base64",
-        });
+        // Two photos off a phone are both called "img-1234". Landing the second
+        // one on top of the first would change a picture on a page nobody was
+        // even looking at, so a name already in use gets a number.
+        let path = "assets/img/" + name + "." + ready.ext;
+        for (let n = 2; taken.indexOf(path) > -1; n++) {
+          path = "assets/img/" + name + "-" + n + "." + ready.ext;
+        }
+        taken.push(path);
+        commits.push({ path: path, content: ready.base64, encoding: "base64" });
       }
       E.busy("Adding to the website…");
       await E.commitFiles(commits, "Add " + commits.length + " photo" + (commits.length === 1 ? "" : "s") + who());
@@ -602,8 +793,15 @@
     const target = s.pickingFor;
     s.pickingFor = null;
     if (!target || !s.page) { location.hash = "#/media"; return; }
-    s.page.values[target] = path;
-    s.dirty = true;
+
+    if (target.list) {
+      const arr = s.page.values[target.list] || [];
+      arr[target.index] = arr[target.index] || {};
+      arr[target.index][target.path] = path;
+    } else {
+      s.page.values[target.path] = path;
+    }
+    touched();
 
     // Back to the page by hand rather than through the address bar. Setting the
     // hash would send the router through openPage again, which re-reads the
@@ -614,6 +812,7 @@
     refreshForm();
     updatePreview();
     setStatus("Photo changed — press Publish to put it on the website", true);
+    E.toast("Photo changed. Press Publish to put it on the website.");
   }
 
   /* ========================================================================
@@ -633,13 +832,30 @@
     try {
       const js = await readFile("assets/js/site.js");
       const index = await readFile("index.html");
+      const live = { values: readSettings(js), nav: CMS.navRead(index) };
       s.settings = {
         js: js,
-        values: readSettings(js),
-        nav: CMS.navRead(index),
+        values: live.values,
+        nav: live.nav,
+        // What the website says now, kept aside so the editor can name what is
+        // about to change rather than asking for a yes to twelve unnamed files.
+        live: JSON.parse(JSON.stringify(live)),
         dirty: false,
+        restored: false,
       };
+
+      const saved = E.store.get("settings", null);
+      if (saved && saved.values && !same(saved, { values: s.settings.values, nav: s.settings.nav, at: saved.at })) {
+        s.settings.values = Object.assign({}, s.settings.values, saved.values);
+        if (saved.nav && saved.nav.length) s.settings.nav = saved.nav;
+        s.settings.dirty = true;
+        s.settings.restored = E.timeAgo(saved.at);
+      } else if (saved) {
+        E.store.remove("settings");
+      }
+
       renderSettings();
+      markUnsaved();
     } catch (err) {
       $("#settings-body").innerHTML = '<div class="empty"><p>' + esc(err.message) + "</p></div>";
     }
@@ -680,6 +896,11 @@
   function renderSettings() {
     const v = s.settings.values;
     $("#settings-body").innerHTML = E.signedOutNotice() +
+      (s.settings.restored
+        ? '<div class="notice notice--warn">Your unsaved changes from ' +
+          esc(s.settings.restored) + " are back. They are not on the website " +
+          "until you press Publish settings.</div>"
+        : "") +
       '<div class="settings">' +
         '<details class="group" open><summary>The campaign<span class="group__count">' +
           (SETTING_KEYS.length + SOCIAL_KEYS.length) + "</span></summary>" +
@@ -718,9 +939,46 @@
       "</div>";
   }
 
+  function settingsTouched(el) {
+    s.settings.dirty = true;
+    keepSettingsDraft();
+    const box = el && (el.closest(".field") || el.closest(".item"));
+    if (box) box.classList.add("is-changed");
+  }
+
+  // What is different from the website, in words. The menu counts as one
+  // change however many links moved, because that is how it reads to a reader.
+  function settingsChanges() {
+    const out = [];
+    const live = s.settings.live;
+    SETTING_KEYS.concat(SOCIAL_KEYS.map((k) => ["social." + k[0], k[1]]))
+      .forEach(function (k) {
+        if ((s.settings.values[k[0]] || "") !== (live.values[k[0]] || "")) {
+          out.push(k[1] + " — " + (s.settings.values[k[0]] ? "now “" + s.settings.values[k[0]] + "”" : "cleared"));
+        }
+      });
+    const was = live.nav.map((n) => n.label + " → " + n.href).join(" | ");
+    const now = s.settings.nav.map((n) => n.label + " → " + n.href).join(" | ");
+    if (was !== now) {
+      out.push("The menu — " + s.settings.nav.map((n) => n.label).join(", ") +
+        " (changes on every page at once)");
+    }
+    return out;
+  }
+
   async function saveSettings() {
     if (!E.canPublish()) { await E.requireSignin("change the settings"); return; }
     if (!s.settings.dirty) { E.toast("Nothing has changed yet."); return; }
+
+    const changes = settingsChanges();
+    const go = await E.confirmDialog({
+      title: changes.length === 1 ? "Publish this change?" : "Publish these " + changes.length + " changes?",
+      body: "These apply to every page on the website at once. Nothing else on any " +
+            "page is touched, and this can be undone like any other change.",
+      list: changes,
+      confirm: "Publish them",
+    });
+    if (!go) return;
 
     try {
       E.busy("Reading the pages…");
@@ -748,7 +1006,11 @@
       await E.commitFiles(files, "Update site settings" + who());
       s.settings.js = files[0].content;
       s.settings.dirty = false;
-      E.busyDone("Settings published across " + files.length + " files. Live in a minute or two.");
+      E.store.remove("settings");
+      markUnsaved();
+      $$("#settings-body .is-changed").forEach((el) => el.classList.remove("is-changed"));
+      E.busyDone("Settings published across " + files.length +
+        " file" + (files.length === 1 ? "" : "s") + ". Live in a minute or two.");
     } catch (err) {
       E.busyDone("Could not save: " + err.message);
     }
@@ -769,23 +1031,36 @@
       if (use) { usePhoto(use.dataset.use); return; }
 
       const pick = ev.target.closest("[data-pick]");
-      if (pick) { s.pickingFor = pick.dataset.pick; location.hash = "#/media"; return; }
+      if (pick) {
+        s.pickingFor = {
+          path: pick.dataset.pick,
+          list: pick.dataset.pickList || null,
+          index: pick.dataset.pickIndex != null ? +pick.dataset.pickIndex : null,
+        };
+        location.hash = "#/media";
+        return;
+      }
 
       const act = ev.target.closest("[data-action]");
       if (act) {
         const a = act.dataset.action;
         if (a === "pages-back") {
-          if (s.dirty && !await E.confirmDialog({
-            title: "Leave without publishing?",
-            body: "The changes you made to this page are not on the website yet, and leaving loses them.",
-            confirm: "Leave",
-          })) return;
-          s.dirty = false;
+          if (s.dirty) E.toast("Your changes are kept here, but they are not on the website yet.");
           location.hash = "#/pages";
+        }
+        if (a === "expand-all") {
+          const shut = $$("#page-form details").filter((d) => !d.open && !d.classList.contains("is-empty"));
+          $$("#page-form details").forEach((d) => (d.open = shut.length > 0));
+          act.textContent = shut.length > 0 ? "Collapse all" : "Expand all";
         }
         if (a === "page-publish") publishPage();
         if (a === "page-revert") revertPage();
         if (a === "media-upload") $("#media-input").click();
+        if (a === "picking-cancel") {
+          const back = s.page ? "#/page/" + encodeURIComponent(s.page.file) : "#/pages";
+          s.pickingFor = null;
+          location.hash = back;
+        }
         if (a === "settings-save") saveSettings();
       }
 
@@ -793,17 +1068,18 @@
       if (add) {
         const list = s.page.schema.filter((f) => f.path === add.dataset.add)[0];
         s.page.values[list.path].push(blankItem(list));
-        s.dirty = true;
+        touched();
         updatePreview();
         refreshForm('[data-list="' + cssEscape(list.path) + '"][data-index="' +
                     (s.page.values[list.path].length - 1) + '"]');
-        setStatus("Not published yet — press Publish to put this on the website", true);
       }
 
       const remove = ev.target.closest("[data-remove]");
       if (remove) {
         s.page.values[remove.dataset.remove].splice(+remove.dataset.index, 1);
-        s.dirty = true; refreshForm(); updatePreview();
+        touched();
+        refreshForm();
+        updatePreview();
       }
 
       const move = ev.target.closest("[data-move]");
@@ -812,7 +1088,7 @@
         const to = +move.dataset.to;
         if (to >= 0 && to < arr.length) {
           arr.splice(to, 0, arr.splice(+move.dataset.from, 1)[0]);
-          s.dirty = true;
+          touched();
           updatePreview();
           refreshForm('[data-move="' + cssEscape(move.dataset.move) + '"][data-from="' + to + '"]');
         }
@@ -852,15 +1128,16 @@
 
     document.addEventListener("input", function (ev) {
       const el = ev.target;
+      if (el.id === "field-search" && s.page) { filterFields(el.value); return; }
       if (el.dataset && el.dataset.path && s.page) { E.autogrow(el); setValue(el); return; }
       if (el.dataset && el.dataset.setting && s.settings) {
         s.settings.values[el.dataset.setting] = el.value;
-        s.settings.dirty = true;
+        settingsTouched(el);
         return;
       }
       if (el.dataset && el.dataset.nav && s.settings) {
         s.settings.nav[+el.dataset.index][el.dataset.nav] = el.value;
-        s.settings.dirty = true;
+        settingsTouched(el);
         return;
       }
       if (el.id === "media-search") renderMedia();
@@ -885,7 +1162,12 @@
     // Clicking the page beside you jumps to the field that controls it. Inside a
     // repeating region that means the field of the item actually clicked.
     window.addEventListener("message", function (ev) {
-      if (!ev.data || ev.data.cms !== "select" || !s.page) return;
+      if (!ev.data || !ev.data.cms) return;
+      // The preview announces itself from inside, while it is still parsing.
+      // From that moment typing can be handed straight to it instead of
+      // redrawing the whole page underneath the reader.
+      if (ev.data.cms === "ready") { s.previewReady = true; return; }
+      if (ev.data.cms !== "select" || !s.page) return;
       const d = ev.data;
       const p = cssEscape(d.path || "");
 
@@ -916,6 +1198,13 @@
 
     $("#media-input").addEventListener("change", function () { uploadMedia(this.files); this.value = ""; });
 
+    // Leaving the library without choosing means the request is off. Left set,
+    // it would greet the next visit with an instruction to pick a photo for a
+    // field nobody is looking at.
+    window.addEventListener("hashchange", function () {
+      if (location.hash.replace(/^#/, "") !== "/media") s.pickingFor = null;
+    });
+
     window.addEventListener("beforeunload", function (e) {
       if (!s.dirty && !(s.settings && s.settings.dirty)) return;
       e.preventDefault(); e.returnValue = "";
@@ -934,6 +1223,8 @@
     if (!ok) return;
     s.page.values = CMS.read(s.page.html);
     s.dirty = false;
+    s.restored = false;
+    dropDraft(s.page.file);
     refreshForm(); updatePreview();
     setStatus(s.page.name + " — as it is on the website now");
   }
@@ -974,6 +1265,7 @@
   }
 
   function ready() {
+    markUnsaved();
     // A datalist so a link field offers the pages that exist.
     const dl = document.createElement("datalist");
     dl.id = "link-choices";
@@ -982,5 +1274,10 @@
     wire();
   }
 
-  window.SitePages = { route: route, ready: ready };
+  window.SitePages = {
+    route: route,
+    ready: ready,
+    pages: PAGES,
+    previewHTML: () => s.previewHTML,
+  };
 })();

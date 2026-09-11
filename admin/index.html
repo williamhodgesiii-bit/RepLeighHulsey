@@ -14,7 +14,7 @@
      serve this page at /admin and some at /admin/, and the browser works out
      relative addresses differently in each case. Going up one level and back
      down again lands on the same file either way. -->
-<link rel="stylesheet" href="../admin/admin.css?v=72418ecf">
+<link rel="stylesheet" href="../admin/admin.css?v=c1fbd3ab">
 </head>
 <body>
 
@@ -30,6 +30,15 @@
     <a href="#/settings" data-section="settings">Settings</a>
   </nav>
   <div class="topbar__right">
+    <button class="findbtn" type="button" data-action="find" aria-label="Find anything on the website">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="findbtn__text">Find anything</span>
+      <kbd data-key="Ctrl K">Ctrl K</kbd>
+    </button>
+    <button class="ghost ghost--icon" type="button" data-action="theme" data-theme="system"
+            aria-label="Appearance" title="Appearance">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 000 18z"/><circle cx="12" cy="12" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
     <button class="ghost" type="button" data-action="help">Help</button>
     <div id="account"></div>
   </div>
@@ -67,6 +76,14 @@
       </div>
       <div class="list-head__actions">
         <input class="search" id="list-search" type="search" placeholder="Search posts" aria-label="Search posts" autocomplete="off">
+        <label class="sortby">
+          <span class="sortby__label">Sort</span>
+          <select class="select" id="list-sort" aria-label="Sort posts">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">By headline</option>
+          </select>
+        </label>
         <button class="btn btn--primary" type="button" data-action="new">Write a post</button>
       </div>
     </div>
@@ -92,6 +109,7 @@
       </button>
       <p class="editbar__status" id="edit-status" aria-live="polite"></p>
       <div class="editbar__actions">
+        <button class="btn btn--quiet" type="button" data-action="duplicate">Make a copy</button>
         <button class="btn btn--quiet" type="button" data-action="save-hidden">Save as hidden</button>
         <button class="btn btn--primary" type="button" data-action="publish">Publish</button>
       </div>
@@ -210,12 +228,21 @@
             <button type="button" role="tab" data-preview="card" aria-selected="false">News card</button>
             <button type="button" role="tab" data-preview="share" aria-selected="false">When shared</button>
           </div>
-          <div class="sizes" id="size-toggle" role="group" aria-label="Screen size">
-            <button type="button" data-size="phone" title="Phone" aria-label="Phone">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-            </button>
-            <button type="button" class="is-active" data-size="desktop" title="Computer" aria-label="Computer">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="previewbar__tools">
+            <div class="sizes" id="size-toggle" role="group" aria-label="Screen size">
+              <button type="button" data-size="phone" title="Phone" aria-label="Phone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button type="button" data-size="tablet" title="Tablet" aria-label="Tablet">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button type="button" class="is-active" data-size="desktop" title="Computer" aria-label="Computer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <button class="ghost ghost--icon" type="button" data-action="open-preview"
+                    title="Open this preview in a new tab" aria-label="Open this preview in a new tab">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
           </div>
         </div>
@@ -269,12 +296,21 @@
       <div class="pane pane--preview">
         <div class="previewbar">
           <p class="previewbar__note">Click anything in the page to jump to it</p>
-          <div class="sizes" id="page-size" role="group" aria-label="Screen size">
-            <button type="button" data-size2="phone" title="Phone" aria-label="Phone">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-            </button>
-            <button type="button" class="is-active" data-size2="desktop" title="Computer" aria-label="Computer">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="previewbar__tools">
+            <div class="sizes" id="page-size" role="group" aria-label="Screen size">
+              <button type="button" data-size2="phone" title="Phone" aria-label="Phone">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button type="button" data-size2="tablet" title="Tablet" aria-label="Tablet">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <button type="button" class="is-active" data-size2="desktop" title="Computer" aria-label="Computer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <button class="ghost ghost--icon" type="button" data-action="open-preview"
+                    title="Open this page in a new tab" aria-label="Open this page in a new tab">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
           </div>
         </div>
@@ -323,14 +359,32 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-<dialog class="modal" id="modal">
+<dialog class="modal" id="modal" aria-labelledby="modal-title">
   <div class="modal__body" id="modal-body"></div>
 </dialog>
 
+<!-- Ctrl+K from anywhere: every page, post, photo and setting by name. -->
+<dialog class="palette" id="palette" aria-label="Find anything on the website">
+  <div class="palette__box">
+    <div class="palette__field">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="palette-input" type="text" role="combobox" autocomplete="off" spellcheck="false"
+             placeholder="Find a page, a post, a photo or a setting"
+             aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list">
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="palette__list" id="palette-list" role="listbox" aria-label="Results"></ul>
+    <p class="palette__foot">
+      <kbd>&uarr;</kbd><kbd>&darr;</kbd> to move · <kbd>Enter</kbd> to open ·
+      <kbd data-key="Ctrl K">Ctrl K</kbd> any time
+    </p>
+  </div>
+</dialog>
+
 <script src="../assets/js/markdown.js?v=7c8b0089"></script>
-<script src="../assets/js/cms.js?v=b91b2e64"></script>
+<script src="../assets/js/cms.js?v=f2c488c1"></script>
 <script src="../assets/js/post-template.js?v=074292bb"></script>
-<script src="../admin/admin.js?v=4c2c27c3"></script>
-<script src="../admin/pages.js?v=0c88f3dc"></script>
+<script src="../admin/admin.js?v=3ccceb63"></script>
+<script src="../admin/pages.js?v=1fa10302"></script>
 </body>
 </html>
